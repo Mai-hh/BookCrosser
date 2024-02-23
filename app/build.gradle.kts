@@ -59,12 +59,19 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-
-    // 高德地图
-//    implementation(files("libs/AMap3DMap_9.8.3_AMapSearch_9.7.0_AMapLocation_6.4.2_20231215.jar"))
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
 
     // Map Compose
     implementation("io.github.TheMelody:gd_compose:1.0.5")
+    implementation("androidx.startup:startup-runtime:1.1.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    // Nav Compose
+    val navVersion = "2.7.7"
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
