@@ -7,5 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun SearchRoute() {
     val viewModel: SearchViewModel = viewModel()
 
-    SearchScreen(viewModel)
+    SearchScreen(uiState = viewModel.state) { event ->
+        viewModel.onEvent(event)
+    }
 }
