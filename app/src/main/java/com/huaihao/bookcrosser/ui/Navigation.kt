@@ -3,7 +3,13 @@ package com.huaihao.bookcrosser.ui
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.Book
+import androidx.compose.material.icons.rounded.ChatBubbleOutline
+import androidx.compose.material.icons.rounded.LocalFlorist
+import androidx.compose.material.icons.rounded.ManageAccounts
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -14,6 +20,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,6 +42,15 @@ object Destinations {
     const val CHATS_ROUTE = "chats"
     const val PROFILE_ROUTE = "profile"
 }
+
+private val IconImageVectors = listOf(
+    Icons.Rounded.Search,
+    Icons.Rounded.Book,
+    Icons.Rounded.LocalFlorist,
+    Icons.Rounded.ChatBubbleOutline,
+    Icons.Rounded.ManageAccounts
+)
+
 @Composable
 fun BookCrosserNavHost(
     navController: NavHostController = rememberNavController()
@@ -44,7 +61,7 @@ fun BookCrosserNavHost(
             NavigationBar {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+                        icon = { Icon(IconImageVectors[index], contentDescription = item) },
                         label = { Text(item) },
                         selected = selectedItem == index,
                         onClick = { selectedItem = index }
@@ -63,5 +80,12 @@ fun BookCrosserNavHost(
             }
         }
     }
+}
 
+@Preview
+@Composable
+private fun BookCrosserNavHostPreview() {
+    MaterialTheme {
+        BookCrosserNavHost()
+    }
 }

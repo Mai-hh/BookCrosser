@@ -7,5 +7,5 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun SearchRoute() {
     val viewModel: SearchViewModel = viewModel()
 
-    SearchScreen()
+    SearchScreen(viewModel)
 }
