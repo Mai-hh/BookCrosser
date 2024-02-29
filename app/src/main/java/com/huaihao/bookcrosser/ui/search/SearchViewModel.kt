@@ -1,6 +1,6 @@
 package com.huaihao.bookcrosser.ui.search
 
-import com.huaihao.bookcrosser.BaseViewModel
+import com.huaihao.bookcrosser.ui.common.BaseViewModel
 
 
 sealed interface SearchEvent {

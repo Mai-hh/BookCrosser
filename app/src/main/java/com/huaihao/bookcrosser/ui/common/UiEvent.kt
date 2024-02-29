@@ -1,4 +1,4 @@
-package com.huaihao.bookcrosser
+package com.huaihao.bookcrosser.ui.common
 
 sealed interface UiEvent {
     data class Error(val message: String): UiEvent

@@ -1,4 +1,4 @@
-package com.huaihao.bookcrosser
+package com.huaihao.bookcrosser.ui.common
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
