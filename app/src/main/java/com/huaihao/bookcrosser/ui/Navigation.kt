@@ -32,6 +32,7 @@ import com.huaihao.bookcrosser.ui.Destinations.REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.profile.ProfileRoute
+import com.huaihao.bookcrosser.ui.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.search.SearchRoute
 
 val items = listOf(SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, CHATS_ROUTE, PROFILE_ROUTE)
@@ -81,6 +82,9 @@ fun BookCrosserNavHost(
             }
             composable(PROFILE_ROUTE) {
                 ProfileRoute()
+            }
+            composable(REVIEWS_ROUTE) {
+                ReviewsRoute()
             }
         }
     }

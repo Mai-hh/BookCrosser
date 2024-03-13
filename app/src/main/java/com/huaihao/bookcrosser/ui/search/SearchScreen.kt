@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Navigation
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
@@ -99,9 +101,26 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
             }
         ) { paddingValue ->
             ConstraintLayout(modifier = Modifier.padding(paddingValue)) {
+                val (map, resetBtn) = createRefs()
 
+                Box(
+                    modifier = Modifier.constrainAs(map) {
+
+                    }
+                ) {
+                    MapView()
+                }
+
+                FloatingActionButton(
+                    modifier = Modifier.constrainAs(resetBtn) {
+                        bottom.linkTo(map.bottom, margin = 16.dp)
+                        end.linkTo(map.end, margin = 16.dp)
+                    },
+                    onClick = {  }
+                ) {
+                    Icon(Icons.Rounded.Navigation, contentDescription = "Reset")
+                }
             }
-//            MapView()
         }
     }
 }
