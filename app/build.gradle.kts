@@ -72,6 +72,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

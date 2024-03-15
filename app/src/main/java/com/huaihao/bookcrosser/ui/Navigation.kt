@@ -31,7 +31,9 @@ import com.huaihao.bookcrosser.ui.Destinations.PROFILE_ROUTE
 import com.huaihao.bookcrosser.ui.Destinations.REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.Destinations.SEARCH_ROUTE
+import com.huaihao.bookcrosser.ui.chats.ChatsRoute
 import com.huaihao.bookcrosser.ui.profile.ProfileRoute
+import com.huaihao.bookcrosser.ui.requests.RequestsRoute
 import com.huaihao.bookcrosser.ui.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.search.SearchRoute
 
@@ -66,7 +68,10 @@ fun BookCrosserNavHost(
                         icon = { Icon(IconImageVectors[index], contentDescription = item) },
                         label = { Text(item) },
                         selected = selectedItem == index,
-                        onClick = { selectedItem = index }
+                        onClick = {
+                            selectedItem = index
+                            navController.navigate(items[selectedItem])
+                        }
                     )
                 }
             }
@@ -80,12 +85,19 @@ fun BookCrosserNavHost(
             composable(SEARCH_ROUTE) {
                 SearchRoute()
             }
-            composable(PROFILE_ROUTE) {
-                ProfileRoute()
+            composable(REQUESTS_ROUTE) {
+                RequestsRoute()
             }
             composable(REVIEWS_ROUTE) {
                 ReviewsRoute()
             }
+            composable(CHATS_ROUTE) {
+                ChatsRoute()
+            }
+            composable(PROFILE_ROUTE) {
+                ProfileRoute()
+            }
+
         }
     }
 }
