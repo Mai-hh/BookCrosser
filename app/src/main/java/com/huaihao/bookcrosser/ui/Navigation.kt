@@ -2,14 +2,12 @@ package com.huaihao.bookcrosser.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.rounded.Book
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.LocalFlorist
 import androidx.compose.material.icons.rounded.ManageAccounts
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -20,7 +18,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -36,6 +33,7 @@ import com.huaihao.bookcrosser.ui.profile.ProfileRoute
 import com.huaihao.bookcrosser.ui.requests.RequestsRoute
 import com.huaihao.bookcrosser.ui.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.search.SearchRoute
+import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
 val items = listOf(SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, CHATS_ROUTE, PROFILE_ROUTE)
 
@@ -105,7 +103,7 @@ fun BookCrosserNavHost(
 @Preview
 @Composable
 private fun BookCrosserNavHostPreview() {
-    MaterialTheme {
+    BookCrosserTheme {
         BookCrosserNavHost()
     }
 }

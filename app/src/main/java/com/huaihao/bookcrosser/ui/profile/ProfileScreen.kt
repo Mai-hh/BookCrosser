@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,7 +83,7 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    MaterialTheme {
+    BookCrosserTheme {
         ProfileScreen(uiState = ProfileUiState(), onEvent = {})
     }
 }

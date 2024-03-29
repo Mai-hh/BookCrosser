@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.ui.common.BookCrosserTabIndicator
+import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.util.supportWideScreen
 import com.melody.map.gd_compose.GDMap
 import com.melody.map.gd_compose.poperties.MapProperties
@@ -150,7 +151,7 @@ fun MapView() {
 @Preview
 @Composable
 fun SearchScreenPreview() {
-    MaterialTheme {
+    BookCrosserTheme {
         SearchScreen(
             onEvent = {},
             uiState = SearchUiState()

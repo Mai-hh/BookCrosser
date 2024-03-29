@@ -26,6 +26,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.model.Review
+import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +101,7 @@ fun NoPermissionScreen(
 
 @Composable
 fun CameraScreen() {
-    
+
 }
 
 @Composable
@@ -132,7 +133,7 @@ fun ReviewCard(modifier: Modifier = Modifier, review: Review) {
 @Preview
 @Composable
 fun ReviewCardPreview() {
-    MaterialTheme {
+    BookCrosserTheme {
         ReviewCard(modifier = Modifier, Review(title = "TestTile", content = ""))
     }
 }
