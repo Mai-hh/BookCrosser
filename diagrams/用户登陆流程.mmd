@@ -1,0 +1,20 @@
+graph TD
+    Start(开始) --> InputLoginId[输入登录标识（邮箱或用户名）]
+    InputLoginId --> InputLoginPassword[输入登录密码]
+    InputLoginPassword --> SubmitLogin[提交登录信息]
+    SubmitLogin --> CheckLoginInfo{检查登录信息是否正确}
+    CheckLoginInfo --> |不正确| ShowLoginError[提示登录失败]
+    ShowLoginError --> InputLoginId
+    CheckLoginInfo --> |正确| CheckAccountStatus{检查账户状态是否正常}
+    CheckAccountStatus --> |账户异常| ShowAccountProblem[提示账户存在问题,联系管理员]
+    ShowAccountProblem --> End(结束)
+    CheckAccountStatus --> |账户正常| CheckEmailVerified{检查邮箱是否已验证}
+    CheckEmailVerified --> |未验证| PromptEmailVerification[提示进行邮箱验证]
+    PromptEmailVerification --> SendNewVerificationEmail{选择重新发送验证邮件}
+    SendNewVerificationEmail --> |是| SendVerificationEmail[发送新的验证邮件]
+    SendNewVerificationEmail --> |否| End
+    SendVerificationEmail --> End
+    CheckEmailVerified --> |已验证| LoginSuccess[登录成功,进入系统]
+    LoginSuccess --> RecordLoginHistory[记录登录历史]
+    RecordLoginHistory --> ShowUserDashboard[显示用户个人面板]
+    ShowUserDashboard --> End

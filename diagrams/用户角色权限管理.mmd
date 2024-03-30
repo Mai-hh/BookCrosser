@@ -1,0 +1,38 @@
+graph TD
+    Start(开始) --> Login[管理员登录]
+    Login --> SelectAction{选择操作}
+
+    SelectAction --> |添加角色| AddRole[创建新角色]
+    AddRole --> InputRoleName[输入角色名称]
+    InputRoleName --> DefinePermissions[定义角色权限]
+    DefinePermissions --> SaveRole[保存角色]
+    SaveRole --> End(结束)
+
+    SelectAction --> |编辑角色权限| SelectRole[选择要编辑的角色]
+    SelectRole --> ViewPermissions[查看角色当前权限]
+    ViewPermissions --> ModifyPermissions[修改角色权限]
+    ModifyPermissions --> ConfirmChanges{确认修改}
+    ConfirmChanges --> |是| SaveChanges[保存权限更改]
+    ConfirmChanges --> |否| CancelEdit[取消编辑]
+    SaveChanges --> NotifySuccess[通知修改成功]
+    CancelEdit --> NotifySuccess
+    NotifySuccess --> End
+
+    SelectAction --> |删除角色| SelectRoleToDelete[选择要删除的角色]
+    SelectRoleToDelete --> ConfirmDelete{确认删除}
+    ConfirmDelete --> |是| ProcessDelete[处理角色删除]
+    ConfirmDelete --> |否| CancelDelete[取消删除]
+    ProcessDelete --> NotifyDeletion[通知删除成功]
+    CancelDelete --> End
+    NotifyDeletion --> End
+
+    SelectAction --> |分配用户角色| SelectUser[选择用户]
+    SelectUser --> ViewUserRoles[查看用户当前角色]
+    ViewUserRoles --> AssignRole[分配新角色给用户]
+    AssignRole --> RemoveRole[移除用户的某个角色]
+    RemoveRole --> ConfirmRoleChanges{确认角色变更}
+    ConfirmRoleChanges --> |是| SaveRoleChanges[保存用户角色变更]
+    ConfirmRoleChanges --> |否| CancelRoleChanges[取消角色变更]
+    SaveRoleChanges --> NotifyUserRoleChange[通知用户角色变更]
+    CancelRoleChanges --> End
+    NotifyUserRoleChange --> End
