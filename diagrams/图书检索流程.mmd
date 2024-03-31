@@ -1,0 +1,27 @@
+graph TD
+    Start(开始) --> SelectSearchType{选择检索方式}
+
+    SelectSearchType --> |基本搜索| InputKeywords[输入关键词]
+    InputKeywords --> SubmitSearch[提交检索请求]
+
+    SelectSearchType --> |高级搜索| SetSearchCriteria[设置检索条件]
+    SetSearchCriteria --> SelectField{选择检索字段}
+    SelectField --> |书名| InputBookTitle[输入书名]
+    SelectField --> |作者| InputAuthorName[输入作者名]
+    SelectField --> |ISBN| InputISBN[输入ISBN]
+    SelectField --> |出版社| InputPublisher[输入出版社]
+    SelectField --> |出版年份| SelectPublicationYear[选择出版年份范围]
+    InputBookTitle & InputAuthorName & InputISBN & InputPublisher & SelectPublicationYear --> CombineSearchCriteria[组合检索条件]
+    CombineSearchCriteria --> SubmitAdvancedSearch[提交高级检索请求]
+
+    SubmitSearch & SubmitAdvancedSearch --> SearchDatabase[检索图书数据库]
+    SearchDatabase --> |未找到匹配结果| ShowNoResults["显示（未找到匹配图书）信息"]
+    SearchDatabase --> |找到匹配结果| ShowSearchResults[显示检索结果列表]
+    ShowSearchResults --> SelectSortCriteria[选择排序方式]
+    SelectSortCriteria --> SortResults[对结果进行排序]
+    SortResults --> ShowSortedResults[显示排序后的结果]
+    ShowSortedResults --> SelectBookDetails{选择查看图书详情}
+    SelectBookDetails --> |是| ShowBookDetails[显示图书详细信息页面]
+    SelectBookDetails --> |否| End(结束)
+    ShowBookDetails --> End
+    ShowNoResults --> End

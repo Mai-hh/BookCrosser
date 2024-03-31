@@ -1,0 +1,11 @@
+graph TD
+    Start(开始) --> UserLogin[用户登录]
+    UserLogin --> SelectTopic[选择话题或讨论区]
+    SelectTopic --> ViewMessages[查看自己发表的留言]
+    ViewMessages --> SelectMessage{选择要删除的留言}
+    SelectMessage --> |是| ConfirmDelete{确认删除}
+    SelectMessage --> |否| End(结束)
+    ConfirmDelete --> |是| DeleteMessage[删除留言]
+    ConfirmDelete --> |否| End
+    DeleteMessage --> NotifyUser[通知用户删除成功]
+    NotifyUser --> End

@@ -1,0 +1,25 @@
+graph TD
+    Start(开始) --> RegisterBook[书主登记图书信息]
+    RegisterBook --> SetReleasePoint[设置图书释放点]
+    SetReleasePoint --> ConfirmRelease{确认释放图书}
+    ConfirmRelease --> |是| MarkBookReleased["标记图书为（已释放）"]
+    ConfirmRelease --> |否| SetReleasePoint
+    MarkBookReleased --> UpdateBookLocation[更新图书位置为释放点]
+    UpdateBookLocation --> NotifyFollowers[通知关注者图书已释放]
+    NotifyFollowers --> WaitingForPickup[图书等待被拾取]
+    WaitingForPickup --> BookPickedUp{图书是否被拾取}
+    BookPickedUp --> |是| MarkBookPickedUp["标记图书为（已拾取）"]
+    BookPickedUp --> |否| CheckReleaseExpired{释放是否过期}
+    CheckReleaseExpired --> |否| WaitingForPickup
+    CheckReleaseExpired --> |是| NotifyBookOwner[通知书主图书未被拾取]
+    NotifyBookOwner --> End(结束)
+    MarkBookPickedUp --> UpdateBookHolder[更新图书持有者信息]
+    UpdateBookHolder --> NotifyBookOwner[通知书主图书已被拾取]
+    NotifyBookOwner --> WaitingForReading[图书等待被阅读]
+    WaitingForReading --> BookRead{图书是否被阅读}
+    BookRead --> |是| MarkBookRead["标记图书为（已阅读）"]
+    BookRead --> |否| WaitingForReading
+    MarkBookRead --> UpdateReadingStatus[更新图书阅读状态]
+    UpdateReadingStatus --> ReleaseBook{持有者是否释放图书}
+    ReleaseBook --> |是| MarkBookReleased
+    ReleaseBook --> |否| UpdateReadingStatus
