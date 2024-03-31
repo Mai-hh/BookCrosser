@@ -1,0 +1,51 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "用户界面层" {
+    package "Web UI" {
+    }
+    package "移动应用" {
+    }
+}
+
+package "应用服务层" {
+    package "用户服务" {
+    }
+    package "图书服务" {
+    }
+    package "交换服务" {
+    }
+    package "社区服务" {
+    }
+    package "推荐服务" {
+    }
+}
+
+package "领域模型层" {
+    package "用户领域" {
+    }
+    package "图书领域" {
+    }
+    package "交换领域" {
+    }
+    package "社区领域" {
+    }
+}
+
+package "基础设施层" {
+    package "持久化" {
+    }
+    package "消息" {
+    }
+    package "缓存" {
+    }
+    package "日志" {
+    }
+}
+
+"用户界面层" --> "应用服务层"
+"应用服务层" --> "领域模型层"
+"应用服务层" --> "基础设施层"
+"领域模型层" --> "基础设施层"
+
+@enduml
