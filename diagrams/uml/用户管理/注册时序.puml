@@ -1,0 +1,47 @@
+@startuml
+actor User
+participant RegistrationActivity
+participant RegistrationFragment
+participant RegistrationViewModel
+participant RegistrationService
+participant EmailService
+participant UserRepository
+
+User -> RegistrationActivity: 进入注册页面
+RegistrationActivity -> RegistrationFragment: 显示注册表单
+
+User -> RegistrationFragment: 填写注册信息
+User -> RegistrationFragment: 提交注册表单
+
+RegistrationFragment -> RegistrationViewModel: submitRegistration()
+
+RegistrationViewModel -> RegistrationViewModel: 校验表单数据
+alt 表单数据无效
+    RegistrationViewModel -> RegistrationFragment: 返回表单验证错误
+    RegistrationFragment -> User: 显示错误提示
+else 表单数据有效
+    RegistrationViewModel -> RegistrationService: register()
+
+    RegistrationService -> UserRepository: findByUsername()
+    UserRepository -> RegistrationService: 返回查询结果
+
+    RegistrationService -> UserRepository: findByEmail()
+    UserRepository -> RegistrationService: 返回查询结果
+
+    alt 用户名或邮箱已存在
+        RegistrationService -> RegistrationViewModel: 返回用户已存在错误
+        RegistrationViewModel -> RegistrationFragment: 显示错误提示
+        RegistrationFragment -> User: 显示错误提示
+    else 用户名和邮箱未被注册
+        RegistrationService -> EmailService: sendVerificationEmail()
+        EmailService -> RegistrationService: 返回邮件发送结果
+
+        RegistrationService -> UserRepository: save()
+        UserRepository -> RegistrationService: 返回保存结果
+
+        RegistrationService -> RegistrationViewModel: 返回注册成功
+        RegistrationViewModel -> RegistrationFragment: 显示注册成功提示
+        RegistrationFragment -> User: 显示注册成功提示
+    end
+end
+@enduml

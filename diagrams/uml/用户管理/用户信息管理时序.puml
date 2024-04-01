@@ -1,0 +1,50 @@
+@startuml
+actor User
+participant UserProfileActivity
+participant UserProfileFragment
+participant UserProfileViewModel
+participant UserService
+participant UserRepository
+
+User -> UserProfileActivity: 进入用户信息页面
+UserProfileActivity -> UserProfileFragment: 显示用户信息
+
+UserProfileFragment -> UserProfileViewModel: getUserProfile()
+UserProfileViewModel -> UserService: getUserById()
+UserService -> UserRepository: findById()
+UserRepository -> UserService: 返回用户信息
+UserService -> UserProfileViewModel: 返回用户信息
+UserProfileViewModel -> UserProfileFragment: 更新用户信息显示
+
+User -> UserProfileFragment: 点击编辑按钮
+UserProfileFragment -> UserProfileViewModel: enableEditMode()
+UserProfileViewModel -> UserProfileFragment: 切换到编辑模式
+
+User -> UserProfileFragment: 修改用户信息
+User -> UserProfileFragment: 点击保存按钮
+UserProfileFragment -> UserProfileViewModel: updateUserProfile()
+
+UserProfileViewModel -> UserProfileViewModel: 校验表单数据
+alt 表单数据无效
+    UserProfileViewModel -> UserProfileFragment: 返回表单验证错误
+    UserProfileFragment -> User: 显示错误提示
+else 表单数据有效
+    UserProfileViewModel -> UserService: updateUser()
+    UserService -> UserRepository: save()
+    UserRepository -> UserService: 返回更新后的用户信息
+    UserService -> UserProfileViewModel: 返回更新后的用户信息
+
+    UserProfileViewModel -> UserProfileFragment: 更新用户信息显示
+    UserProfileViewModel -> UserProfileFragment: 切换到查看模式
+
+    UserProfileFragment -> User: 显示更新成功提示
+end
+
+User -> UserProfileFragment: 点击注销按钮
+UserProfileFragment -> UserProfileViewModel: logout()
+UserProfileViewModel -> UserService: logout()
+UserService -> UserService: 清除登录状态和本地token
+UserService -> UserProfileViewModel: 返回注销成功
+UserProfileViewModel -> UserProfileActivity: 跳转到登录页面
+UserProfileActivity -> User: 显示登录页面
+@enduml
