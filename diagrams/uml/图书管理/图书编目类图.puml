@@ -1,0 +1,97 @@
+@startuml
+class BookCatalogingActivity {
+    - bookCatalogingFragment: BookCatalogingFragment
+    - bookCatalogingViewModel: BookCatalogingViewModel
+    + onCreate()
+    + onBookCatalogingComplete()
+}
+
+class BookCatalogingFragment {
+    - bookCatalogingViewModel: BookCatalogingViewModel
+    + onCreateView()
+    + onBookLoaded(book: Book)
+    + onCategoriesLoaded(categories: List<Category>)
+    + onCatalogingInfoSubmitted(catalogingInfo: CatalogingInfo)
+    + showBookDetails(book: Book)
+    + showCategories(categories: List<Category>)
+    + showCatalogingResult(success: Boolean)
+}
+
+class BookCatalogingViewModel {
+    - bookService: BookService
+    - categoryService: CategoryService
+    + loadBookDetails(bookId: Long)
+    + loadCategories()
+    + saveBookCataloging(bookId: Long, catalogingInfo: CatalogingInfo)
+    + onBookLoaded(book: Book)
+    + onCategoriesLoaded(categories: List<Category>)
+    + onCatalogingComplete(success: Boolean)
+}
+
+interface BookService {
+    + getBookById(bookId: Long): Book
+    + updateBook(book: Book): Boolean
+}
+
+class BookServiceImpl {
+    - bookRepository: BookRepository
+    + getBookById(bookId: Long): Book
+    + updateBook(book: Book): Boolean
+}
+
+interface CategoryService {
+    + getCategories(): List<Category>
+}
+
+class CategoryServiceImpl {
+    + getCategories(): List<Category>
+}
+
+interface BookRepository {
+    + findById(bookId: Long): Book
+    + save(book: Book): Boolean
+}
+
+class BookRepositoryImpl {
+    + findById(bookId: Long): Book
+    + save(book: Book): Boolean
+}
+
+class Book {
+    - id: Long
+    - title: String
+    - author: String
+    - isbn: String
+    - publisher: String
+    - publicationYear: Int
+    - categories: List<Category>
+    - coverImage: String
+    - description: String
+}
+
+class Category {
+    - id: Long
+    - name: String
+}
+
+class CatalogingInfo {
+    - callNumber: String
+    - subjects: List<String>
+    - physicalDescription: String
+    - notes: String
+}
+
+BookCatalogingActivity *-- BookCatalogingFragment
+BookCatalogingActivity *-- BookCatalogingViewModel
+BookCatalogingFragment --> BookCatalogingViewModel
+BookCatalogingViewModel --> BookService
+BookCatalogingViewModel --> CategoryService
+BookServiceImpl ..|> BookService
+BookServiceImpl --> BookRepository
+CategoryServiceImpl ..|> CategoryService
+BookRepositoryImpl ..|> BookRepository
+BookRepositoryImpl --> Book
+Book "1" *-- "*" Category
+BookCatalogingFragment ..> CatalogingInfo
+BookCatalogingViewModel ..> CatalogingInfo
+@enduml

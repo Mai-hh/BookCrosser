@@ -1,0 +1,93 @@
+@startuml
+actor User
+participant BookStatusActivity
+participant BookStatusFragment
+participant BookStatusViewModel
+participant BookService
+participant BookRepository
+participant DriftingService
+participant DriftingRepository
+
+User -> BookStatusActivity: 进入图书状态跟踪页面
+activate BookStatusActivity
+
+BookStatusActivity -> BookStatusFragment: 显示图书状态跟踪界面
+activate BookStatusFragment
+
+BookStatusFragment -> BookStatusViewModel: getBookStatus(bookId)
+activate BookStatusViewModel
+
+BookStatusViewModel -> BookService: getBookById(bookId)
+activate BookService
+
+BookService -> BookRepository: findById(bookId)
+activate BookRepository
+BookRepository --> BookService: Book
+deactivate BookRepository
+
+BookService --> BookStatusViewModel: Book
+deactivate BookService
+
+BookStatusViewModel -> DriftingService: getDriftingByBookId(bookId)
+activate DriftingService
+
+DriftingService -> DriftingRepository: findByBookId(bookId)
+activate DriftingRepository
+DriftingRepository --> DriftingService: Drifting
+deactivate DriftingRepository
+
+DriftingService --> BookStatusViewModel: Drifting
+deactivate DriftingService
+
+BookStatusViewModel --> BookStatusFragment: BookStatus
+deactivate BookStatusViewModel
+
+alt 图书未漂流
+    BookStatusFragment -> User: 显示"未漂流"状态
+    User -> BookStatusFragment: 点击"发起漂流"按钮
+    BookStatusFragment -> BookStatusViewModel: startDrifting(bookId, userId)
+    activate BookStatusViewModel
+
+    BookStatusViewModel -> DriftingService: startDrifting(bookId, userId)
+    activate DriftingService
+
+    DriftingService -> DriftingRepository: save(drifting)
+    activate DriftingRepository
+    DriftingRepository --> DriftingService: Drifting
+    deactivate DriftingRepository
+
+    DriftingService --> BookStatusViewModel: Drifting
+    deactivate DriftingService
+
+    BookStatusViewModel --> BookStatusFragment: 漂流发起成功
+    deactivate BookStatusViewModel
+
+    BookStatusFragment -> User: 显示"漂流中"状态
+else 图书漂流中
+    BookStatusFragment -> User: 显示"漂流中"状态
+    User -> BookStatusFragment: 点击"确认收到"按钮
+    BookStatusFragment -> BookStatusViewModel: confirmReceived(bookId)
+    activate BookStatusViewModel
+
+    BookStatusViewModel -> DriftingService: confirmReceived(bookId)
+    activate DriftingService
+
+    DriftingService -> DriftingRepository: updateStatus(bookId, "已收到")
+    activate DriftingRepository
+    DriftingRepository --> DriftingService: Drifting
+    deactivate DriftingRepository
+
+    DriftingService --> BookStatusViewModel: Drifting
+    deactivate DriftingService
+
+    BookStatusViewModel --> BookStatusFragment: 确认收到成功
+    deactivate BookStatusViewModel
+
+    BookStatusFragment -> User: 显示"已收到"状态
+else 图书已收到
+    BookStatusFragment -> User: 显示"已收到"状态
+end
+
+deactivate BookStatusFragment
+deactivate BookStatusActivity
+@enduml
