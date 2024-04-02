@@ -1,0 +1,148 @@
+@startuml
+left to right direction
+
+
+    class RoleManagementActivity {
+        - roleListFragment: RoleListFragment
+        - roleEditFragment: RoleEditFragment
+        - permissionAssignmentFragment: PermissionAssignmentFragment
+        - roleViewModel: RoleViewModel
+        + onCreate()
+        + onRoleSelected(roleId: Long)
+        + onAddRoleClicked()
+        + onEditRoleClicked(roleId: Long)
+        + onDeleteRoleClicked(roleId: Long)
+        + onAssignPermissionsClicked(roleId: Long)
+    }
+
+    class RoleListFragment {
+        - roleList: List<Role>
+        - onRoleClickListener: OnRoleClickListener
+        + onCreateView()
+        + onRoleClick(roleId: Long)
+        + showRoleList(roleList: List<Role>)
+        + showAddRoleButton()
+        + showEditRoleButton(roleId: Long)
+        + showDeleteRoleButton(roleId: Long)
+        + showAssignPermissionsButton(roleId: Long)
+    }
+
+    class RoleEditFragment {
+        - role: Role
+        + onCreateView()
+        + showRoleDetails(role: Role)
+        + onSaveRoleClicked(role: Role)
+    }
+
+    class PermissionAssignmentFragment {
+        - roleId: Long
+        - permissionList: List<Permission>
+        + onCreateView()
+        + showPermissionList(permissionList: List<Permission>)
+        + onPermissionAssigned(permissionId: Long, assigned: Boolean)
+        + onSavePermissionsClicked()
+    }
+
+
+
+    class RoleViewModel {
+        - roleService: RoleService
+        + getRoleList(): LiveData<List<Role>>
+        + createRole(role: Role): LiveData<Role>
+        + updateRole(role: Role): LiveData<Role>
+        + deleteRole(roleId: Long): LiveData<Boolean>
+        + getPermissionsByRole(roleId: Long): LiveData<List<Permission>>
+        + updateRolePermissions(roleId: Long, permissionIds: List<Long>): LiveData<Boolean>
+    }
+
+
+
+    interface RoleService {
+        + getAllRoles(): List<Role>
+        + createRole(role: Role): Role
+        + updateRole(role: Role): Role
+        + deleteRole(roleId: Long): Boolean
+        + getPermissionsByRoleId(roleId: Long): List<Permission>
+        + assignPermissionsToRole(roleId: Long, permissionIds: List<Long>): Boolean
+    }
+
+    class RoleServiceImpl {
+        - roleRepository: RoleRepository
+        - permissionRepository: PermissionRepository
+        + getAllRoles(): List<Role>
+        + createRole(role: Role): Role
+        + updateRole(role: Role): Role
+        + deleteRole(roleId: Long): Boolean
+        + getPermissionsByRoleId(roleId: Long): List<Permission>
+        + assignPermissionsToRole(roleId: Long, permissionIds: List<Long>): Boolean
+    }
+
+
+
+    interface RoleRepository {
+        + findAll(): List<Role>
+        + findById(roleId: Long): Role
+        + save(role: Role): Role
+        + deleteById(roleId: Long): Boolean
+    }
+
+    interface PermissionRepository {
+        + findByRoleId(roleId: Long): List<Permission>
+        + deleteByRoleId(roleId: Long)
+        + saveAll(permissions: List<Permission>)
+    }
+
+    class RoleRepositoryImpl {
+        + findAll(): List<Role>
+        + findById(roleId: Long): Role
+        + save(role: Role): Role
+        + deleteById(roleId: Long): Boolean
+    }
+
+    class PermissionRepositoryImpl {
+        + findByRoleId(roleId: Long): List<Permission>
+        + deleteByRoleId(roleId: Long)
+        + saveAll(permissions: List<Permission>)
+    }
+
+
+
+    abstract class BaseEntity {
+        # id: Long
+    }
+
+    class Role {
+        - name: String
+        - description: String
+    }
+
+    class Permission {
+        - name: String
+        - description: String
+    }
+
+
+RoleManagementActivity --> RoleListFragment
+RoleManagementActivity --> RoleEditFragment
+RoleManagementActivity --> PermissionAssignmentFragment
+RoleManagementActivity --> RoleViewModel
+
+RoleListFragment --> Role
+RoleEditFragment --> Role
+PermissionAssignmentFragment --> Permission
+
+RoleViewModel --> RoleService
+
+RoleServiceImpl ..|> RoleService
+RoleServiceImpl --> RoleRepository
+RoleServiceImpl --> PermissionRepository
+
+RoleRepositoryImpl ..|> RoleRepository
+PermissionRepositoryImpl ..|> PermissionRepository
+
+RoleRepositoryImpl --> Role
+PermissionRepositoryImpl --> Permission
+
+Role --|> BaseEntity
+Permission --|> BaseEntity
+@enduml

@@ -1,0 +1,69 @@
+@startuml
+actor User
+participant BookEntryActivity
+participant BookEntryFragment
+participant BookEntryViewModel
+participant BookService
+participant IsbnService
+participant BookRepository
+
+User -> BookEntryActivity: 进入图书录入页面
+activate BookEntryActivity
+
+BookEntryActivity -> BookEntryFragment: 显示图书录入表单
+activate BookEntryFragment
+
+User -> BookEntryFragment: 输入ISBN
+User -> BookEntryFragment: 点击"查询"按钮
+
+BookEntryFragment -> BookEntryViewModel: fetchBookInfo(isbn)
+activate BookEntryViewModel
+
+BookEntryViewModel -> IsbnService: getBookInfoByIsbn(isbn)
+activate IsbnService
+
+alt ISBN存在
+    IsbnService -> IsbnService: 从第三方API获取图书信息
+    IsbnService --> BookEntryViewModel: 返回图书信息
+else ISBN不存在
+    IsbnService --> BookEntryViewModel: 返回空
+end
+
+deactivate IsbnService
+
+BookEntryViewModel -> BookEntryFragment: 更新图书信息显示
+deactivate BookEntryViewModel
+
+User -> BookEntryFragment: 补充或修改图书信息
+User -> BookEntryFragment: 点击"提交"按钮
+
+BookEntryFragment -> BookEntryViewModel: submitBookInfo(bookInfo)
+activate BookEntryViewModel
+
+BookEntryViewModel -> BookEntryViewModel: 验证图书信息
+
+alt 信息有效
+    BookEntryViewModel -> BookService: addBook(bookInfo)
+    activate BookService
+
+    BookService -> BookRepository: save(book)
+    activate BookRepository
+    BookRepository --> BookService: 返回录入结果
+    deactivate BookRepository
+
+    BookService --> BookEntryViewModel: 返回录入结果
+    deactivate BookService
+
+    BookEntryViewModel -> BookEntryFragment: 显示录入成功提示
+else 信息无效
+    BookEntryViewModel -> BookEntryFragment: 显示录入失败提示
+end
+
+deactivate BookEntryViewModel
+
+User -> BookEntryFragment: 确认提示
+deactivate BookEntryFragment
+
+User -> BookEntryActivity: 返回图书列表
+deactivate BookEntryActivity
+@enduml
