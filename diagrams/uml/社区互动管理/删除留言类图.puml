@@ -1,0 +1,41 @@
+@startuml
+class MessageActivity {
+    - messageFragment: MessageFragment
+}
+
+class MessageFragment {
+    - messageViewModel: MessageViewModel
+    + showDeleteConfirmationDialog()
+    + showDeleteSuccessMessage()
+    + showDeleteFailureMessage()
+}
+
+class MessageViewModel {
+    - messageService: MessageService
+    + deleteMessage(messageId: Long): Boolean
+}
+
+interface MessageService {
+    + deleteMessage(messageId: Long): Boolean
+}
+
+class MessageServiceImpl {
+    - messageRepository: MessageRepository
+}
+
+interface MessageRepository {
+    + deleteById(messageId: Long): Boolean
+}
+
+class MessageRepositoryImpl
+
+class Message
+
+MessageActivity *-- MessageFragment
+MessageFragment --> MessageViewModel
+MessageViewModel --> MessageService
+MessageServiceImpl ..|> MessageService
+MessageServiceImpl --> MessageRepository
+MessageRepositoryImpl ..|> MessageRepository
+MessageRepositoryImpl --> Message
+@enduml

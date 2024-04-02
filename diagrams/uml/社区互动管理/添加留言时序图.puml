@@ -1,0 +1,61 @@
+@startuml
+actor User
+participant MessageActivity
+participant MessageFragment
+participant MessageViewModel
+participant MessageService
+participant MessageRepository
+
+User -> MessageActivity: 进入留言页面
+activate MessageActivity
+
+MessageActivity -> MessageFragment: 显示留言列表
+activate MessageFragment
+
+User -> MessageFragment: 点击"添加留言"按钮
+activate User
+activate MessageFragment
+
+MessageFragment -> MessageViewModel: createEmptyMessage()
+activate MessageViewModel
+
+MessageViewModel --> MessageFragment: 返回空的Message对象
+deactivate MessageViewModel
+
+MessageFragment -> User: 显示留言编辑界面
+deactivate MessageFragment
+
+User -> MessageFragment: 输入留言内容
+activate MessageFragment
+
+User -> MessageFragment: 点击"发布"按钮
+deactivate User
+
+MessageFragment -> MessageViewModel: addMessage(message)
+activate MessageViewModel
+
+MessageViewModel -> MessageService: addMessage(message)
+activate MessageService
+
+MessageService -> MessageRepository: save(message)
+activate MessageRepository
+MessageRepository --> MessageService: 返回保存后的Message对象
+deactivate MessageRepository
+
+MessageService --> MessageViewModel: 返回保存后的Message对象
+deactivate MessageService
+
+MessageViewModel --> MessageFragment: 返回保存后的Message对象
+deactivate MessageViewModel
+
+MessageFragment -> MessageActivity: 刷新留言列表
+deactivate MessageFragment
+
+MessageActivity -> MessageFragment: 显示更新后的留言列表
+activate MessageFragment
+deactivate MessageFragment
+
+User -> MessageActivity: 退出留言页面
+deactivate MessageActivity
+deactivate User
+@enduml

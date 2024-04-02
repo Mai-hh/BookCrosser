@@ -1,0 +1,70 @@
+@startuml
+actor User
+participant MessageActivity
+participant MessageFragment
+participant MessageViewModel
+participant MessageService
+participant MessageRepository
+
+User -> MessageActivity: 进入留言页面
+activate MessageActivity
+
+MessageActivity -> MessageFragment: 显示留言列表
+activate MessageFragment
+
+MessageFragment -> MessageViewModel: getMessages()
+activate MessageViewModel
+
+MessageViewModel -> MessageService: getMessages()
+activate MessageService
+
+MessageService -> MessageRepository: findAll()
+activate MessageRepository
+MessageRepository --> MessageService: List<Message>
+deactivate MessageRepository
+
+MessageService --> MessageViewModel: List<Message>
+deactivate MessageService
+
+MessageViewModel --> MessageFragment: 更新留言列表
+deactivate MessageViewModel
+
+MessageFragment -> User: 显示留言列表
+deactivate MessageFragment
+
+User -> MessageFragment: 点击留言
+activate User
+activate MessageFragment
+
+MessageFragment -> MessageViewModel: getMessage(messageId)
+activate MessageViewModel
+
+MessageViewModel -> MessageService: getMessage(messageId)
+activate MessageService
+
+MessageService -> MessageRepository: findById(messageId)
+activate MessageRepository
+MessageRepository --> MessageService: Message
+deactivate MessageRepository
+
+MessageService --> MessageViewModel: Message
+deactivate MessageService
+
+MessageViewModel --> MessageFragment: 更新留言详情
+deactivate MessageViewModel
+
+MessageFragment -> User: 显示留言详情
+deactivate MessageFragment
+deactivate User
+
+User -> MessageFragment: 返回留言列表
+activate User
+activate MessageFragment
+
+MessageFragment -> MessageActivity: 返回留言列表
+deactivate MessageFragment
+
+User -> MessageActivity: 退出留言页面
+deactivate User
+deactivate MessageActivity
+@enduml
