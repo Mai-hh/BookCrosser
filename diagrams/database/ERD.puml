@@ -1,0 +1,134 @@
+@startuml
+entity "users" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *username : VARCHAR(50)
+    *email : VARCHAR(100) <<UNIQUE>>
+    *password : VARCHAR(100)
+    avatar : VARCHAR(200)
+    bio : VARCHAR(500)
+    location : VARCHAR(100)
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "roles" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *name : VARCHAR(50) <<UNIQUE>>
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "permissions" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *name : VARCHAR(50) <<UNIQUE>>
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "books" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *title : VARCHAR(100)
+    *author : VARCHAR(100)
+    isbn : VARCHAR(20) <<UNIQUE>>
+    description : TEXT
+    cover_url : VARCHAR(200)
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "categories" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *name : VARCHAR(50) <<UNIQUE>>
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "book_copies" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *book_id : BIGINT <<FK>>
+    *owner_id : BIGINT <<FK>>
+    *status : VARCHAR(20)
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "driftings" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *book_copy_id : BIGINT <<FK>>
+    *requester_id : BIGINT <<FK>>
+    *receiver_id : BIGINT <<FK>>
+    *status : VARCHAR(20)
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "messages" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *user_id : BIGINT <<FK>>
+    *content : TEXT
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "comments" {
+    *id : BIGINT <<PK>> <<AUTO_INCREMENT>>
+    --
+    *message_id : BIGINT <<FK>>
+    *user_id : BIGINT <<FK>>
+    *content : TEXT
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "user_roles" {
+    *user_id : BIGINT <<PK>> <<FK>>
+    *role_id : BIGINT <<PK>> <<FK>>
+    --
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "role_permissions" {
+    *role_id : BIGINT <<PK>> <<FK>>
+    *permission_id : BIGINT <<PK>> <<FK>>
+    --
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+entity "book_categories" {
+    *book_id : BIGINT <<PK>> <<FK>>
+    *category_id : BIGINT <<PK>> <<FK>>
+    --
+    *created_at : DATETIME
+    *updated_at : DATETIME
+}
+
+users ||..o{ user_roles
+roles ||..o{ user_roles
+users ||..o{ book_copies
+users ||..o{ driftings
+users ||..o{ messages
+users ||..o{ comments
+
+roles ||..o{ role_permissions
+permissions ||..o{ role_permissions
+
+books ||..o{ book_copies
+books ||..o{ driftings
+books ||..o{ book_categories
+
+categories ||..o{ book_categories
+
+book_copies ||..o{ driftings
+
+messages ||..o{ comments
+@enduml
