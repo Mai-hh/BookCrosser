@@ -1,4 +1,4 @@
-package com.huaihao.bookcrosser.ui.requests
+package com.huaihao.bookcrosser.viewmodel
 
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 

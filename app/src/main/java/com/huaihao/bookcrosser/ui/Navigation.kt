@@ -95,7 +95,6 @@ fun BookCrosserNavHost(
             composable(PROFILE_ROUTE) {
                 ProfileRoute()
             }
-
         }
     }
 }

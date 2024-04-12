@@ -1,4 +1,4 @@
-package com.huaihao.bookcrosser.ui.search
+package com.huaihao.bookcrosser.viewmodel
 
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 

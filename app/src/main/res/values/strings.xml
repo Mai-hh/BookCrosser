@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">BookCrosser</string>
     <string name="content_test">BookCrosserBookCrosserBookCrosserBookCrosserBookCrosserBookCrosser</string>
+
+    <string name="app_name_space">Book Crosser</string>
+    <string name="login">Sign in</string>
+    <string name="forget_password">Forget password?</string>
+    <string name="register">Sign up</string>
+    <string name="code_resend">Resend verification code</string>
 </resources>

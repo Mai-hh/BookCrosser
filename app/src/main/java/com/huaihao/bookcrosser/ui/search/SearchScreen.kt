@@ -33,6 +33,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.ui.common.BookCrosserTabIndicator
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.util.supportWideScreen
+import com.huaihao.bookcrosser.viewmodel.SearchEvent
+import com.huaihao.bookcrosser.viewmodel.SearchUiState
 import com.melody.map.gd_compose.GDMap
 import com.melody.map.gd_compose.poperties.MapProperties
 import com.melody.map.gd_compose.poperties.MapUiSettings
