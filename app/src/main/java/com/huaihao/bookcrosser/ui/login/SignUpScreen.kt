@@ -22,7 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -59,7 +61,7 @@ fun SignUpScreen() {
                         bottom.linkTo(content.top, margin = 16.dp)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.app_name_space),
+                        text = stringResource(id = R.string.input_profile),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
@@ -75,6 +77,7 @@ fun SignUpScreen() {
                     }) {
 
                     OutlinedTextField(
+                        label = { Text(text = "用户名") },
                         value = "mohuaihao@163.com",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
@@ -83,6 +86,7 @@ fun SignUpScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
+                        label = { Text(text = "邮箱") },
                         value = "momo0918",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
@@ -91,6 +95,8 @@ fun SignUpScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
+                        label = { Text(text = "密码") },
+                        visualTransformation = PasswordVisualTransformation(),
                         value = "momo0918",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
@@ -98,6 +104,8 @@ fun SignUpScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
+                        label = { Text(text = "确认密码") },
+                        visualTransformation = PasswordVisualTransformation(),
                         value = "momo0918",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()

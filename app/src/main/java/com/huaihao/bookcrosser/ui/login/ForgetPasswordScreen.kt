@@ -31,7 +31,7 @@ import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerificationScreen() {
+fun ForgetPasswordScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,7 +59,7 @@ fun VerificationScreen() {
                         bottom.linkTo(content.top, margin = 16.dp)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.app_name_space),
+                        text = stringResource(id = R.string.retrieve_password),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
@@ -75,6 +75,7 @@ fun VerificationScreen() {
                     }) {
 
                     OutlinedTextField(
+                        label = { Text(text = "邮箱") },
                         value = "mohuaihao@163.com",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
@@ -83,7 +84,7 @@ fun VerificationScreen() {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = stringResource(id = R.string.login))
+                        Text(text = stringResource(id = R.string.code_send))
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -101,8 +102,8 @@ fun VerificationScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun VerificationScreenPreview() {
+fun ForgetPasswordScreenPreview() {
     BookCrosserTheme {
-        VerificationScreen()
+        ForgetPasswordScreen()
     }
 }

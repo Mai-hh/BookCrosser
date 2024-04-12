@@ -59,7 +59,7 @@ fun VerificationScreen() {
                         bottom.linkTo(content.top, margin = 16.dp)
                     }) {
                     Text(
-                        text = stringResource(id = R.string.app_name_space),
+                        text = stringResource(id = R.string.input_verification_code),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
@@ -75,7 +75,8 @@ fun VerificationScreen() {
                     }) {
 
                     OutlinedTextField(
-                        value = "mohuaihao@163.com",
+                        label = { Text(text = "验证码") },
+                        value = "32ES41",
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -83,13 +84,13 @@ fun VerificationScreen() {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = stringResource(id = R.string.login))
+                        Text(text = "验证")
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = stringResource(id = R.string.forget_password),
+                        text = stringResource(id = R.string.code_resend),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )

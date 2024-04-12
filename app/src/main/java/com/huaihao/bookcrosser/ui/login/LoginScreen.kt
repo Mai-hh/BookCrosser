@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -53,6 +54,7 @@ fun LoginScreen() {
             }) {
 
             OutlinedTextField(
+                label = { Text(text = "邮箱") },
                 value = "mohuaihao@163.com",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth()
@@ -61,6 +63,8 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
+                label = { Text(text = "密码") },
+                visualTransformation = PasswordVisualTransformation(),
                 value = "momo0918",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth()
@@ -75,7 +79,7 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(id = R.string.code_resend),
+                text = stringResource(id = R.string.forget_password),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )

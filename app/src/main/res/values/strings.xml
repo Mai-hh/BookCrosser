@@ -3,8 +3,13 @@
     <string name="content_test">BookCrosserBookCrosserBookCrosserBookCrosserBookCrosserBookCrosser</string>
 
     <string name="app_name_space">Book Crosser</string>
-    <string name="login">Sign in</string>
-    <string name="forget_password">Forget password?</string>
-    <string name="register">Sign up</string>
-    <string name="code_resend">Resend verification code</string>
+    <string name="login">登录</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="register">注册</string>
+    <string name="code_resend">重新发送验证码</string>
+    <string name="code_send">发送验证码</string>
+    <string name="retrieve_password">输入需要找回密码的电子邮箱</string>
+    <string name="input_profile">按照提示输入注册信息</string>
+    <string name="input_email">请输入电子邮箱</string>
+    <string name="input_verification_code">请输入验证码</string>
 </resources>
