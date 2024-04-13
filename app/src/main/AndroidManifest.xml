@@ -36,6 +36,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".BookCrosserApp"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -79,9 +80,10 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.huaihao.bookcrosser.initializer.NetworkApiInitializer"
+                android:name="com.huaihao.bookcrosser.initializer.MapsInitializer"
                 android:value="androidx.startup" />
         </provider>
+
 
     </application>
 

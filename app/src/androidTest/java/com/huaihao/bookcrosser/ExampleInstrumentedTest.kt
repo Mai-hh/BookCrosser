@@ -22,3 +22,4 @@ class ExampleInstrumentedTest {
         assertEquals("com.huaihao.bookcrosser", appContext.packageName)
     }
 }
+

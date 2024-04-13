@@ -20,7 +20,7 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 object BookCrosserApi {
-    lateinit var retrofitService: BookCrosserApiService
+    lateinit var bookCrosserApiService: BookCrosserApiService
 
     const val BASE_URL = "http://localhost:3001"
     fun init(context: Context) {
@@ -62,7 +62,7 @@ object BookCrosserApi {
             .baseUrl(BASE_URL)
             .build()
 
-        retrofitService = retrofit.create(BookCrosserApiService::class.java)
+        bookCrosserApiService = retrofit.create(BookCrosserApiService::class.java)
 
     }
 }

@@ -1,99 +1,55 @@
 package com.huaihao.bookcrosser.ui
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Book
-import androidx.compose.material.icons.rounded.ChatBubbleOutline
-import androidx.compose.material.icons.rounded.LocalFlorist
-import androidx.compose.material.icons.rounded.ManageAccounts
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.huaihao.bookcrosser.ui.Destinations.CHATS_ROUTE
-import com.huaihao.bookcrosser.ui.Destinations.PROFILE_ROUTE
-import com.huaihao.bookcrosser.ui.Destinations.REQUESTS_ROUTE
-import com.huaihao.bookcrosser.ui.Destinations.REVIEWS_ROUTE
-import com.huaihao.bookcrosser.ui.Destinations.SEARCH_ROUTE
-import com.huaihao.bookcrosser.ui.chats.ChatsRoute
-import com.huaihao.bookcrosser.ui.profile.ProfileRoute
-import com.huaihao.bookcrosser.ui.requests.RequestsRoute
-import com.huaihao.bookcrosser.ui.reviews.ReviewsRoute
-import com.huaihao.bookcrosser.ui.search.SearchRoute
+import androidx.navigation.navigation
+import com.huaihao.bookcrosser.ui.Destinations.AUTH_ROUTE
+import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
+import com.huaihao.bookcrosser.ui.auth.LoginScreen
+import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
+import com.huaihao.bookcrosser.ui.main.MainScreenRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
-
-val items = listOf(SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, CHATS_ROUTE, PROFILE_ROUTE)
-
+import com.huaihao.bookcrosser.viewmodel.auth.LoginViewModel
+import org.koin.androidx.compose.koinViewModel
 object Destinations {
-    const val SEARCH_ROUTE = "search"
-    const val REQUESTS_ROUTE = "requests"
-    const val REVIEWS_ROUTE = "reviews"
-    const val CHATS_ROUTE = "chats"
-    const val PROFILE_ROUTE = "profile"
+    const val AUTH_ROUTE = "auth"
+    const val MAIN_SCREEN_ROUTE = "main_screen"
 }
 
-private val IconImageVectors = listOf(
-    Icons.Rounded.Search,
-    Icons.Rounded.Book,
-    Icons.Rounded.LocalFlorist,
-    Icons.Rounded.ChatBubbleOutline,
-    Icons.Rounded.ManageAccounts
-)
 
 @Composable
 fun BookCrosserNavHost(
     navController: NavHostController = rememberNavController()
 ) {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        icon = { Icon(IconImageVectors[index], contentDescription = item) },
-                        label = { Text(item) },
-                        selected = selectedItem == index,
-                        onClick = {
-                            selectedItem = index
-                            navController.navigate(items[selectedItem])
-                        }
-                    )
-                }
-            }
-        }
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = SEARCH_ROUTE,
+            startDestination = AUTH_ROUTE,
         ) {
-            composable(SEARCH_ROUTE) {
-                SearchRoute()
+            navigation(startDestination = "login", route = AUTH_ROUTE) {
+                composable("login") {
+                    val viewModel = koinViewModel<LoginViewModel>()
+                    BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                        LoginScreen(
+                            uiState = viewModel.state,
+                            onEvent = viewModel::onEvent
+                        )
+                    }
+                }
             }
-            composable(REQUESTS_ROUTE) {
-                RequestsRoute()
-            }
-            composable(REVIEWS_ROUTE) {
-                ReviewsRoute()
-            }
-            composable(CHATS_ROUTE) {
-                ChatsRoute()
-            }
-            composable(PROFILE_ROUTE) {
-                ProfileRoute()
+
+            navigation(startDestination = "search", route = MAIN_SCREEN_ROUTE) {
+                composable("search") {
+                    MainScreenRoute()
+                }
             }
         }
     }
