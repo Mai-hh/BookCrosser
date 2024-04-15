@@ -50,6 +50,14 @@
             android:name="com.amap.api.v2.apikey"
             android:value="d3189d630e97430b703af7f72912935d" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDMf04DpUTs9JaUY251oGRsdY_hRuwyhS8" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <service android:name="com.amap.api.location.APSService"/>
 
         <activity

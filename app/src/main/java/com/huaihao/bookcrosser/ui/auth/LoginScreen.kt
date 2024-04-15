@@ -1,5 +1,6 @@
 package com.huaihao.bookcrosser.ui.auth
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.R
-import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
+import com.huaihao.bookcrosser.ui.auth.AuthRoute.Destinations.FORGET_PASSWORD_ROUTE
+import com.huaihao.bookcrosser.ui.auth.AuthRoute.Destinations.SIGNUP_ROUTE
+import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.auth.LoginEvent
 import com.huaihao.bookcrosser.viewmodel.auth.LoginType
@@ -57,8 +60,8 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
                 bottom.linkTo(parent.bottom)
             }) {
 
-            OutlinedTextField(
-                label = { Text(text = "邮箱") },
+            LimitedOutlinedTextField(
+                label = "邮箱",
                 value = uiState.email,
                 onValueChange = { email ->
                     onEvent(LoginEvent.EmailChange(email))
@@ -68,8 +71,8 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                label = { Text(text = "密码") },
+            LimitedOutlinedTextField(
+                label = "密码",
                 visualTransformation = PasswordVisualTransformation(),
                 value = uiState.password,
                 onValueChange = { password ->
@@ -97,11 +100,14 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
                 text = stringResource(id = R.string.forget_password),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.clickable {
+                    onEvent(LoginEvent.NavTo(FORGET_PASSWORD_ROUTE))
+                }
             )
         }
 
         OutlinedButton(onClick = {
-            onEvent(LoginEvent.NavTo(MAIN_SCREEN_ROUTE))
+            onEvent(LoginEvent.NavTo(SIGNUP_ROUTE))
         }, modifier = Modifier
             .fillMaxWidth()
             .constrainAs(action) {

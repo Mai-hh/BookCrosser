@@ -30,19 +30,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.amap.api.maps.model.CameraPosition
-import com.amap.api.maps.model.LatLng
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.huaihao.bookcrosser.ui.common.BookCrosserTabIndicator
-import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.util.supportWideScreen
 import com.huaihao.bookcrosser.viewmodel.main.SearchEvent
 import com.huaihao.bookcrosser.viewmodel.main.SearchUiState
-import com.melody.map.gd_compose.GDMap
-import com.melody.map.gd_compose.overlay.Marker
-import com.melody.map.gd_compose.overlay.MarkerState
-import com.melody.map.gd_compose.poperties.MapProperties
-import com.melody.map.gd_compose.poperties.MapUiSettings
-import com.melody.map.gd_compose.position.rememberCameraPositionState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,7 +144,7 @@ fun MapView() {
     val uiSettings by remember {
         mutableStateOf(
             MapUiSettings(
-                isScrollGesturesEnabled = true,
+                scrollGesturesEnabled = true,
             )
         )
     }
@@ -160,7 +159,7 @@ fun MapView() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         // 地图
-        GDMap(
+        GoogleMap(
             modifier = Modifier.matchParentSize(),
             uiSettings = uiSettings,
             properties = mapProperties,

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -70,6 +71,8 @@ dependencies {
     implementation("io.github.TheMelody:gd_compose:1.0.5")
     implementation("androidx.startup:startup-runtime:1.1.1")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
     // Nav Compose
     val navVersion = "2.7.7"

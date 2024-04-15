@@ -1,14 +1,29 @@
 package com.huaihao.bookcrosser.ui.common
 
+import android.app.Activity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
 
 @Composable
@@ -33,6 +48,8 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                 is UiEvent.Toast -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
+
+                UiEvent.NavBack -> navController.navigateUp()
             }
 
         }
@@ -45,4 +62,35 @@ fun <State, ScreenEvent> BaseScreenWrapper(
             content()
         }
     }
+}
+
+@Composable
+fun LimitedOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    maxLines: Int = 1,
+    maxLength: Int = 20,
+    label: String = "",
+    modifier: Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
+) {
+    val fieldValue = remember { mutableStateOf(TextFieldValue(value)) }
+
+    OutlinedTextField(
+        value = fieldValue.value,
+        onValueChange = {
+            if (it.text.length <= maxLength) {
+                fieldValue.value = it
+                onValueChange(it.text)
+            }
+        },
+        visualTransformation = visualTransformation,
+        maxLines = maxLines,
+        label = { Text(label) },
+        modifier = modifier,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
+    )
 }

@@ -11,10 +11,9 @@ sealed interface LoginEvent {
 
     data class NavTo(val destination: String) : LoginEvent
     data class UsernameChange(val username: String) : LoginEvent
-    data class EmailChange(val username: String) : LoginEvent
+    data class EmailChange(val email: String) : LoginEvent
     data class PasswordChange(val password: String) : LoginEvent
     data class LoginByEmail(val email: String, val password: String) : LoginEvent
-
     data class LoginByUsername(val username: String, val password: String) : LoginEvent
 }
 
@@ -42,7 +41,7 @@ class LoginViewModel(private val authRepository: AuthRepo) : BaseViewModel<Login
             password = event.password
         )
 
-        is LoginEvent.EmailChange -> onUsernameChange(username = event.username)
+        is LoginEvent.EmailChange -> onEmailChange(email = event.email)
         is LoginEvent.LoginByEmail -> onLoginByEmail(email = event.email, password = event.password)
         is LoginEvent.NavTo -> sendEvent(UiEvent.Navigate(event.destination))
     }
@@ -51,6 +50,12 @@ class LoginViewModel(private val authRepository: AuthRepo) : BaseViewModel<Login
     private fun onUsernameChange(username: String) {
         state = state.copy(
             username = username
+        )
+    }
+
+    private fun onEmailChange(email: String) {
+        state = state.copy(
+            email = email
         )
     }
 

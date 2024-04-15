@@ -12,8 +12,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,19 +28,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.R
-import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
-import com.huaihao.bookcrosser.viewmodel.auth.AuthEvent
-import com.huaihao.bookcrosser.viewmodel.auth.AuthUiState
+import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
+import com.huaihao.bookcrosser.viewmodel.auth.SignUpEvent
+import com.huaihao.bookcrosser.viewmodel.auth.SignUpUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit) {
+fun SignUpScreen(uiState: SignUpUiState, onEvent: (event: SignUpEvent) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { onEvent(SignUpEvent.NavBack) }) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = "Back"
+                        )
+                    }
                 },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -77,47 +83,62 @@ fun SignUpScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit) {
                         bottom.linkTo(parent.bottom)
                     }) {
 
-                    OutlinedTextField(
-                        label = { Text(text = "用户名") },
+                    LimitedOutlinedTextField(
+                        label = "用户名",
                         value = uiState.username,
                         onValueChange = { username ->
-                            onEvent(AuthEvent.UsernameChange(username))
+                            onEvent(SignUpEvent.UsernameChange(username))
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
-                        label = { Text(text = "邮箱") },
+                    LimitedOutlinedTextField(
+                        label = "邮箱",
                         value = uiState.email,
-                        onValueChange = {},
+                        onValueChange = {
+                            onEvent(SignUpEvent.EmailChange(it))
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
-                        label = { Text(text = "密码") },
+                    LimitedOutlinedTextField(
+                        label = "密码",
                         visualTransformation = PasswordVisualTransformation(),
                         value = uiState.password,
-                        onValueChange = {},
+                        onValueChange = {
+                            onEvent(SignUpEvent.PasswordChange(it))
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
-                        label = { Text(text = "确认密码") },
+                    LimitedOutlinedTextField(
+                        label = "确认密码",
                         visualTransformation = PasswordVisualTransformation(),
                         value = uiState.password,
-                        onValueChange = {},
+                        onValueChange = {
+                            onEvent(SignUpEvent.PasswordChange(it))
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-                        Text(text = stringResource(id = R.string.login))
+                    Button(onClick = {
+                        onEvent(
+                            SignUpEvent.Register(
+                                uiState.username,
+                                uiState.email,
+                                uiState.password,
+                                uiState.confirmPassword
+                            )
+                        )
+                    }, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = stringResource(id = R.string.register))
                     }
                 }
             }
@@ -128,9 +149,9 @@ fun SignUpScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    BookCrosserTheme {
+    MaterialTheme {
         SignUpScreen(
-            uiState = AuthUiState(),
+            uiState = SignUpUiState(),
             onEvent = { }
         )
     }

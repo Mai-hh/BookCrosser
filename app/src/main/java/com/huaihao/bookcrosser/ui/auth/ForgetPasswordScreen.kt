@@ -12,8 +12,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,19 +27,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.R
+import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
-import com.huaihao.bookcrosser.viewmodel.auth.AuthEvent
-import com.huaihao.bookcrosser.viewmodel.auth.AuthUiState
+import com.huaihao.bookcrosser.viewmodel.auth.ForgotPasswordEvent
+import com.huaihao.bookcrosser.viewmodel.auth.ForgotPasswordUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgetPasswordScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit) {
+fun ForgetPasswordScreen(uiState: ForgotPasswordUiState, onEvent: (event: ForgotPasswordEvent) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { onEvent(ForgotPasswordEvent.NavBack) }) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = "Back"
+                        )
+                    }
                 },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -76,10 +83,12 @@ fun ForgetPasswordScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Un
                         bottom.linkTo(parent.bottom)
                     }) {
 
-                    OutlinedTextField(
-                        label = { Text(text = "邮箱") },
-                        value = "mohuaihao@163.com",
-                        onValueChange = {},
+                    LimitedOutlinedTextField(
+                        label = "邮箱",
+                        value = uiState.email,
+                        onValueChange = {
+                            onEvent(ForgotPasswordEvent.EmailChange(it))
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -92,7 +101,7 @@ fun ForgetPasswordScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Un
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = stringResource(id = R.string.forget_password),
+                        text = "60s",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
@@ -107,7 +116,7 @@ fun ForgetPasswordScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Un
 fun ForgetPasswordScreenPreview() {
     BookCrosserTheme {
         ForgetPasswordScreen(
-            uiState = AuthUiState(),
+            uiState = ForgotPasswordUiState(),
             onEvent = { }
         )
     }
