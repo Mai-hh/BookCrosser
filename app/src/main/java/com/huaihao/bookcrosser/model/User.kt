@@ -4,12 +4,12 @@ import java.time.LocalDateTime
 
 
 data class User (
-    var username: String,
-    var email: String,
+    var username: String? = null,
+    var email: String? = null,
     var password: String,
-    var avatar: String? = null,
-    var bio: String? = null,
+    var avatar: String = "",
+    var bio: String = "",
     var location: String? = null,
-    var createdAt: LocalDateTime? = null,
-    var updatedAt: LocalDateTime? = null
+    var createdAt: String? = null,
+    var updatedAt: String? = null
 )

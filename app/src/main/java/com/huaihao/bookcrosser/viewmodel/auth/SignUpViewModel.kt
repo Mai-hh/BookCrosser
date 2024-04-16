@@ -1,9 +1,14 @@
 package com.huaihao.bookcrosser.viewmodel.auth
 
+import androidx.lifecycle.viewModelScope
+import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.AuthRepo
+import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.util.AuthUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 sealed interface SignUpEvent {
     data class UsernameChange(val username: String) : SignUpEvent
@@ -99,10 +104,31 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
                 passwordError = passwordError,
                 confirmPasswordError = confirmPasswordError
             )
-            return
+            sendEvent(UiEvent.Toast(usernameError + emailError + passwordError + confirmPasswordError))
         }
 
         state = state.copy(isLoading = true)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepo.register(
+                username = username,
+                email = email,
+                password = password
+            ).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        state = state.copy(isLoading = false, isRegistered = true)
+                        sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
+                    }
+
+                    is ApiResult.Error -> {
+                        state = state.copy(isLoading = false, error = result.errorMessage)
+                    }
+
+                    is ApiResult.Loading -> {}
+                }
+            }
+        }
 
     }
 

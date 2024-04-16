@@ -28,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
-import com.huaihao.bookcrosser.viewmodel.auth.AuthEvent
-import com.huaihao.bookcrosser.viewmodel.auth.AuthUiState
+import com.huaihao.bookcrosser.viewmodel.auth.VerificationEvent
+import com.huaihao.bookcrosser.viewmodel.auth.VerificationUiState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerificationScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit) {
+fun VerificationScreen(uiState: VerificationUiState, onEvent: (event: VerificationEvent) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,7 +108,7 @@ fun VerificationScreen(uiState: AuthUiState, onEvent: (event: AuthEvent) -> Unit
 fun VerificationScreenPreview() {
     BookCrosserTheme {
         VerificationScreen(
-            uiState = AuthUiState(),
+            uiState = VerificationUiState(),
             onEvent = { }
         )
     }

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.Book
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.LocalFlorist
 import androidx.compose.material.icons.rounded.ManageAccounts
+import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -23,19 +24,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
+import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileRoute
 import com.huaihao.bookcrosser.ui.main.requests.RequestsRoute
 import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
-val items = listOf(SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
+val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
 
 object Destinations {
+    const val MAP_ROUTE = "map"
     const val SEARCH_ROUTE = "search"
     const val REQUESTS_ROUTE = "requests"
     const val REVIEWS_ROUTE = "reviews"
@@ -43,6 +47,7 @@ object Destinations {
 }
 
 private val IconImageVectors = listOf(
+    Icons.Rounded.Map,
     Icons.Rounded.Search,
     Icons.Rounded.Book,
     Icons.Rounded.LocalFlorist,
@@ -75,8 +80,11 @@ fun MainScreenRoute(
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = SEARCH_ROUTE,
+            startDestination = MAP_ROUTE,
         ) {
+            composable(MAP_ROUTE) {
+                MapScreen()
+            }
 
             composable(SEARCH_ROUTE) {
                 SearchRoute()

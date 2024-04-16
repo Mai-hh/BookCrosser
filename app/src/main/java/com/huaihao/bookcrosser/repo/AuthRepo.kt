@@ -1,11 +1,12 @@
 package com.huaihao.bookcrosser.repo
 
-import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.network.ApiResult
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepo {
-    suspend fun login(usernameOrEmail: String, password: String): ApiResult<Unit>
-    suspend fun register(username: String, email: String, password: String): ApiResult<User>
-    suspend fun sendResetCode(email: String): ApiResult<Boolean>
-    suspend fun resetPassword(email: String, code: String, newPassword: String): ApiResult<Boolean>
+    suspend fun loginByEmail(email: String, password: String): Flow<ApiResult>
+    suspend fun loginByUsername(username: String, password: String): Flow<ApiResult>
+    suspend fun register(username: String, email: String, password: String): Flow<ApiResult>
+    suspend fun sendResetCode(email: String): Flow<ApiResult>
+    suspend fun resetPassword(email: String, code: String, newPassword: String): Flow<ApiResult>
 }

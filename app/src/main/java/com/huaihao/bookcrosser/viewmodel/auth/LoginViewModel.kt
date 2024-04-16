@@ -3,6 +3,7 @@ package com.huaihao.bookcrosser.viewmodel.auth
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.AuthRepo
+import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import kotlinx.coroutines.launch
@@ -32,7 +33,8 @@ data class LoginUiState(
     val loginType: LoginType = LoginType.EMAIL
 )
 
-class LoginViewModel(private val authRepository: AuthRepo) : BaseViewModel<LoginUiState, LoginEvent>() {
+class LoginViewModel(private val authRepository: AuthRepo) :
+    BaseViewModel<LoginUiState, LoginEvent>() {
     override fun onEvent(event: LoginEvent) = when (event) {
         is LoginEvent.UsernameChange -> onUsernameChange(username = event.username)
         is LoginEvent.PasswordChange -> onPasswordChange(password = event.password)
@@ -70,10 +72,29 @@ class LoginViewModel(private val authRepository: AuthRepo) : BaseViewModel<Login
             isLoading = true
         )
         viewModelScope.launch {
-            val result = authRepository.login(username, password)
-            state = when (result) {
-                is ApiResult.Success -> state.copy(isLoading = false, isLoggedIn = true)
-                is ApiResult.Error -> state.copy(isLoading = false, error = result.error)
+            authRepository.loginByUsername(username, password).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        state = state.copy(
+                            isLoading = false,
+                            isLoggedIn = true
+                        )
+                    }
+
+                    is ApiResult.Error -> {
+                        state = state.copy(
+                            isLoading = false,
+                            error = result.errorMessage
+                        )
+                    }
+
+                    is ApiResult.Loading -> {
+                        state = state.copy(
+                            isLoading = true
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -82,5 +103,31 @@ class LoginViewModel(private val authRepository: AuthRepo) : BaseViewModel<Login
         state = state.copy(
             isLoading = true
         )
+        viewModelScope.launch {
+            authRepository.loginByEmail(email, password).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        state = state.copy(
+                            isLoading = false,
+                            isLoggedIn = true
+                        )
+                        sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
+                    }
+
+                    is ApiResult.Error -> {
+                        state = state.copy(
+                            isLoading = false,
+                            error = result.errorMessage
+                        )
+                    }
+
+                    is ApiResult.Loading -> {
+                        state = state.copy(
+                            isLoading = true
+                        )
+                    }
+                }
+            }
+        }
     }
 }

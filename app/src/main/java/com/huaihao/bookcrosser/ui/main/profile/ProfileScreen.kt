@@ -66,7 +66,7 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
 
                 Text(
-                    text = uiState.user.username, modifier = Modifier.constrainAs(name) {
+                    text = uiState.user.username ?: "", modifier = Modifier.constrainAs(name) {
                         start.linkTo(avatar.end, margin = 16.dp)
                         top.linkTo(avatar.top)
                         bottom.linkTo(bio.top)
@@ -75,7 +75,7 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 )
 
                 Text(
-                    text = uiState.user.bio ?: "", modifier = Modifier.constrainAs(bio) {
+                    text = uiState.user.bio, modifier = Modifier.constrainAs(bio) {
                         start.linkTo(name.start)
                         bottom.linkTo(avatar.bottom)
                         top.linkTo(name.bottom)

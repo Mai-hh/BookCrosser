@@ -1,6 +1,24 @@
 package com.huaihao.bookcrosser.network
 
-sealed class ApiResult<out T> {
-    data class Success<out T>(val data: T) : ApiResult<T>()
-    data class Error(val error: String) : ApiResult<Nothing>()
+enum class ApiStatus {
+    SUCCESSFUL,
+    LOADING,
+    ERROR
+}
+
+sealed class ApiResult {
+    data class Success<T>(
+        val status: ApiStatus = ApiStatus.SUCCESSFUL,
+        var data: T? = null
+    ) : ApiResult()
+
+    data class Error(
+        val status: ApiStatus = ApiStatus.ERROR,
+        val code: Int,
+        val errorMessage: String? = null
+    ) : ApiResult()
+
+    data class Loading(
+        val status: ApiStatus = ApiStatus.LOADING
+    ) : ApiResult()
 }

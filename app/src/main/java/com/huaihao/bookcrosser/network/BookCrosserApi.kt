@@ -5,9 +5,12 @@ import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.flow.FlowCollector
+import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -22,7 +25,7 @@ import java.util.concurrent.TimeUnit
 object BookCrosserApi {
     lateinit var bookCrosserApiService: BookCrosserApiService
 
-    const val BASE_URL = "http://localhost:3001"
+    const val BASE_URL = "http://192.168.1.208:3001/"
     fun init(context: Context) {
 
         val httpLoggingInterceptor =
@@ -49,6 +52,7 @@ object BookCrosserApi {
             .addInterceptor(requestInterceptor)
             .addInterceptor(tokenInterceptor)
             .addInterceptor(httpLoggingInterceptor)
+            .connectionSpecs(listOf(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS))
             .build()
 
         val moshi =
@@ -93,8 +97,3 @@ interface BookCrosserApiService {
     suspend fun deleteByEmail(@Path("email") email: String): Boolean
 }
 
-enum class ApiStatus {
-    SUCCESSFUL,
-    LOADING,
-    ERROR
-}
