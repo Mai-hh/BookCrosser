@@ -1,16 +1,14 @@
 package com.huaihao.bookcrosser.viewmodel.main
 
-import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.model.ProfileNotification
 import com.huaihao.bookcrosser.model.ProfileNotificationType
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.repo.AuthRepo
+import com.huaihao.bookcrosser.ui.Destinations.AUTH_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 data class ProfileUiState(
@@ -83,6 +81,8 @@ class ProfileViewModel(private val authRepo: AuthRepo) :
             ProfileEvent.Logout -> {
                 onLogout()
             }
+
+            else -> {}
         }
     }
 

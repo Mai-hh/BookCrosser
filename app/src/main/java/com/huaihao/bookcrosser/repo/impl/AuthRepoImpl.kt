@@ -72,8 +72,10 @@ class AuthRepoImpl : AuthRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun logout(username: String): Flow<ApiResult> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun checkLogin(token: String): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.checkLogin()
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher)
 
 }

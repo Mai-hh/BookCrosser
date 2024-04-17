@@ -1,8 +1,8 @@
 package com.huaihao.bookcrosser.ui.common
 
 import android.app.Activity
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,18 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.lifecycleScope
@@ -41,7 +37,22 @@ fun <State, ScreenEvent> BaseScreenWrapper(
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val backPressedTime = remember { mutableLongStateOf(0L) }
 
+    val onBackPressed = {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - backPressedTime.longValue > 2000) {
+            backPressedTime.longValue = currentTime
+            Toast.makeText(context, "再按一次退出应用", Toast.LENGTH_SHORT).show()
+        } else {
+            (context as? Activity)?.finishAffinity()
+        }
+    }
+
+
+    BackHandler {
+        onBackPressed()
+    }
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collect { event ->
             when (event) {
@@ -62,6 +73,10 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                     lifecycleOwner.lifecycleScope.launch {
                         (context as? Activity)?.finishAffinity()
                     }
+                }
+
+                is UiEvent.PopUpToStartDestination -> {
+                    navController.graph.startDestinationRoute?.let { navController.popBackStack(route = it, inclusive = event.inclusive) }
                 }
             }
 

@@ -80,6 +80,9 @@ interface BookCrosserApiService {
     @POST("/user/login")
     suspend fun login(@Body user: User): Response<TokenResponse>
 
+    @GET("/user/checkLogin")
+    suspend fun checkLogin(): Response<Unit>
+
     @POST("/user/update")
     suspend fun update(@Body user: User): Boolean
 

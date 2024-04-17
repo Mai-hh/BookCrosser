@@ -104,17 +104,12 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 )
 
                 var showLogoutAlert by remember { mutableStateOf(false) }
-                val lifecycleOwner = LocalLifecycleOwner.current
-                val context = LocalContext.current
 
                 if (showLogoutAlert) {
                     LogoutAlert(
                         onDismiss = { showLogoutAlert = false },
                         onConfirm = {
                             onEvent(ProfileEvent.Logout)
-                            lifecycleOwner.lifecycleScope.launch {
-                                (context as? Activity)?.finishAffinity()
-                            }
                         }
                     )
                 }

@@ -10,6 +10,7 @@ import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface LoginEvent {
@@ -39,6 +40,34 @@ data class LoginUiState(
 
 class LoginViewModel(private val authRepo: AuthRepo) :
     BaseViewModel<LoginUiState, LoginEvent>() {
+
+    init {
+        checkLogin()
+    }
+
+    private fun checkLogin() {
+        val token = MMKVUtil.getString(USER_TOKEN)
+        if (token.isNotBlank()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                authRepo.checkLogin(token).collect { result ->
+                    when (result) {
+                        is ApiResult.Success<*> -> {
+                            state = state.copy(
+                                isLoggedIn = true
+                            )
+                            sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
+                        }
+
+                        is ApiResult.Error -> {
+                            MMKVUtil.clear(USER_TOKEN)
+                        }
+
+                        is ApiResult.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         const val TAG = "LoginViewModel"
