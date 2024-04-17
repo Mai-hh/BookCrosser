@@ -1,5 +1,7 @@
 package com.huaihao.bookcrosser.ui.main
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Book
@@ -87,6 +89,8 @@ fun MainScreenRoute(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
             startDestination = MAP_ROUTE,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
         ) {
             composable(MAP_ROUTE) {
                 val viewModel = koinViewModel<MapViewModel>()

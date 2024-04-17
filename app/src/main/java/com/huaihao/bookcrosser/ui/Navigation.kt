@@ -19,12 +19,14 @@ import com.huaihao.bookcrosser.ui.auth.ForgetPasswordScreen
 import com.huaihao.bookcrosser.ui.auth.LoginScreen
 import com.huaihao.bookcrosser.ui.auth.SignUpScreen
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
+import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.MainScreenRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.auth.ForgetPasswordViewModel
 import com.huaihao.bookcrosser.viewmodel.auth.LoginViewModel
 import com.huaihao.bookcrosser.viewmodel.auth.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
+
 object Destinations {
     const val AUTH_ROUTE = "auth"
     const val MAIN_SCREEN_ROUTE = "main_screen"
@@ -74,11 +76,8 @@ fun BookCrosserNavHost(
                     }
                 }
             }
-
-            navigation(startDestination = "search", route = MAIN_SCREEN_ROUTE) {
-                composable("search") {
-                    MainScreenRoute()
-                }
+            composable(MAIN_SCREEN_ROUTE) {
+                MainScreenRoute()
             }
         }
     }
