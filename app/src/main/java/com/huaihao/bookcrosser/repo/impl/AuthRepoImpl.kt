@@ -1,5 +1,6 @@
 package com.huaihao.bookcrosser.repo.impl
 
+import android.util.Log
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.network.BookCrosserApi
@@ -13,6 +14,10 @@ import kotlinx.coroutines.flow.flowOn
 
 class AuthRepoImpl : AuthRepo {
 
+    companion object {
+        const val TAG = "AuthRepoImpl"
+    }
+
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val api = BookCrosserApi.bookCrosserApiService
     override suspend fun loginByEmail(email: String, password: String): Flow<ApiResult> = flow {
@@ -23,6 +28,7 @@ class AuthRepoImpl : AuthRepo {
                 password = password
             )
         )
+        Log.d(TAG, "loginByEmail: $response")
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher)
 

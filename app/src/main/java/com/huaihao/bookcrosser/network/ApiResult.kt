@@ -1,5 +1,7 @@
 package com.huaihao.bookcrosser.network
 
+import com.squareup.moshi.Json
+
 enum class ApiStatus {
     SUCCESSFUL,
     LOADING,
@@ -22,3 +24,8 @@ sealed class ApiResult {
         val status: ApiStatus = ApiStatus.LOADING
     ) : ApiResult()
 }
+
+data class TokenResponse(
+    val code: Int,
+    @Json(name = "token") val token: String,
+)

@@ -5,6 +5,8 @@ import android.os.Parcelable
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 
+const val USER_TOKEN = "USER_TOKEN"
+
 object MMKVUtil {
     lateinit var mmkv: MMKV
 
@@ -79,6 +81,10 @@ object MMKVUtil {
     }
 
     fun removeKey(key: String) {
+        mmkv.removeValueForKey(key)
+    }
+
+    fun clear(key: String) {
         mmkv.removeValueForKey(key)
     }
 

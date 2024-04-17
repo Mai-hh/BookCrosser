@@ -1,8 +1,10 @@
 package com.huaihao.bookcrosser.network
 
 import android.content.Context
+import android.util.Log
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.util.MMKVUtil
+import com.huaihao.bookcrosser.util.USER_TOKEN
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.flow.FlowCollector
@@ -31,25 +33,22 @@ object BookCrosserApi {
         val httpLoggingInterceptor =
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS)
 
-        val requestInterceptor = Interceptor { chain ->
-            chain.request().newBuilder()
-                .build()
-                .let { chain.proceed(it) }
-        }
-
         val tokenInterceptor = Interceptor { chain ->
             chain.request().newBuilder()
                 .addHeader(
                     "Authorization",
-                    MMKVUtil.getString("USER_TOKEN")
+                    MMKVUtil.getString(USER_TOKEN)
                 )
                 .build()
-                .let { chain.proceed(it) }
+                .let {
+                    Log.d("BookCrosserApi", "token: ${MMKVUtil.getString(USER_TOKEN)}")
+                    Log.d("BookCrosserApi", "Authorization: ${it.headers}")
+                    chain.proceed(it)
+                }
         }
 
         val okhttpClient = OkHttpClient.Builder()
             .connectTimeout(3, TimeUnit.SECONDS)
-            .addInterceptor(requestInterceptor)
             .addInterceptor(tokenInterceptor)
             .addInterceptor(httpLoggingInterceptor)
             .connectionSpecs(listOf(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS))
@@ -76,10 +75,10 @@ interface BookCrosserApiService {
     suspend fun save(@Body user: User): Boolean
 
     @POST("/user/register")
-    suspend fun register(@Body user: User): Response<Unit>
+    suspend fun register(@Body user: User): Response<TokenResponse>
 
     @POST("/user/login")
-    suspend fun login(@Body user: User): Response<Unit>
+    suspend fun login(@Body user: User): Response<TokenResponse>
 
     @POST("/user/update")
     suspend fun update(@Body user: User): Boolean

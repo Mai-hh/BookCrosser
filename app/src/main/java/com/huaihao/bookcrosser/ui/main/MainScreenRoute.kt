@@ -32,12 +32,15 @@ import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
-import com.huaihao.bookcrosser.ui.main.profile.ProfileRoute
+import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
-import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
-import com.huaihao.bookcrosser.ui.main.search.SearchRoute
+import com.huaihao.bookcrosser.ui.main.reviews.ReviewsScreen
+import com.huaihao.bookcrosser.ui.main.search.SearchScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
+import com.huaihao.bookcrosser.viewmodel.main.ProfileViewModel
+import com.huaihao.bookcrosser.viewmodel.main.ReviewsViewModel
+import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 
 val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
@@ -85,6 +88,7 @@ fun MainScreenRoute(
             }
         }
     ) { paddingValues ->
+
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
@@ -100,18 +104,27 @@ fun MainScreenRoute(
             }
 
             composable(SEARCH_ROUTE) {
-                SearchRoute()
+                val viewModel = koinViewModel<SearchViewModel>()
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    SearchScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
             }
 
             composable(REQUESTS_ROUTE) {
                 DriftingRoute(navController = navController)
             }
             composable(REVIEWS_ROUTE) {
-                ReviewsRoute()
+                val viewModel = koinViewModel<ReviewsViewModel>()
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    ReviewsScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
             }
 
             composable(PROFILE_ROUTE) {
-                ProfileRoute()
+                val viewModel = koinViewModel<ProfileViewModel>()
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    ProfileScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.huaihao.bookcrosser.ui.main.profile
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,16 +38,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import com.huaihao.bookcrosser.model.ProfileNotification
 import com.huaihao.bookcrosser.model.ProfileNotificationType
 import com.huaihao.bookcrosser.viewmodel.main.ProfileEvent
 import com.huaihao.bookcrosser.viewmodel.main.ProfileUiState
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
@@ -99,12 +104,17 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 )
 
                 var showLogoutAlert by remember { mutableStateOf(false) }
+                val lifecycleOwner = LocalLifecycleOwner.current
+                val context = LocalContext.current
 
                 if (showLogoutAlert) {
                     LogoutAlert(
                         onDismiss = { showLogoutAlert = false },
                         onConfirm = {
                             onEvent(ProfileEvent.Logout)
+                            lifecycleOwner.lifecycleScope.launch {
+                                (context as? Activity)?.finishAffinity()
+                            }
                         }
                     )
                 }

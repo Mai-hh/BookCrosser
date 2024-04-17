@@ -21,10 +21,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @Composable
 fun <State, ScreenEvent> BaseScreenWrapper(
@@ -32,6 +36,10 @@ fun <State, ScreenEvent> BaseScreenWrapper(
     viewModel: BaseViewModel<State, ScreenEvent>,
     content: @Composable () -> Unit
 ) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -50,6 +58,11 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                 }
 
                 UiEvent.NavBack -> navController.navigateUp()
+                UiEvent.Finish -> {
+                    lifecycleOwner.lifecycleScope.launch {
+                        (context as? Activity)?.finishAffinity()
+                    }
+                }
             }
 
         }

@@ -1,10 +1,5 @@
 package com.huaihao.bookcrosser.util
 
-import com.huaihao.bookcrosser.network.ApiResult
-import kotlinx.coroutines.flow.FlowCollector
-import org.json.JSONObject
-import retrofit2.Response
-
 object AuthUtil {
     fun validateUsername(username: String): String? {
         if (username.length < 3) {
@@ -30,8 +25,8 @@ object AuthUtil {
         if (password.length < 8) {
             return "Password must be at least 8 characters"
         }
-        if (!password.matches(Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$"))) {
-            return "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        if (!password.matches(Regex("^(?=.*[a-zA-Z])(?=.*\\d).+$"))) {
+            return "密码需要包含字母和数字"
         }
         return null
     }

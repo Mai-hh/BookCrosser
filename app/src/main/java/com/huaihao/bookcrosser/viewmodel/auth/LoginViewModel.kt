@@ -1,11 +1,15 @@
 package com.huaihao.bookcrosser.viewmodel.auth
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.network.ApiResult
+import com.huaihao.bookcrosser.network.TokenResponse
 import com.huaihao.bookcrosser.repo.AuthRepo
 import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.util.MMKVUtil
+import com.huaihao.bookcrosser.util.USER_TOKEN
 import kotlinx.coroutines.launch
 
 sealed interface LoginEvent {
@@ -35,6 +39,11 @@ data class LoginUiState(
 
 class LoginViewModel(private val authRepo: AuthRepo) :
     BaseViewModel<LoginUiState, LoginEvent>() {
+
+    companion object {
+        const val TAG = "LoginViewModel"
+    }
+
     override fun onEvent(event: LoginEvent) = when (event) {
         is LoginEvent.UsernameChange -> onUsernameChange(username = event.username)
         is LoginEvent.PasswordChange -> onPasswordChange(password = event.password)
@@ -111,6 +120,9 @@ class LoginViewModel(private val authRepo: AuthRepo) :
                             isLoading = false,
                             isLoggedIn = true
                         )
+                        Log.d(TAG, "MMKV Token: " + MMKVUtil.getString(USER_TOKEN))
+                        Log.d(TAG, "Response Message: " + (result.data as TokenResponse).token)
+                        MMKVUtil.put(USER_TOKEN, (result.data as TokenResponse).token)
                         sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
                     }
 

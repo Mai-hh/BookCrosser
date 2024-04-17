@@ -3,10 +3,10 @@ package com.huaihao.bookcrosser.ui.main.map
 import android.Manifest
 import android.content.Intent
 import android.provider.Settings
-import android.util.Rational
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -14,9 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.ShapeDefaults
@@ -25,6 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,14 +42,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -48,12 +60,17 @@ import com.huaihao.bookcrosser.util.hasLocationPermission
 import com.huaihao.bookcrosser.viewmodel.main.MapEvent
 import com.huaihao.bookcrosser.viewmodel.main.MapUiState
 import com.huaihao.bookcrosser.viewmodel.main.MapViewState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
 
     val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val cameraState = rememberCameraPositionState()
 
     val permissionState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -91,6 +108,7 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
         shape = ShapeDefaults.ExtraLarge,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+
             when (uiState.viewState) {
                 is MapViewState.Loading -> {
                     Box(
@@ -132,25 +150,45 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
                             location?.latitude ?: 0.0,
                             location?.longitude ?: 0.0
                         )
-                    val cameraState = rememberCameraPositionState()
 
                     LaunchedEffect(key1 = currentLoc) {
                         cameraState.centerOnLocation(currentLoc)
                     }
 
-                    MainScreen(
-                        currentPosition = LatLng(
-                            currentLoc.latitude,
-                            currentLoc.longitude
-                        ),
-                        cameraState = cameraState
-                    )
+                    ConstraintLayout {
+                        val (map, fab) = createRefs()
+                        MapContentScreen(
+                            currentPosition = LatLng(
+                                currentLoc.latitude,
+                                currentLoc.longitude
+                            ),
+                            cameraState = cameraState,
+                            modifier = Modifier.constrainAs(map) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom)
+                            }
+                        )
+
+                        FloatingActionButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    cameraState.centerOnLocation(currentLoc)
+                                }
+                            },
+                            modifier = Modifier.constrainAs(fab) {
+                                end.linkTo(parent.end, margin = 16.dp)
+                                bottom.linkTo(parent.bottom, margin = 16.dp)
+                            }
+                        ) {
+                            Icon(Icons.Rounded.MyLocation, contentDescription = "My Location")
+                        }
+                    }
                 }
             }
         }
     }
-
-
 }
 
 @Composable
@@ -187,15 +225,25 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 }
 
 @Composable
-fun MainScreen(currentPosition: LatLng, cameraState: CameraPositionState) {
+fun MapContentScreen(
+    currentPosition: LatLng,
+    cameraState: CameraPositionState,
+    modifier: Modifier = Modifier
+) {
+
+    val mapUiSettings = remember {
+        MapUiSettings(
+            zoomControlsEnabled = false
+        )
+    }
+
     val marker = LatLng(currentPosition.latitude, currentPosition.longitude)
     GoogleMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraState,
+        uiSettings = mapUiSettings,
         properties = MapProperties(
-            isMyLocationEnabled = true,
             mapType = MapType.HYBRID,
-            isTrafficEnabled = true
         )
     ) {
         Marker(

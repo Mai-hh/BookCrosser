@@ -104,7 +104,6 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
                 passwordError = passwordError,
                 confirmPasswordError = confirmPasswordError
             )
-            sendEvent(UiEvent.Toast(usernameError + emailError + passwordError + confirmPasswordError))
         }
 
         state = state.copy(isLoading = true)

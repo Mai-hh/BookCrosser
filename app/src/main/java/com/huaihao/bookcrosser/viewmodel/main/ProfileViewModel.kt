@@ -4,9 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.model.ProfileNotification
 import com.huaihao.bookcrosser.model.ProfileNotificationType
 import com.huaihao.bookcrosser.model.User
-import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.AuthRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
+import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.util.MMKVUtil
+import com.huaihao.bookcrosser.util.USER_TOKEN
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -84,25 +87,8 @@ class ProfileViewModel(private val authRepo: AuthRepo) :
     }
 
     private fun onLogout() {
-
-        viewModelScope.launch {
-            authRepo.logout("").collect { result ->
-                when (result) {
-                    is ApiResult.Success<*> -> {
-
-                    }
-
-                    is ApiResult.Error -> {
-
-                    }
-
-                    is ApiResult.Loading -> {
-
-                    }
-                }
-
-            }
-        }
+        MMKVUtil.clear(USER_TOKEN)
+        sendEvent(UiEvent.Finish)
     }
 
     override fun defaultState(): ProfileUiState = ProfileUiState()

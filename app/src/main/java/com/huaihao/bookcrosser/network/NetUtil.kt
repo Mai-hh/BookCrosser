@@ -14,8 +14,8 @@ object NetUtil {
         } else {
             val json = response?.errorBody()?.string()
             val jsonObject = json?.let { JSONObject(it) }
-            val returnCondition = jsonObject?.getString("errorMsg")
-            val errorCode = jsonObject?.getString("errorCode")
+            val returnCondition = jsonObject?.getString("message")
+            val errorCode = jsonObject?.getString("code")
             flow.emit(
                 ApiResult.Error(
                     code = errorCode?.toInt() ?: response?.code() ?: 0,
@@ -27,3 +27,4 @@ object NetUtil {
     }
 
 }
+

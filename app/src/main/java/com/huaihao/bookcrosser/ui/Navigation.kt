@@ -1,10 +1,14 @@
 package com.huaihao.bookcrosser.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -19,7 +23,6 @@ import com.huaihao.bookcrosser.ui.auth.ForgetPasswordScreen
 import com.huaihao.bookcrosser.ui.auth.LoginScreen
 import com.huaihao.bookcrosser.ui.auth.SignUpScreen
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
-import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.MainScreenRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.auth.ForgetPasswordViewModel
@@ -37,11 +40,14 @@ object Destinations {
 fun BookCrosserNavHost(
     navController: NavHostController = rememberNavController()
 ) {
+
+
+
     Scaffold { paddingValues ->
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = MAIN_SCREEN_ROUTE,
+            startDestination = AUTH_ROUTE,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
