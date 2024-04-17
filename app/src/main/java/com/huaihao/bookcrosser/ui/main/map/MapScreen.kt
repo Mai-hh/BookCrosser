@@ -3,6 +3,7 @@ package com.huaihao.bookcrosser.ui.main.map
 import android.Manifest
 import android.content.Intent
 import android.provider.Settings
+import android.util.Rational
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -107,7 +109,7 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("使用该")
+                        Text("使用地图需要定位权限")
                         Button(
                             onClick = {
                                 context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS))
@@ -118,7 +120,7 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
                                 modifier = Modifier.size(14.dp),
                                 color = Color.White
                             )
-                            else Text("Settings")
+                            else Text("设置")
                         }
                     }
                 }
@@ -214,3 +216,9 @@ private suspend fun CameraPositionState.centerOnLocation(
     ),
     durationMs = 1500
 )
+
+@Preview(showBackground = true)
+@Composable
+fun RationalDialogPreview() {
+    RationaleAlert(onDismiss = { }, onConfirm = { })
+}

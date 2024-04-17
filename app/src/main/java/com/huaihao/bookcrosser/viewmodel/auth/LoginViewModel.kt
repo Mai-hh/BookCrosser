@@ -33,7 +33,7 @@ data class LoginUiState(
     val loginType: LoginType = LoginType.EMAIL
 )
 
-class LoginViewModel(private val authRepository: AuthRepo) :
+class LoginViewModel(private val authRepo: AuthRepo) :
     BaseViewModel<LoginUiState, LoginEvent>() {
     override fun onEvent(event: LoginEvent) = when (event) {
         is LoginEvent.UsernameChange -> onUsernameChange(username = event.username)
@@ -72,7 +72,7 @@ class LoginViewModel(private val authRepository: AuthRepo) :
             isLoading = true
         )
         viewModelScope.launch {
-            authRepository.loginByUsername(username, password).collect { result ->
+            authRepo.loginByUsername(username, password).collect { result ->
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(
@@ -104,7 +104,7 @@ class LoginViewModel(private val authRepository: AuthRepo) :
             isLoading = true
         )
         viewModelScope.launch {
-            authRepository.loginByEmail(email, password).collect { result ->
+            authRepo.loginByEmail(email, password).collect { result ->
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(

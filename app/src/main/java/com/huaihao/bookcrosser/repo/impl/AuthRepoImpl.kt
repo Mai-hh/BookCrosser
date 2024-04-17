@@ -66,4 +66,8 @@ class AuthRepoImpl : AuthRepo {
         TODO("Not yet implemented")
     }
 
+    override suspend fun logout(username: String): Flow<ApiResult> {
+        TODO("Not yet implemented")
+    }
+
 }

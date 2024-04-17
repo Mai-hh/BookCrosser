@@ -30,7 +30,7 @@ val appModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get()) }
     viewModel { ForgetPasswordViewModel(get()) }
-    viewModel { ProfileViewModel() }
+    viewModel { ProfileViewModel(get()) }
     viewModel { ReviewsViewModel() }
     viewModel { SearchViewModel() }
     viewModel { MapViewModel(get()) }
