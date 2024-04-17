@@ -99,6 +99,9 @@ dependencies {
     val koin_version = "3.5.6"
     implementation("io.insert-koin:koin-androidx-compose:$koin_version")
 
+    // Image loader
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.insert-koin:koin-test-junit4:$koin_version")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

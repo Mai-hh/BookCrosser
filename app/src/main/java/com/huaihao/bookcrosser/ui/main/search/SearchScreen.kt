@@ -69,7 +69,6 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
                     Text(
                         text = "搜寻图书",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.padding(end = 16.dp)
                     )
                 })
             },
