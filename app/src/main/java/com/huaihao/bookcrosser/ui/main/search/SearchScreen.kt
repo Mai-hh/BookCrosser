@@ -1,50 +1,32 @@
 package com.huaihao.bookcrosser.ui.main.search
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.huaihao.bookcrosser.R
-import com.huaihao.bookcrosser.ui.common.BookCrosserTabIndicator
+import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
 import com.huaihao.bookcrosser.util.supportWideScreen
 import com.huaihao.bookcrosser.viewmodel.main.SearchEvent
@@ -193,31 +175,7 @@ fun SearchType(modifier: Modifier) {
     }
 }
 
-@Composable
-fun FilterChips(items: List<String>) {
-    var selected by remember { mutableIntStateOf(0) }
-    Row {
-        items.forEachIndexed { index, item ->
-            FilterChip(
-                leadingIcon = {
-                    AnimatedVisibility(visible = selected == index) {
-                        Icon(
-                            Icons.Rounded.Done,
-                            contentDescription = item,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                },
-                selected = (selected == index),
-                onClick = {
-                    selected = index
-                },
-                label = { Text(text = item) },
-                modifier = Modifier.padding(end = 8.dp)
-            )
-        }
-    }
-}
+
 
 @Preview(showBackground = true)
 @Composable

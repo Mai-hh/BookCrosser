@@ -3,7 +3,6 @@ package com.huaihao.bookcrosser.ui.main
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Book
-import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.LocalFlorist
 import androidx.compose.material.icons.rounded.ManageAccounts
 import androidx.compose.material.icons.rounded.Map
@@ -24,18 +23,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
-import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
-import com.huaihao.bookcrosser.ui.main.Destinations.SHELF_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileRoute
-import com.huaihao.bookcrosser.ui.main.requests.RequestsRoute
+import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
 import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
@@ -48,8 +44,8 @@ object Destinations {
     const val MAP_ROUTE = "地图"
 
     const val SEARCH_ROUTE = "搜索"
-    const val SHELF_BOOK_ROUTE = "上架"
-    const val REQUEST_BOOK_ROUTE = "请求"
+    const val SHELF_BOOK_ROUTE = "起漂"
+    const val REQUEST_BOOK_ROUTE = "求漂"
 
     const val REQUESTS_ROUTE = "漂流"
     const val REVIEWS_ROUTE = "评论"
@@ -104,7 +100,7 @@ fun MainScreenRoute(
             }
 
             composable(REQUESTS_ROUTE) {
-                RequestsRoute(navController = navController)
+                DriftingRoute(navController = navController)
             }
             composable(REVIEWS_ROUTE) {
                 ReviewsRoute()
