@@ -39,7 +39,6 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
     val sheetState = rememberBottomSheetScaffoldState()
     Surface(modifier = Modifier.supportWideScreen()) {
         BottomSheetScaffold(
-            sheetPeekHeight = 200.dp,
             scaffoldState = sheetState,
             sheetContent = {
                 Column(modifier = Modifier.fillMaxSize()) {
