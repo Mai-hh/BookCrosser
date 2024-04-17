@@ -71,8 +71,14 @@ dependencies {
     implementation("io.github.TheMelody:gd_compose:1.0.5")
     implementation("androidx.startup:startup-runtime:1.1.1")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    // Google Maps
     implementation("com.google.maps.android:maps-compose:2.11.4")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.maps.android:maps-ktx:5.0.0")
+    implementation("com.google.maps.android:maps-utils-ktx:5.0.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+
 
     // Nav Compose
     val navVersion = "2.7.7"
@@ -93,7 +99,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // Dependency Injection
     val koin_version = "3.5.6"

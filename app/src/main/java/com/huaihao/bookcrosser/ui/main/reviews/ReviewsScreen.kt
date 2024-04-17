@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -35,7 +36,10 @@ fun ReviewsScreen(uiState: ReviewsUiState, onEvent: (ReviewsEvent) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Reviews", style = MaterialTheme.typography.headlineLarge) }
+                title = { Text(
+                    text = "图书评论",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                ) }
             )
         },
         floatingActionButton = {

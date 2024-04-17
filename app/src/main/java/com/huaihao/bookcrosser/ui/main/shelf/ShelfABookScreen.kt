@@ -14,6 +14,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,116 +38,109 @@ import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 
 val exampleImageAddress = "https://i.pinimg.com/564x/cc/e4/ef/cce4ef60f77a3cf3b36f5b9897ae378d.jpg"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShelfABookScreen() {
-    Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = "图书漂流瓶",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                )
-            })
-        }
-    ) { innerPadding ->
-        Column(
-            Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+    Column(
+        Modifier
+            .fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
-            Box(
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                    .padding(horizontal = 16.dp, vertical = 32.dp)
             ) {
-                ConstraintLayout(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    val (cover, info, action) = createRefs()
-                    Card(modifier = Modifier
-                        .constrainAs(cover) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom)
-                        }
-                        .fillMaxSize()) {
-                        AsyncImage(
-                            model = exampleImageAddress,
-                            placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                val (cover, info, action) = createRefs()
+                Card(modifier = Modifier
+                    .constrainAs(cover) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
                     }
-
-                    AssistChip(
-                        onClick = { /*TODO*/ },
-                        label = {
-                            Text(text = "上传封面")
-                        },
-                        leadingIcon = {
-                            Icon(imageVector = Icons.Rounded.Upload, contentDescription = "上传封面")
-                        }
+                    .fillMaxSize()) {
+                    AsyncImage(
+                        model = exampleImageAddress,
+                        placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 }
+
+                FilterChip(
+                    selected = true,
+                    onClick = { /*TODO*/ },
+                    label = {
+                        Text(text = "上传封面")
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Rounded.Upload, contentDescription = "上传封面", tint = MaterialTheme.colorScheme.primary)
+                    },
+                    modifier = Modifier.constrainAs(action) {
+                        bottom.linkTo(cover.bottom)
+                        end.linkTo(cover.end, margin = 8.dp)
+                    }
+                )
             }
+        }
 
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(2f)
+                    .padding(vertical = 20.dp, horizontal = 16.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 20.dp, horizontal = 16.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(Modifier) {
-                        Text(
-                            text = "书籍信息",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                Column(Modifier) {
+                    Text(
+                        text = "书籍信息",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Column(Modifier.padding(vertical = 8.dp)) {
+                        LimitedOutlinedTextField(
+                            value = "",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Column(Modifier.padding(vertical = 8.dp)) {
-                            LimitedOutlinedTextField(
-                                value = "",
-                                onValueChange = {},
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            LimitedOutlinedTextField(
-                                value = "",
-                                onValueChange = {},
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            LimitedOutlinedTextField(
-                                value = "",
-                                onValueChange = {},
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            LimitedOutlinedTextField(
-                                value = "",
-                                onValueChange = {},
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-
+                        LimitedOutlinedTextField(
+                            value = "",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        LimitedOutlinedTextField(
+                            value = "",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        LimitedOutlinedTextField(
+                            value = "",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
 
-                    Button(onClick = { }, Modifier.fillMaxWidth()) {
-                        Text(text = "塞入漂流瓶")
-                    }
                 }
 
-
+                Button(onClick = { }, Modifier.fillMaxWidth()) {
+                    Text(text = "塞入漂流瓶")
+                }
             }
+
+
         }
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

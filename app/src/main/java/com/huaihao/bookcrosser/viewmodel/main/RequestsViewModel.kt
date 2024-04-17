@@ -4,10 +4,7 @@ import com.huaihao.bookcrosser.ui.common.BaseViewModel
 
 
 sealed interface RequestsEvent {
-    data class SearchingTextChange(val text: String) : RequestsEvent
-    data class Search(val query: String): RequestsEvent
-
-    data class ToggleSearch(val active: Boolean): RequestsEvent
+    data object AddBook : RequestsEvent
 }
 
 data class RequestsUiState(

@@ -24,26 +24,36 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.SHELF_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileRoute
 import com.huaihao.bookcrosser.ui.main.requests.RequestsRoute
 import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchRoute
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
+import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
+import org.koin.androidx.compose.koinViewModel
 
 val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
 
 object Destinations {
-    const val MAP_ROUTE = "map"
-    const val SEARCH_ROUTE = "search"
-    const val REQUESTS_ROUTE = "requests"
-    const val REVIEWS_ROUTE = "reviews"
-    const val PROFILE_ROUTE = "profile"
+    const val MAP_ROUTE = "地图"
+
+    const val SEARCH_ROUTE = "搜索"
+    const val SHELF_BOOK_ROUTE = "上架"
+    const val REQUEST_BOOK_ROUTE = "请求"
+
+    const val REQUESTS_ROUTE = "漂流"
+    const val REVIEWS_ROUTE = "评论"
+    const val PROFILE_ROUTE = "我的"
 }
 
 private val IconImageVectors = listOf(
@@ -83,14 +93,18 @@ fun MainScreenRoute(
             startDestination = MAP_ROUTE,
         ) {
             composable(MAP_ROUTE) {
-                MapScreen()
+                val viewModel = koinViewModel<MapViewModel>()
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    MapScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
             }
 
             composable(SEARCH_ROUTE) {
                 SearchRoute()
             }
+
             composable(REQUESTS_ROUTE) {
-                RequestsRoute()
+                RequestsRoute(navController = navController)
             }
             composable(REVIEWS_ROUTE) {
                 ReviewsRoute()
