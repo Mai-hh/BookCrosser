@@ -9,6 +9,7 @@ import com.huaihao.bookcrosser.repo.AuthRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
@@ -30,7 +31,7 @@ class AuthRepoImpl : AuthRepo {
         )
         Log.d(TAG, "loginByEmail: $response")
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
 
     override suspend fun loginByUsername(username: String, password: String): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
@@ -41,7 +42,7 @@ class AuthRepoImpl : AuthRepo {
             )
         )
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
 
     override suspend fun register(
         username: String,
@@ -58,7 +59,7 @@ class AuthRepoImpl : AuthRepo {
         )
         NetUtil.checkResponse(response, this)
 
-    }.flowOn(dispatcher)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
 
     override suspend fun sendResetCode(email: String): Flow<ApiResult> {
         TODO("Not yet implemented")
@@ -76,6 +77,6 @@ class AuthRepoImpl : AuthRepo {
         emit(ApiResult.Loading())
         val response = api.checkLogin()
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
 
 }

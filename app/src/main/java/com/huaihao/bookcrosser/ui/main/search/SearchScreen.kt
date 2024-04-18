@@ -18,6 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -28,10 +32,17 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
+import com.huaihao.bookcrosser.ui.main.Destinations.BASIC_SEARCH_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.BCID_SEARCH_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.ISBN_SEARCH_ROUTE
 import com.huaihao.bookcrosser.util.supportWideScreen
 import com.huaihao.bookcrosser.viewmodel.main.SearchEvent
+import com.huaihao.bookcrosser.viewmodel.main.SearchType
 import com.huaihao.bookcrosser.viewmodel.main.SearchUiState
 
+
+
+val types = listOf(BASIC_SEARCH_ROUTE, ISBN_SEARCH_ROUTE, BCID_SEARCH_ROUTE)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,62 +72,169 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                SearchType(modifier = Modifier)
+                var selectedScreen by remember { mutableStateOf(BASIC_SEARCH_ROUTE) }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
-                ) {
-                    LimitedOutlinedTextField(
-                        label = "书名",
-                        value = "",
-                        onValueChange = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
+                FilterChips(items = types, onSelected = { selected ->
+                    selectedScreen = selected
+                })
 
-                    FilterChip(
-                        selected = true,
-                        onClick = { /*TODO*/ },
-                        label = { Text(text = "完全匹配") },
-                        modifier = Modifier.padding(end = 8.dp, top = 8.dp)
-                    )
-                }
+                when (selectedScreen) {
+                    BASIC_SEARCH_ROUTE -> {
+                        BasicSearchScreen(onEvent)
+                    }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
-                ) {
-                    LimitedOutlinedTextField(
-                        label = "作者",
-                        value = "",
-                        onValueChange = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
+                    ISBN_SEARCH_ROUTE -> {
+                        ISBNSearchScreen(onEvent)
+                    }
 
-                    FilterChip(
-                        selected = true,
-                        onClick = { /*TODO*/ },
-                        label = { Text(text = "完全匹配") },
-                        modifier = Modifier.padding(end = 8.dp, top = 8.dp)
-                    )
-                }
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                ) {
-                    Text(text = "搜索")
+                    BCID_SEARCH_ROUTE -> {
+                        BCIDSearchScreen(onEvent)
+                    }
                 }
             }
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun BasicSearchScreen(onEvent: (event: SearchEvent) -> Unit = {}) {
+
+    var title by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf("") }
+    var titleMatchComplete by remember {
+        mutableStateOf(false)
+    }
+    var authorMatchComplete by remember {
+        mutableStateOf(false)
+    }
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
+        ) {
+            LimitedOutlinedTextField(
+                label = "书名",
+                value = title,
+                onValueChange = {
+                    title = it
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            FilterChip(
+                selected = titleMatchComplete,
+                onClick = { titleMatchComplete = titleMatchComplete.not() },
+                label = { Text(text = "完全匹配") },
+                modifier = Modifier.padding(end = 8.dp, top = 8.dp)
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
+        ) {
+            LimitedOutlinedTextField(
+                label = "作者",
+                value = author,
+                onValueChange = { author = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            FilterChip(
+                selected = authorMatchComplete,
+                onClick = { authorMatchComplete = authorMatchComplete.not() },
+                label = { Text(text = "完全匹配") },
+                modifier = Modifier.padding(end = 8.dp, top = 8.dp)
+            )
+        }
+
+        Button(
+            onClick = {
+                onEvent(SearchEvent.Search(type = SearchType.Basic(title, author)))
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(text = "搜索")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ISBNSearchScreen(onEvent: (event: SearchEvent) -> Unit = {}) {
+
+    var isbn by remember {
+        mutableStateOf("")
+    }
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
+        ) {
+            LimitedOutlinedTextField(
+                label = "ISBN",
+                value = isbn,
+                onValueChange = { isbn = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
+        Button(
+            onClick = { onEvent(SearchEvent.Search(type = SearchType.ISBN(isbn))) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(text = "搜索")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BCIDSearchScreen(onEvent: (event: SearchEvent) -> Unit = {}) {
+
+    var bcid by remember {
+        mutableStateOf("")
+    }
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp), contentAlignment = Alignment.CenterEnd
+        ) {
+            LimitedOutlinedTextField(
+                label = "BCID",
+                value = bcid,
+                onValueChange = { bcid = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
+        Button(
+            onClick = { onEvent(SearchEvent.Search(type = SearchType.BCID(bcid))) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(text = "搜索")
+        }
+    }
+}
+
 
 @Composable
 fun BookCard(modifier: Modifier = Modifier) {
@@ -157,10 +275,12 @@ fun BookCard(modifier: Modifier = Modifier) {
             overflow = TextOverflow.Ellipsis
         )
 
-        Button(onClick = { /*TODO*/ }, modifier = Modifier.constrainAs(action) {
-            bottom.linkTo(frame.bottom)
-            start.linkTo(frame.start)
-        }.padding(12.dp)) {
+        Button(onClick = { /*TODO*/ }, modifier = Modifier
+            .constrainAs(action) {
+                bottom.linkTo(frame.bottom)
+                start.linkTo(frame.start)
+            }
+            .padding(12.dp)) {
             Text(text = "求漂")
         }
     }
@@ -173,7 +293,6 @@ fun SearchType(modifier: Modifier) {
         FilterChips(items = listOf("基本", "ISBN", "BCID"))
     }
 }
-
 
 
 @Preview(showBackground = true)

@@ -1,14 +1,10 @@
 package com.huaihao.bookcrosser.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -40,14 +36,11 @@ object Destinations {
 fun BookCrosserNavHost(
     navController: NavHostController = rememberNavController()
 ) {
-
-
-
     Scaffold { paddingValues ->
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = AUTH_ROUTE,
+            startDestination = MAIN_SCREEN_ROUTE,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {

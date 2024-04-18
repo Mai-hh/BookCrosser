@@ -25,8 +25,6 @@ import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SHELF_BOOK_ROUTE
-import com.huaihao.bookcrosser.ui.main.requests.find.RequestDriftingScreen
-import com.huaihao.bookcrosser.ui.main.requests.shelf.ShelfABookScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingViewModel
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookViewModel
@@ -86,7 +84,7 @@ fun DriftingRoute(navController: NavHostController = rememberNavController()) {
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun RequestsRoutePre() {
+fun DriftingRoutePre() {
     BookCrosserTheme {
         DriftingRoute()
     }

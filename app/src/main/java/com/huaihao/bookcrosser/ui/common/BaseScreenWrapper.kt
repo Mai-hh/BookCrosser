@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.TextFieldValue
@@ -116,7 +117,7 @@ fun LimitedOutlinedTextField(
         },
         visualTransformation = visualTransformation,
         maxLines = maxLines,
-        label = { Text(label) },
+        label = { Text(label, color = Color.Unspecified.copy(alpha = 0.5f)) },
         modifier = modifier,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions

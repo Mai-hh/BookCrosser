@@ -1,6 +1,5 @@
-package com.huaihao.bookcrosser.ui.main.requests.find
+package com.huaihao.bookcrosser.ui.main.requests
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,9 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,18 +23,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
-import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingEvent
-import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingUiState
+import com.huaihao.bookcrosser.viewmodel.main.ShelfABookEvent
+import com.huaihao.bookcrosser.viewmodel.main.ShelfABookUiState
 
+
+private const val exampleImageAddress = "https://i.pinimg.com/564x/cc/e4/ef/cce4ef60f77a3cf3b36f5b9897ae378d.jpg"
 
 @Composable
-fun RequestDriftingScreen(
-    uiState: RequestDriftingUiState,
-    onEvent: (RequestDriftingEvent) -> Unit
-) {
+fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
@@ -47,8 +50,8 @@ fun RequestDriftingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                val (cover) = createRefs()
-                OutlinedCard(modifier = Modifier
+                val (cover, info, action) = createRefs()
+                Card(modifier = Modifier
                     .constrainAs(cover) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
@@ -56,13 +59,33 @@ fun RequestDriftingScreen(
                         bottom.linkTo(parent.bottom)
                     }
                     .fillMaxSize()) {
-                    Image(
-                        painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                    AsyncImage(
+                        model = exampleImageAddress,
+                        placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 }
+
+                FilterChip(
+                    selected = true,
+                    onClick = { /*TODO*/ },
+                    label = {
+                        Text(text = "上传封面")
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Upload,
+                            contentDescription = "上传封面",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    modifier = Modifier.constrainAs(action) {
+                        bottom.linkTo(cover.bottom)
+                        end.linkTo(cover.end, margin = 8.dp)
+                    }
+                )
             }
         }
 
@@ -86,36 +109,37 @@ fun RequestDriftingScreen(
                         LimitedOutlinedTextField(
                             label = "书名",
                             value = uiState.title,
-                            onValueChange = { onEvent(RequestDriftingEvent.TitleChange(it)) },
+                            onValueChange = { onEvent(ShelfABookEvent.TitleChange(it)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         LimitedOutlinedTextField(
                             label = "作者",
                             value = uiState.author,
-                            onValueChange = { onEvent(RequestDriftingEvent.AuthorChange(it)) },
+                            onValueChange = { onEvent(ShelfABookEvent.AuthorChange(it)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         LimitedOutlinedTextField(
                             label = "ISBN",
                             value = uiState.isbn,
-                            onValueChange = { onEvent(RequestDriftingEvent.IsbnChange(it)) },
+                            onValueChange = { onEvent(ShelfABookEvent.IsbnChange(it)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         LimitedOutlinedTextField(
-                            label = "备注（可选）",
+                            label = "简介（可选）",
                             maxLength = 100,
                             maxLines = 4,
-                            value = uiState.requirements,
-                            onValueChange = { onEvent(RequestDriftingEvent.RequirementsChange(it)) },
+                            value = uiState.description,
+                            onValueChange = { onEvent(ShelfABookEvent.DescriptionChange(it)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
+
                 }
 
                 Button(onClick = {
-                    onEvent(RequestDriftingEvent.RequestDrifting)
+                    onEvent(ShelfABookEvent.ShelfBook)
                 }, Modifier.fillMaxWidth()) {
-                    Text(text = "请求图书")
+                    Text(text = "图书起漂")
                 }
             }
 
@@ -124,10 +148,20 @@ fun RequestDriftingScreen(
     }
 }
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewRequestsScreen() {
+fun ShelfABookScreenPreview() {
     BookCrosserTheme {
-        RequestDriftingScreen(uiState = RequestDriftingUiState(), onEvent = {})
+        ShelfABookScreen(
+            ShelfABookUiState(
+                coverUrl = exampleImageAddress,
+                title = "哈里波特",
+                author = "J.K.罗琳",
+                isbn = "9787530218562",
+                description = "哈利波特是一部由英国作家J.K.罗琳创作的奇幻小说，讲述了一个孤儿哈利波特在霍格沃茨魔法学校的冒险故事。"
+            ),
+            onEvent = {}
+        )
     }
 }

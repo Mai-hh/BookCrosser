@@ -132,7 +132,7 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 })
                 
                 // TODO: Add my books and in reading books
-                Text(text = "我上架的书籍", modifier = Modifier.constrainAs(my) {
+                Text(text = "我的在漂图书", modifier = Modifier.constrainAs(my) {
                     start.linkTo(parent.start)
                     top.linkTo(notifications.bottom, margin = 16.dp)
                 }, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))

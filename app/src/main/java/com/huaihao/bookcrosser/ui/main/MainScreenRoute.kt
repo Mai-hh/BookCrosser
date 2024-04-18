@@ -1,8 +1,5 @@
 package com.huaihao.bookcrosser.ui.main
 
-import android.app.Activity
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
@@ -20,12 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -40,7 +34,8 @@ import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
-import com.huaihao.bookcrosser.ui.main.reviews.ReviewsScreen
+import com.huaihao.bookcrosser.ui.main.reviews.MyReviewScreen
+import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
@@ -55,11 +50,18 @@ object Destinations {
     const val MAP_ROUTE = "地图"
 
     const val SEARCH_ROUTE = "搜索"
+    const val BASIC_SEARCH_ROUTE = "基本"
+    const val ISBN_SEARCH_ROUTE = "ISBN"
+    const val BCID_SEARCH_ROUTE = "BCID"
+
+    const val REQUESTS_ROUTE = "漂流"
     const val SHELF_BOOK_ROUTE = "起漂"
     const val REQUEST_BOOK_ROUTE = "求漂"
 
-    const val REQUESTS_ROUTE = "漂流"
     const val REVIEWS_ROUTE = "评论"
+    const val REVIEW_SQUARE_ROUTE = "广场"
+    const val MY_REVIEW_ROUTE = "我的评论"
+
     const val PROFILE_ROUTE = "我的"
 }
 
@@ -121,10 +123,7 @@ fun MainScreenRoute(
                 DriftingRoute(navController = navController)
             }
             composable(REVIEWS_ROUTE) {
-                val viewModel = koinViewModel<ReviewsViewModel>()
-                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
-                    ReviewsScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
-                }
+                ReviewsRoute(navController = navController)
             }
 
             composable(PROFILE_ROUTE) {
