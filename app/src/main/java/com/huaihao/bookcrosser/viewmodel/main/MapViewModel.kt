@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 
 
 data class MapUiState(
-    var viewState: MapViewState = MapViewState.Loading
+    var viewState: MapViewState = MapViewState.Loading,
+    var currentPosition: LatLng? = null,
+    val bookMarkers: List<LatLng> = mutableListOf()
 )
 
 sealed interface MapViewState {

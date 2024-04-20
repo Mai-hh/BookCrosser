@@ -40,7 +40,7 @@ fun BookCrosserNavHost(
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = AUTH_ROUTE,
+            startDestination = MAIN_SCREEN_ROUTE,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {

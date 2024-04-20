@@ -56,6 +56,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.huaihao.bookcrosser.model.BookMarker
 import com.huaihao.bookcrosser.util.hasLocationPermission
 import com.huaihao.bookcrosser.viewmodel.main.MapEvent
 import com.huaihao.bookcrosser.viewmodel.main.MapUiState
@@ -228,7 +229,8 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 fun MapContentScreen(
     currentPosition: LatLng,
     cameraState: CameraPositionState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bookMarkers: List<BookMarker> = emptyList(),
 ) {
 
     val mapUiSettings = remember {
@@ -237,7 +239,6 @@ fun MapContentScreen(
         )
     }
 
-    val marker = LatLng(currentPosition.latitude, currentPosition.longitude)
     GoogleMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraState,
@@ -247,11 +248,20 @@ fun MapContentScreen(
         )
     ) {
         Marker(
-            state = MarkerState(position = marker),
+            state = MarkerState(position = currentPosition),
             title = "MyPosition",
             snippet = "This is a description of this Marker",
-            draggable = true
+            draggable = false
         )
+
+        bookMarkers.forEach { marker ->
+            Marker(
+                state = MarkerState(position = marker.position),
+                title = "MyPosition",
+                snippet = "This is a description of this Marker",
+                draggable = false
+            )
+        }
     }
 }
 
