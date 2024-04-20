@@ -97,14 +97,14 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
         val passwordError = validatePassword(password)
         val confirmPasswordError = validateConfirmPassword(confirmPassword)
 
-        if (usernameError != null || emailError != null || passwordError != null || confirmPasswordError != null) {
-            state = state.copy(
-                usernameError = usernameError,
-                emailError = emailError,
-                passwordError = passwordError,
-                confirmPasswordError = confirmPasswordError
-            )
-        }
+
+        state = state.copy(
+            usernameError = usernameError,
+            emailError = emailError,
+            passwordError = passwordError,
+            confirmPasswordError = confirmPasswordError
+        )
+
 
         state = state.copy(isLoading = true)
 
@@ -117,11 +117,13 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(isLoading = false, isRegistered = true)
+                        sendEvent(UiEvent.Toast("注册成功"))
                         sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
                     }
 
                     is ApiResult.Error -> {
                         state = state.copy(isLoading = false, error = result.errorMessage)
+                        sendEvent(UiEvent.Toast("注册失败\n原因: ${result.errorMessage}"))
                     }
 
                     is ApiResult.Loading -> {}
@@ -141,7 +143,7 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
 
     private fun validateConfirmPassword(confirmPassword: String): String? {
         if (confirmPassword != state.password) {
-            return "Passwords do not match"
+            return "两次输入的密码不一致"
         }
         return null
     }

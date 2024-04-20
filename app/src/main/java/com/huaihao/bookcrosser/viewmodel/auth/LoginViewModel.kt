@@ -8,6 +8,7 @@ import com.huaihao.bookcrosser.repo.AuthRepo
 import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.util.AuthUtil
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +35,9 @@ data class LoginUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
+    val emailError: String? = null,
+    val usernameError: String? = null,
+    val passwordError: String? = null,
     val isLoggedIn: Boolean = false,
     val loginType: LoginType = LoginType.EMAIL
 )
@@ -95,13 +99,15 @@ class LoginViewModel(private val authRepo: AuthRepo) :
 
     private fun onEmailChange(email: String) {
         state = state.copy(
-            email = email
+            email = email,
+            emailError = AuthUtil.validateEmail(email)
         )
     }
 
     private fun onPasswordChange(password: String) {
         state = state.copy(
-            password = password
+            password = password,
+            passwordError = AuthUtil.validatePassword(password)
         )
     }
 
@@ -152,6 +158,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
                         Log.d(TAG, "MMKV Token: " + MMKVUtil.getString(USER_TOKEN))
                         Log.d(TAG, "Response Message: " + (result.data as TokenResponse).token)
                         MMKVUtil.put(USER_TOKEN, (result.data as TokenResponse).token)
+                        sendEvent(UiEvent.Toast("登录成功"))
                         sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
                     }
 
@@ -160,6 +167,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
                             isLoading = false,
                             error = result.errorMessage
                         )
+                        sendEvent(UiEvent.Toast("登录失败\n原因: ${result.errorMessage}"))
                     }
 
                     is ApiResult.Loading -> {

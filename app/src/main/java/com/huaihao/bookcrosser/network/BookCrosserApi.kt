@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 object BookCrosserApi {
     lateinit var bookCrosserApiService: BookCrosserApiService
 
-    const val BASE_URL = "http://192.168.1.208:3001/"
+    const val BASE_URL = "http://192.168.1.65:3001/"
     fun init(context: Context) {
 
         val httpLoggingInterceptor =

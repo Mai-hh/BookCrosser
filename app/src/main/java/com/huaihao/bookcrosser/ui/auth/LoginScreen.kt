@@ -66,6 +66,12 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
                 onValueChange = { email ->
                     onEvent(LoginEvent.EmailChange(email))
                 },
+                isError = uiState.emailError != null,
+                supportingText = {
+                    uiState.emailError?.let {
+                        Text(text = it, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -75,8 +81,14 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
                 label = "密码",
                 visualTransformation = PasswordVisualTransformation(),
                 value = uiState.password,
+                isError = uiState.passwordError != null,
                 onValueChange = { password ->
                     onEvent(LoginEvent.PasswordChange(password))
+                },
+                supportingText = {
+                    uiState.passwordError?.let {
+                        Text(text = it, color = MaterialTheme.colorScheme.error)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -87,7 +99,10 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
                 onEvent(
                     when (uiState.loginType) {
                         LoginType.EMAIL -> LoginEvent.LoginByEmail(uiState.email, uiState.password)
-                        LoginType.USERNAME -> LoginEvent.LoginByUsername(uiState.username, uiState.password)
+                        LoginType.USERNAME -> LoginEvent.LoginByUsername(
+                            uiState.username,
+                            uiState.password
+                        )
                     }
                 )
             }, modifier = Modifier.fillMaxWidth()) {

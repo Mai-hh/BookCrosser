@@ -89,6 +89,15 @@ fun SignUpScreen(uiState: SignUpUiState, onEvent: (event: SignUpEvent) -> Unit) 
                         onValueChange = { username ->
                             onEvent(SignUpEvent.UsernameChange(username))
                         },
+                        isError = uiState.usernameError != null,
+                        supportingText = {
+                            uiState.usernameError?.let {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -99,6 +108,15 @@ fun SignUpScreen(uiState: SignUpUiState, onEvent: (event: SignUpEvent) -> Unit) 
                         value = uiState.email,
                         onValueChange = {
                             onEvent(SignUpEvent.EmailChange(it))
+                        },
+                        isError = uiState.emailError != null,
+                        supportingText = {
+                            uiState.emailError?.let {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -112,6 +130,15 @@ fun SignUpScreen(uiState: SignUpUiState, onEvent: (event: SignUpEvent) -> Unit) 
                         onValueChange = {
                             onEvent(SignUpEvent.PasswordChange(it))
                         },
+                        isError = uiState.passwordError != null,
+                        supportingText = {
+                            uiState.passwordError?.let {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -122,6 +149,15 @@ fun SignUpScreen(uiState: SignUpUiState, onEvent: (event: SignUpEvent) -> Unit) 
                         value = uiState.password,
                         onValueChange = {
                             onEvent(SignUpEvent.PasswordChange(it))
+                        },
+                        isError = uiState.passwordError != null,
+                        supportingText = {
+                            uiState.passwordError?.let {
+                                Text(
+                                    text = it,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
