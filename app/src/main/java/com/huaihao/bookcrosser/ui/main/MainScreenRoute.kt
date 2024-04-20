@@ -55,7 +55,7 @@ object Destinations {
     const val BCID_SEARCH_ROUTE = "BCID"
 
     const val REQUESTS_ROUTE = "漂流"
-    const val SHELF_BOOK_ROUTE = "起漂"
+    const val SHELF_BOOK_ROUTE = "上架"
     const val REQUEST_BOOK_ROUTE = "求漂"
 
     const val REVIEWS_ROUTE = "评论"

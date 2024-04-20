@@ -2,6 +2,7 @@ package com.huaihao.bookcrosser.network
 
 import android.content.Context
 import android.util.Log
+import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
@@ -71,9 +72,6 @@ object BookCrosserApi {
 }
 
 interface BookCrosserApiService {
-    @POST("/user/save")
-    suspend fun save(@Body user: User): Boolean
-
     @POST("/user/register")
     suspend fun register(@Body user: User): Response<TokenResponse>
 
@@ -97,5 +95,8 @@ interface BookCrosserApiService {
 
     @DELETE("/user/deleteByEmail/{email}")
     suspend fun deleteByEmail(@Path("email") email: String): Boolean
+
+    @POST("/book/shelfABook")
+    suspend fun shelfABook(@Body book: Book): Response<Unit>
 }
 

@@ -70,7 +70,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
 
                 FilterChip(
                     selected = true,
-                    onClick = { /*TODO*/ },
+                    onClick = { onEvent(ShelfABookEvent.UploadCover) },
                     label = {
                         Text(text = "上传封面")
                     },
@@ -139,7 +139,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                 Button(onClick = {
                     onEvent(ShelfABookEvent.ShelfBook)
                 }, Modifier.fillMaxWidth()) {
-                    Text(text = "图书起漂")
+                    Text(text = "图书上架")
                 }
             }
 

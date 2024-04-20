@@ -2,6 +2,7 @@ package com.huaihao.bookcrosser.viewmodel.main
 
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.DriftingRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
@@ -13,6 +14,7 @@ sealed interface ShelfABookEvent {
     data class TitleChange(val title: String) : ShelfABookEvent
     data class AuthorChange(val author: String) : ShelfABookEvent
     data class IsbnChange(val isbn: String) : ShelfABookEvent
+    data object UploadCover : ShelfABookEvent
     data class DescriptionChange(val description: String) : ShelfABookEvent
     data object ShelfBook : ShelfABookEvent
     data object NavBack : ShelfABookEvent
@@ -27,7 +29,8 @@ data class ShelfABookUiState(
     var isLoading: Boolean = false
 )
 
-class ShelfABookViewModel(driftingRepo: DriftingRepo) : BaseViewModel<ShelfABookUiState, ShelfABookEvent>() {
+class ShelfABookViewModel(private val driftingRepo: DriftingRepo) :
+    BaseViewModel<ShelfABookUiState, ShelfABookEvent>() {
     override fun onEvent(event: ShelfABookEvent) {
         when (event) {
             is ShelfABookEvent.CoverUrlChange -> onCoverUrlChange(coverUrl = event.coverUrl)
@@ -37,6 +40,7 @@ class ShelfABookViewModel(driftingRepo: DriftingRepo) : BaseViewModel<ShelfABook
             is ShelfABookEvent.DescriptionChange -> onDescriptionChange(description = event.description)
             ShelfABookEvent.ShelfBook -> onShelfBook()
             ShelfABookEvent.NavBack -> sendEvent(UiEvent.NavBack)
+            ShelfABookEvent.UploadCover -> sendEvent(UiEvent.Toast("封面已上传"))
         }
     }
 
@@ -85,21 +89,22 @@ class ShelfABookViewModel(driftingRepo: DriftingRepo) : BaseViewModel<ShelfABook
         state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
-//            bookRepo.shelfBook(book).collect { result ->
-//                when (result) {
-//                    is ApiResult.Success<*> -> {
-//                        state = state.copy(isLoading = false, isShelved = true)
-//                        sendEvent(UiEvent.Toast("Book shelved successfully"))
-//                        sendEvent(UiEvent.NavBack)
-//                    }
-//
-//                    is ApiResult.Error -> {
-//                        state = state.copy(isLoading = false, error = result.errorMessage)
-//                    }
-//
-//                    is ApiResult.Loading -> {}
-//                }
-//            }
+            driftingRepo.shelfABook(book).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        state = state.copy(isLoading = false)
+                        sendEvent(UiEvent.Toast("上架成功"))
+                        sendEvent(UiEvent.NavBack)
+                    }
+
+                    is ApiResult.Error -> {
+                        state = state.copy(isLoading = false)
+                        sendEvent(UiEvent.Toast("上架失败\n ${result.errorMessage}"))
+                    }
+
+                    is ApiResult.Loading -> {}
+                }
+            }
         }
     }
 
