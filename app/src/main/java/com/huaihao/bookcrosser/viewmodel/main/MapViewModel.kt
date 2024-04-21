@@ -51,8 +51,6 @@ class MapViewModel(private val locationService: ILocationService, private val bo
                         )
                     }
                 }
-
-                onEvent(MapEvent.LoadBookMarkers)
             }
 
             is MapEvent.PermissionRevoked -> {

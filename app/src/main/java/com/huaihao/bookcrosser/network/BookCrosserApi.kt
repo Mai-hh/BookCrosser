@@ -109,5 +109,15 @@ interface BookCrosserApiService {
 
     @POST("/book/shelfABook")
     suspend fun shelfABook(@Body book: RequestBody.Book): Response<Unit>
+
+    @GET("/book/search")
+    suspend fun search(
+        @Query("title") title: String?,
+        @Query("author") author: String?,
+        @Query("exact") matchComplete: Boolean
+    ): Response<List<Book>>
+
+    @GET("/book/searchByIsbn")
+    suspend fun searchByIsbn(@Query("isbn") isbn: String): Response<List<Book>>
 }
 

@@ -142,8 +142,6 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                     Text(text = "图书上架")
                 }
             }
-
-
         }
     }
 }

@@ -22,9 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.android.gms.maps.model.LatLng
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
@@ -34,13 +37,11 @@ import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
-import com.huaihao.bookcrosser.ui.main.reviews.MyReviewScreen
 import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
 import com.huaihao.bookcrosser.viewmodel.main.ProfileViewModel
-import com.huaihao.bookcrosser.viewmodel.main.ReviewsViewModel
 import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -105,10 +106,40 @@ fun MainScreenRoute(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
-            composable(MAP_ROUTE) {
+            composable(
+                route = "$MAP_ROUTE/{latitude}/{longitude}",
+                arguments = listOf(
+                    navArgument("latitude") { type = NavType.FloatType },
+                    navArgument("longitude") { type = NavType.FloatType }
+                )
+            ) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
+                val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble()
+                val initialPos: LatLng? = if (latitude != null && longitude != null) {
+                    LatLng(latitude, longitude)
+                } else {
+                    null
+                }
                 val viewModel = koinViewModel<MapViewModel>()
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
-                    MapScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                    MapScreen(
+                        uiState = viewModel.state,
+                        onEvent = viewModel::onEvent,
+                        initialPosition = initialPos
+                    )
+                }
+            }
+
+            composable(
+                route = MAP_ROUTE
+            ) {
+                val viewModel = koinViewModel<MapViewModel>()
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    MapScreen(
+                        uiState = viewModel.state,
+                        onEvent = viewModel::onEvent,
+                        initialPosition = null
+                    )
                 }
             }
 

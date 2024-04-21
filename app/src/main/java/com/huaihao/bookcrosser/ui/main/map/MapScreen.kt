@@ -6,7 +6,6 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -21,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.ShapeDefaults
@@ -30,10 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +42,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -65,7 +60,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
+fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition: LatLng? = null) {
 
     val context = LocalContext.current
 
@@ -84,10 +79,14 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
         permissionState.launchMultiplePermissionRequest()
     }
 
+
     when {
         permissionState.allPermissionsGranted -> {
             LaunchedEffect(Unit) {
                 onEvent(MapEvent.PermissionGranted)
+            }
+            LaunchedEffect(Unit) {
+                onEvent(MapEvent.LoadBookMarkers)
             }
         }
 
@@ -145,9 +144,9 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
                 }
 
                 is MapViewState.Success -> {
-                    val location = (uiState.viewState as MapViewState.Success).location
-                    val currentLoc =
-                        LatLng(
+                    val location = remember { (uiState.viewState as MapViewState.Success).location }
+                    val currentLoc = initialPosition
+                        ?: LatLng(
                             location?.latitude ?: 0.0,
                             location?.longitude ?: 0.0
                         )
@@ -258,8 +257,8 @@ fun MapContentScreen(
         bookMarkers.forEach { marker ->
             Marker(
                 state = MarkerState(position = marker.position),
-                title = "MyPosition",
-                snippet = "This is a description of this Marker",
+                title = marker.book.title,
+                snippet = marker.book.author,
                 draggable = false
             )
         }

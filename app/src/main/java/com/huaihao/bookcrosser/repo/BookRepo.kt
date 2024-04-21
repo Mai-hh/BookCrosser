@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.Flow
 interface BookRepo {
 
     suspend fun loadBooks(): Flow<ApiResult>
-
     suspend fun shelfABook(book: RequestBody.Book): Flow<ApiResult>
     suspend fun requestABook(drifting: Drifting): Flow<ApiResult>
+    suspend fun search(title: String?, author: String?, matchComplete: Boolean): Flow<ApiResult>
+
+    suspend fun searchByIsbn(isbn: String): Flow<ApiResult>
 
 }
