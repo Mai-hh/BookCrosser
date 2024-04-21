@@ -3,6 +3,7 @@ package com.huaihao.bookcrosser.network
 import android.content.Context
 import android.util.Log
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
@@ -26,9 +27,12 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 object BookCrosserApi {
+
+    const val TAG = "BookCrosserApi"
+
     lateinit var bookCrosserApiService: BookCrosserApiService
 
-    const val BASE_URL = "http://192.168.1.65:3001/"
+    const val BASE_URL = "http://192.168.1.208:3001/"
     fun init(context: Context) {
 
         val httpLoggingInterceptor =
@@ -72,6 +76,8 @@ object BookCrosserApi {
 }
 
 interface BookCrosserApiService {
+
+    // ================== User ==================
     @POST("/user/register")
     suspend fun register(@Body user: User): Response<TokenResponse>
 
@@ -96,7 +102,12 @@ interface BookCrosserApiService {
     @DELETE("/user/deleteByEmail/{email}")
     suspend fun deleteByEmail(@Path("email") email: String): Boolean
 
+    // ================== Book ==================
+
+    @GET("/book/selectAll")
+    suspend fun selectAllBooks(): Response<List<Book>>
+
     @POST("/book/shelfABook")
-    suspend fun shelfABook(@Body book: Book): Response<Unit>
+    suspend fun shelfABook(@Body book: RequestBody.Book): Response<Unit>
 }
 

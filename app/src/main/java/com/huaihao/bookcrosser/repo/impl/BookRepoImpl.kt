@@ -1,11 +1,11 @@
 package com.huaihao.bookcrosser.repo.impl
 
-import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.Drifting
+import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.network.BookCrosserApi
 import com.huaihao.bookcrosser.network.NetUtil
-import com.huaihao.bookcrosser.repo.DriftingRepo
+import com.huaihao.bookcrosser.repo.BookRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,10 +13,16 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class DriftingRepoImpl : DriftingRepo {
+class BookRepoImpl : BookRepo {
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val api = BookCrosserApi.bookCrosserApiService
-    override suspend fun shelfABook(book: Book): Flow<ApiResult> = flow {
+    override suspend fun loadBooks(): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.selectAllBooks()
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
+
+    override suspend fun shelfABook(book: RequestBody.Book): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
         val response = api.shelfABook(book)
         NetUtil.checkResponse(response, this)

@@ -1,6 +1,6 @@
 package com.huaihao.bookcrosser.viewmodel.main
 
-import com.huaihao.bookcrosser.repo.DriftingRepo
+import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 
 sealed interface RequestDriftingEvent {
@@ -21,7 +21,7 @@ data class RequestDriftingUiState(
     var isLoading: Boolean = false
 )
 
-class RequestDriftingViewModel(driftingRepo: DriftingRepo) : BaseViewModel<RequestDriftingUiState, RequestDriftingEvent>() {
+class RequestDriftingViewModel(bookRepo: BookRepo) : BaseViewModel<RequestDriftingUiState, RequestDriftingEvent>() {
     override fun onEvent(event: RequestDriftingEvent) {
         TODO("Not yet implemented")
     }

@@ -164,6 +164,7 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit) {
                                 currentLoc.longitude
                             ),
                             cameraState = cameraState,
+                            bookMarkers = uiState.bookMarkers,
                             modifier = Modifier.constrainAs(map) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)

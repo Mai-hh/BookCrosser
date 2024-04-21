@@ -4,10 +4,10 @@ import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.huaihao.bookcrosser.repo.AuthRepo
-import com.huaihao.bookcrosser.repo.DriftingRepo
+import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.repo.ReviewRepo
 import com.huaihao.bookcrosser.repo.impl.AuthRepoImpl
-import com.huaihao.bookcrosser.repo.impl.DriftingRepoImpl
+import com.huaihao.bookcrosser.repo.impl.BookRepoImpl
 import com.huaihao.bookcrosser.repo.impl.ReviewRepoImpl
 import com.huaihao.bookcrosser.service.ILocationService
 import com.huaihao.bookcrosser.service.LocationService
@@ -29,7 +29,7 @@ val appModule = module {
     single<AuthRepo> { AuthRepoImpl() }
     single<FusedLocationProviderClient> { LocationServices.getFusedLocationProviderClient(get<Context>()) }
     single<ILocationService> { LocationService(get(), get()) }
-    single<DriftingRepo> { DriftingRepoImpl() }
+    single<BookRepo> { BookRepoImpl() }
     single<ReviewRepo> { ReviewRepoImpl() }
 
     viewModel { LoginViewModel(get()) }
@@ -38,7 +38,7 @@ val appModule = module {
     viewModel { ProfileViewModel(get()) }
     viewModel { ReviewsViewModel() }
     viewModel { SearchViewModel() }
-    viewModel { MapViewModel(get()) }
+    viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>()) }
     viewModel { ShelfABookViewModel(get()) }
     viewModel { RequestDriftingViewModel(get()) }
     viewModel { ReviewSquareViewModel(get()) }

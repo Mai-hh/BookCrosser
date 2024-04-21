@@ -2,8 +2,9 @@ package com.huaihao.bookcrosser.viewmodel.main
 
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.network.ApiResult
-import com.huaihao.bookcrosser.repo.DriftingRepo
+import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,7 @@ data class ShelfABookUiState(
     var isLoading: Boolean = false
 )
 
-class ShelfABookViewModel(private val driftingRepo: DriftingRepo) :
+class ShelfABookViewModel(private val bookRepo: BookRepo) :
     BaseViewModel<ShelfABookUiState, ShelfABookEvent>() {
     override fun onEvent(event: ShelfABookEvent) {
         when (event) {
@@ -77,7 +78,7 @@ class ShelfABookViewModel(private val driftingRepo: DriftingRepo) :
     }
 
     private fun onShelfBook() {
-        val book = Book(
+        val book = RequestBody.Book(
             coverUrl = state.coverUrl,
             title = state.title,
             author = state.author,
@@ -89,7 +90,7 @@ class ShelfABookViewModel(private val driftingRepo: DriftingRepo) :
         state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
-            driftingRepo.shelfABook(book).collect { result ->
+            bookRepo.shelfABook(book).collect { result ->
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(isLoading = false)
