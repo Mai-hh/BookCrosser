@@ -179,7 +179,7 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition:
                                 }
                             },
                             modifier = Modifier.constrainAs(fab) {
-                                end.linkTo(parent.end, margin = 16.dp)
+                                start.linkTo(parent.start, margin = 16.dp)
                                 bottom.linkTo(parent.bottom, margin = 16.dp)
                             }
                         ) {

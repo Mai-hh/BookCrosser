@@ -5,6 +5,7 @@ import android.util.Log
 import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.model.User
+import com.huaihao.bookcrosser.model.UserProfile
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
 import com.squareup.moshi.Moshi
@@ -119,5 +120,9 @@ interface BookCrosserApiService {
 
     @GET("/book/searchByIsbn")
     suspend fun searchByIsbn(@Query("isbn") isbn: String): Response<List<Book>>
+
+    @GET("/user/loadUserProfile")
+    suspend fun loadUserProfile(): Response<UserProfile>
+
 }
 

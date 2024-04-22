@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.maps.model.LatLng
@@ -78,7 +79,19 @@ private val IconImageVectors = listOf(
 fun MainScreenRoute(
     navController: NavHostController = rememberNavController()
 ) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     var selectedItem by remember { mutableIntStateOf(0) }
+
+    // 根据当前路由更新 selectedItem 的值
+    when (currentRoute) {
+        MAP_ROUTE, "$MAP_ROUTE/{latitude}/{longitude}" -> selectedItem = 0
+        SEARCH_ROUTE -> selectedItem = 1
+        REQUESTS_ROUTE -> selectedItem = 2
+        REVIEWS_ROUTE -> selectedItem = 3
+        PROFILE_ROUTE -> selectedItem = 4
+    }
 
 
     Scaffold(
@@ -90,8 +103,10 @@ fun MainScreenRoute(
                         label = { Text(item) },
                         selected = selectedItem == index,
                         onClick = {
-                            selectedItem = index
-                            navController.navigate(items[selectedItem])
+                            if (selectedItem != index) {
+                                selectedItem = index
+                                navController.navigate(items[selectedItem])
+                            }
                         }
                     )
                 }
@@ -102,7 +117,7 @@ fun MainScreenRoute(
         NavHost(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            startDestination = MAP_ROUTE,
+            startDestination = PROFILE_ROUTE,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {

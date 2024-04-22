@@ -33,16 +33,17 @@ class AuthRepoImpl : AuthRepo {
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch { it.printStackTrace() }
 
-    override suspend fun loginByUsername(username: String, password: String): Flow<ApiResult> = flow {
-        emit(ApiResult.Loading())
-        val response = api.login(
-            User(
-                username = username,
-                password = password
+    override suspend fun loginByUsername(username: String, password: String): Flow<ApiResult> =
+        flow {
+            emit(ApiResult.Loading())
+            val response = api.login(
+                User(
+                    username = username,
+                    password = password
+                )
             )
-        )
-        NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+            NetUtil.checkResponse(response, this)
+        }.flowOn(dispatcher).catch { it.printStackTrace() }
 
     override suspend fun register(
         username: String,
@@ -78,5 +79,14 @@ class AuthRepoImpl : AuthRepo {
         val response = api.checkLogin()
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch { it.printStackTrace() }
+
+    override suspend fun loadUserProfile(): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.loadUserProfile()
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        Log.e(TAG, "loadUserProfile: ${it.message}")
+        it.printStackTrace()
+    }
 
 }

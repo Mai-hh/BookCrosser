@@ -1,6 +1,5 @@
 package com.huaihao.bookcrosser.ui.main.profile
 
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
-import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -30,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,23 +36,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.lifecycleScope
 import com.huaihao.bookcrosser.model.ProfileNotification
 import com.huaihao.bookcrosser.model.ProfileNotificationType
 import com.huaihao.bookcrosser.viewmodel.main.ProfileEvent
 import com.huaihao.bookcrosser.viewmodel.main.ProfileUiState
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+
+    LaunchedEffect(Unit) {
+        onEvent(ProfileEvent.LoadUserProfile)
+    }
+
     Scaffold { paddingValues ->
         Surface(
             modifier = Modifier
@@ -85,7 +84,8 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
 
                 Text(
-                    text = uiState.user.username ?: "", modifier = Modifier.constrainAs(name) {
+                    text = uiState.userProfile?.username ?: "用户名",
+                    modifier = Modifier.constrainAs(name) {
                         start.linkTo(avatar.end, margin = 16.dp)
                         top.linkTo(avatar.top)
                         bottom.linkTo(bio.top)
@@ -94,7 +94,8 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 )
 
                 Text(
-                    text = uiState.user.bio, modifier = Modifier.constrainAs(bio) {
+                    text = uiState.userProfile?.bio ?: "简介空空如也~",
+                    modifier = Modifier.constrainAs(bio) {
                         start.linkTo(name.start)
                         bottom.linkTo(avatar.bottom)
                         top.linkTo(name.bottom)
@@ -125,12 +126,14 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
 
 
-                NotificationList(notifications = uiState.notifications, modifier = Modifier.constrainAs(notifications) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(avatar.bottom, margin = 28.dp)
-                })
-                
+                NotificationList(
+                    notifications = uiState.notifications,
+                    modifier = Modifier.constrainAs(notifications) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(avatar.bottom, margin = 28.dp)
+                    })
+
                 // TODO: Add my books and in reading books
                 Text(text = "我的在漂图书", modifier = Modifier.constrainAs(my) {
                     start.linkTo(parent.start)
@@ -152,7 +155,7 @@ fun NotificationList(notifications: List<ProfileNotification>, modifier: Modifie
         items(notifications) { notification ->
             Box(
                 modifier = Modifier
-                    .fillParentMaxWidth(1f/2f)
+                    .fillParentMaxWidth(1f / 2f)
             ) {
                 NotificationCard(notification)
             }
@@ -185,6 +188,24 @@ fun NotificationCard(notification: ProfileNotification) {
 
         }
     }
+}
+
+
+// 这个页面可以查看我借阅的图书，并且决定是否起漂
+@Composable
+fun MyBorrowedScreen() {
+
+}
+
+@Composable
+fun MyUploadedScreen() {
+
+}
+
+
+@Composable
+fun MyWait4CommentScreen() {
+
 }
 
 @Composable
