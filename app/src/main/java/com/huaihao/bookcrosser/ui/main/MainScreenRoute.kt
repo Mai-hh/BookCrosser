@@ -143,7 +143,9 @@ fun MainScreenRoute(
                 } else {
                     null
                 }
-                val viewModel = koinViewModel<MapViewModel>()
+                val viewModel = koinNavViewModel<MapViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
                     MapScreen(
                         uiState = viewModel.state,
@@ -156,7 +158,9 @@ fun MainScreenRoute(
             composable(
                 route = MAP_ROUTE
             ) {
-                val viewModel = koinViewModel<MapViewModel>()
+                val viewModel = koinNavViewModel<MapViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
                     MapScreen(
                         uiState = viewModel.state,
@@ -167,7 +171,9 @@ fun MainScreenRoute(
             }
 
             composable(SEARCH_ROUTE) {
-                val viewModel = koinViewModel<SearchViewModel>()
+                val viewModel = koinNavViewModel<SearchViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
                     SearchScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
                 }
