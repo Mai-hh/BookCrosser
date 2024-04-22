@@ -1,10 +1,11 @@
 package com.huaihao.bookcrosser.viewmodel.main
 
 import androidx.lifecycle.viewModelScope
-import com.huaihao.bookcrosser.model.Book
+import com.google.android.gms.maps.model.LatLng
 import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.BookRepo
+import com.huaihao.bookcrosser.service.ILocationService
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,9 @@ sealed interface ShelfABookEvent {
     data class DescriptionChange(val description: String) : ShelfABookEvent
     data object ShelfBook : ShelfABookEvent
     data object NavBack : ShelfABookEvent
+
+    data object GetCurrentLocation : ShelfABookEvent
+
 }
 
 data class ShelfABookUiState(
@@ -27,10 +31,14 @@ data class ShelfABookUiState(
     var author: String = "",
     var isbn: String = "",
     var description: String = "",
-    var isLoading: Boolean = false
+    var isLoading: Boolean = false,
+    var location: LatLng? = null
 )
 
-class ShelfABookViewModel(private val bookRepo: BookRepo) :
+class ShelfABookViewModel(
+    private val bookRepo: BookRepo,
+    private val locationService: ILocationService
+) :
     BaseViewModel<ShelfABookUiState, ShelfABookEvent>() {
     override fun onEvent(event: ShelfABookEvent) {
         when (event) {
@@ -42,6 +50,23 @@ class ShelfABookViewModel(private val bookRepo: BookRepo) :
             ShelfABookEvent.ShelfBook -> onShelfBook()
             ShelfABookEvent.NavBack -> sendEvent(UiEvent.NavBack)
             ShelfABookEvent.UploadCover -> sendEvent(UiEvent.Toast("封面已上传"))
+
+            is ShelfABookEvent.GetCurrentLocation -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    locationService.requestCurrentLocation().collect { location ->
+                        if (location != null) {
+                            val currentLocation =
+                                LatLng(location.latitude, location.longitude)
+                            state = state.copy(
+                                location = currentLocation
+                            )
+                            sendEvent(UiEvent.Toast("获取位置成功"))
+                        } else {
+                            sendEvent(UiEvent.Toast("位置获取异常，请确认是否开启定位权限"))
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -78,14 +103,21 @@ class ShelfABookViewModel(private val bookRepo: BookRepo) :
     }
 
     private fun onShelfBook() {
+        if (state.location == null) {
+            sendEvent(UiEvent.Toast("未获取位置信息，请重试"))
+            return
+        }
+
+
         val book = RequestBody.Book(
             coverUrl = state.coverUrl,
             title = state.title,
             author = state.author,
             isbn = state.isbn,
-            description = state.description
+            description = state.description,
+            latitude = state.location!!.latitude,
+            longitude = state.location!!.longitude
         )
-
 
         state = state.copy(isLoading = true)
 

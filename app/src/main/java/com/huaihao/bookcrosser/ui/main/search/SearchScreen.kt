@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PinDrop
-import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,17 +41,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import coil.compose.AsyncImage
-import com.huaihao.bookcrosser.R
-import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.BookSearchItem
 import com.huaihao.bookcrosser.model.toSearchItem
 import com.huaihao.bookcrosser.ui.common.FilterChips
@@ -73,8 +67,6 @@ val types = listOf(BASIC_SEARCH_ROUTE, ISBN_SEARCH_ROUTE, BCID_SEARCH_ROUTE)
 fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) {
     val sheetState = rememberBottomSheetScaffoldState()
 
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(uiState.shouldExpandBottomSheet) {
         if (uiState.shouldExpandBottomSheet) {
             sheetState.bottomSheetState.expand()
@@ -89,7 +81,7 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
             sheetContent = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(uiState.books) { book ->
-                        BookCard(book = book.toSearchItem()) {
+                        BookSearchCard(book = book.toSearchItem()) {
                             onEvent(SearchEvent.NavToBookMarker(book))
                         }
                     }
@@ -281,7 +273,7 @@ fun BCIDSearchScreen(
 
 
 @Composable
-fun BookCard(
+fun BookSearchCard(
     modifier: Modifier = Modifier,
     book: BookSearchItem,
     onLocateSelected: () -> Unit = {}
@@ -398,9 +390,9 @@ fun SearchType(modifier: Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun BookCardPreview() {
+fun BookSearchCardPreview() {
     MaterialTheme {
-        BookCard(
+        BookSearchCard(
             book = BookSearchItem(
                 title = "书名",
                 author = "作者",

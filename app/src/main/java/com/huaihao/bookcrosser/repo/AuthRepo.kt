@@ -10,6 +10,6 @@ interface AuthRepo {
     suspend fun sendResetCode(email: String): Flow<ApiResult>
     suspend fun resetPassword(email: String, code: String, newPassword: String): Flow<ApiResult>
     suspend fun checkLogin(token: String): Flow<ApiResult>
-
     suspend fun loadUserProfile(): Flow<ApiResult>
+    suspend fun updateProfile(username: String, bio: String?, latitude: Double?, longitude: Double?): Flow<ApiResult>
 }

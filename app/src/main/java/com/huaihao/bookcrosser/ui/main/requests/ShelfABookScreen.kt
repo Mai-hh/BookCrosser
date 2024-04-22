@@ -1,21 +1,38 @@
 package com.huaihao.bookcrosser.ui.main.requests
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddLocation
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -31,13 +48,14 @@ import com.huaihao.bookcrosser.viewmodel.main.ShelfABookEvent
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookUiState
 
 
-private const val exampleImageAddress = "https://i.pinimg.com/564x/cc/e4/ef/cce4ef60f77a3cf3b36f5b9897ae378d.jpg"
+private const val exampleImageAddress =
+    "https://i.pinimg.com/564x/cc/e4/ef/cce4ef60f77a3cf3b36f5b9897ae378d.jpg"
 
 @Composable
 fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> Unit) {
     Column(
         Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         Box(
             modifier = Modifier
@@ -91,16 +109,18 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .weight(2f)
         ) {
             Column(
                 modifier = Modifier
                     .padding(vertical = 20.dp, horizontal = 16.dp)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
             ) {
-                Column(Modifier) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())) {
                     Text(
                         text = "书籍信息",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
@@ -134,12 +154,56 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                         )
                     }
 
-                }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "位置信息",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
 
-                Button(onClick = {
-                    onEvent(ShelfABookEvent.ShelfBook)
-                }, Modifier.fillMaxWidth()) {
-                    Text(text = "图书上架")
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        AssistChip(
+                            onClick = {
+                                onEvent(ShelfABookEvent.GetCurrentLocation)
+                            },
+                            label = {
+                                Text(text = "获取当前位置")
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.LocationOn,
+                                    contentDescription = "获取当前位置",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        )
+                    }
+
+                    Row(Modifier.padding(vertical = 8.dp)) {
+                        OutlinedTextField(
+                            label = {
+                                Text("经度")
+                            },
+                            value = if (uiState.location != null) uiState.location!!.longitude.toString() else "",
+                            onValueChange = { },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        OutlinedTextField(
+                            label = {
+                                Text("纬度")
+                            },
+                            value = if (uiState.location != null) uiState.location!!.latitude.toString() else "",
+                            onValueChange = { },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Button(onClick = {
+                        onEvent(ShelfABookEvent.ShelfBook)
+                    }, Modifier.fillMaxWidth()) {
+                        Text(text = "图书上架")
+                    }
                 }
             }
         }

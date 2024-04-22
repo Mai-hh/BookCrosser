@@ -18,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterChips(items: List<String>, onSelected: (String) -> Unit = {}) {
+fun FilterChips(items: List<String>,modifier: Modifier = Modifier, onSelected: (String) -> Unit = {}) {
     var selected by remember { mutableIntStateOf(0) }
-    Row {
+    Row(modifier = modifier) {
         items.forEachIndexed { index, item ->
             FilterChip(
                 leadingIcon = {

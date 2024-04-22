@@ -89,7 +89,12 @@ interface BookCrosserApiService {
     suspend fun checkLogin(): Response<Unit>
 
     @POST("/user/update")
-    suspend fun update(@Body user: User): Boolean
+    suspend fun update(
+        @Query("username") username: String,
+        @Query("bio") bio: String?,
+        @Query("latitude") latitude: Double?,
+        @Query("longitude") longitude: Double?
+    ): Response<Unit>
 
     @GET("/user/selectAll")
     suspend fun selectAll(): List<User>
@@ -109,7 +114,15 @@ interface BookCrosserApiService {
     suspend fun selectAllBooks(): Response<List<Book>>
 
     @POST("/book/shelfABook")
-    suspend fun shelfABook(@Body book: RequestBody.Book): Response<Unit>
+    suspend fun shelfABook(
+        @Query("title") title: String,
+        @Query("author") author: String,
+        @Query("isbn") isbn: String,
+        @Query("description") description: String,
+        @Query("coverUrl") coverUrl: String,
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double
+    ): Response<Unit>
 
     @GET("/book/search")
     suspend fun search(

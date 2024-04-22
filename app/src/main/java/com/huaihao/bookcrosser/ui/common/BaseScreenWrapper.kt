@@ -104,6 +104,7 @@ fun LimitedOutlinedTextField(
     singLine: Boolean = true,
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null,
+    enabled : Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -118,6 +119,7 @@ fun LimitedOutlinedTextField(
                 onValueChange(it.text)
             }
         },
+        enabled = enabled,
         visualTransformation = visualTransformation,
         maxLines = maxLines,
         isError = isError,

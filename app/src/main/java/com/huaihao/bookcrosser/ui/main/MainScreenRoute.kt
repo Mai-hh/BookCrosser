@@ -28,15 +28,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.google.android.gms.maps.model.LatLng
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_SETTINGS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
+import com.huaihao.bookcrosser.ui.main.profile.ProfileSettingsScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
 import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchScreen
@@ -45,6 +48,7 @@ import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
 import com.huaihao.bookcrosser.viewmodel.main.ProfileViewModel
 import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.navigation.koinNavViewModel
 
 val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
 
@@ -65,6 +69,10 @@ object Destinations {
     const val MY_REVIEW_ROUTE = "我的评论"
 
     const val PROFILE_ROUTE = "我的"
+    const val PROFILE_SETTINGS_ROUTE = "设置"
+    const val MY_UPLOADED_BOOKS_ROUTE = "已上传"
+    const val MY_BORROWED_BOOKS_ROUTE = "我拥有"
+    const val BOOKS_WAITING_FOR_COMMENT_ROUTE = "待评论"
 }
 
 private val IconImageVectors = listOf(
@@ -173,9 +181,22 @@ fun MainScreenRoute(
             }
 
             composable(PROFILE_ROUTE) {
-                val viewModel = koinViewModel<ProfileViewModel>()
+                val viewModel = koinNavViewModel<ProfileViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
                     ProfileScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
+            }
+
+            composable(
+                route = PROFILE_SETTINGS_ROUTE,
+            ) {
+                val viewModel = koinNavViewModel<ProfileViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    ProfileSettingsScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
                 }
             }
         }

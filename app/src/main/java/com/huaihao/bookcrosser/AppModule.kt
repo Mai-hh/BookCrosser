@@ -35,11 +35,11 @@ val appModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get()) }
     viewModel { ForgetPasswordViewModel(get()) }
-    viewModel { ProfileViewModel(get()) }
+    viewModel { ProfileViewModel(get(), get<ILocationService>()) }
     viewModel { ReviewsViewModel() }
     viewModel { SearchViewModel(get()) }
     viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>()) }
-    viewModel { ShelfABookViewModel(get()) }
+    viewModel { ShelfABookViewModel(get<BookRepo>(), get<ILocationService>()) }
     viewModel { RequestDriftingViewModel(get()) }
     viewModel { ReviewSquareViewModel(get()) }
     viewModel { MyReviewViewModel(get()) }

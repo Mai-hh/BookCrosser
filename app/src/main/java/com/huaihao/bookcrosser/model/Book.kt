@@ -17,6 +17,14 @@ data class Book(
     val updatedAt: String
 )
 
+data class BookProfileItem(
+    val title: String,
+    val author: String,
+    val description: String,
+    val status: String,
+    val coverUrl: String?
+)
+
 data class BookSearchItem(
     val title: String,
     val author: String,
@@ -26,6 +34,14 @@ data class BookSearchItem(
 )
 
 fun Book.toSearchItem() = BookSearchItem(
+    title = title,
+    author = author,
+    description = description,
+    status = status,
+    coverUrl = coverUrl
+)
+
+fun Book.toProfileItem() = BookProfileItem(
     title = title,
     author = author,
     description = description,

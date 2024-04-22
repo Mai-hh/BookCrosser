@@ -104,6 +104,8 @@ dependencies {
     // Dependency Injection
     val koin_version = "3.5.6"
     implementation("io.insert-koin:koin-androidx-compose:$koin_version")
+    implementation("io.insert-koin:koin-androidx-compose-navigation:$koin_version")
+
 
     // Image loader
     implementation("io.coil-kt:coil-compose:2.6.0")

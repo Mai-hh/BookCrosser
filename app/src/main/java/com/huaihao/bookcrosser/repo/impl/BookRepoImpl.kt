@@ -31,7 +31,15 @@ class BookRepoImpl : BookRepo {
 
     override suspend fun shelfABook(book: RequestBody.Book): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
-        val response = api.shelfABook(book)
+        val response = api.shelfABook(
+            title = book.title,
+            author = book.author,
+            isbn = book.isbn,
+            coverUrl = book.coverUrl,
+            description = book.description,
+            latitude = book.latitude,
+            longitude = book.longitude
+        )
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch { it.printStackTrace() }
 

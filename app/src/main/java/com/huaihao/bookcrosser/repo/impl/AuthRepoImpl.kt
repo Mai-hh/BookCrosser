@@ -89,4 +89,24 @@ class AuthRepoImpl : AuthRepo {
         it.printStackTrace()
     }
 
+    override suspend fun updateProfile(
+        username: String,
+        bio: String?,
+        latitude: Double?,
+        longitude: Double?
+    ): Flow<ApiResult> {
+        return flow {
+            emit(ApiResult.Loading())
+            val response = api.update(
+                username = username,
+                bio = bio ?: "",
+                latitude = latitude,
+                longitude = longitude
+            )
+            NetUtil.checkResponse(response, this)
+        }.flowOn(dispatcher).catch {
+            it.printStackTrace()
+        }
+    }
+
 }

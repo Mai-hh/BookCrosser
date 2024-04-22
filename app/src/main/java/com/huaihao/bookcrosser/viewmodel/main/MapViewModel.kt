@@ -29,7 +29,6 @@ sealed interface MapViewState {
 sealed interface MapEvent {
     data object PermissionGranted : MapEvent
     data object PermissionRevoked : MapEvent
-
     data object LoadBookMarkers : MapEvent
 
 }
@@ -84,7 +83,6 @@ class MapViewModel(private val locationService: ILocationService, private val bo
 
                             }
                         }
-
                     }
                 }
             }
