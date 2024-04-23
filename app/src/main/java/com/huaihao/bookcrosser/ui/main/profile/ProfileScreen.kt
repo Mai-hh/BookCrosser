@@ -63,6 +63,7 @@ import com.huaihao.bookcrosser.model.toProfileItem
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.main.Destinations.BOOKS_WAITING_FOR_COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.MY_REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_UPLOADED_BOOKS_ROUTE
 import com.huaihao.bookcrosser.viewmodel.main.ProfileEvent
 import com.huaihao.bookcrosser.viewmodel.main.ProfileUiState
@@ -142,13 +143,13 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }) {
                     IconButton(onClick = {
                         onEvent(ProfileEvent.NavToSettings)
-                    } ) {
+                    }) {
                         Icon(Icons.Rounded.Settings, contentDescription = "退出")
                     }
 
                     IconButton(onClick = {
                         showLogoutAlert = true
-                    } ) {
+                    }) {
                         Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = "退出")
                     }
                 }
@@ -168,7 +169,8 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                         items = listOf(
                             MY_UPLOADED_BOOKS_ROUTE,
                             MY_BORROWED_BOOKS_ROUTE,
-                            BOOKS_WAITING_FOR_COMMENT_ROUTE
+                            BOOKS_WAITING_FOR_COMMENT_ROUTE,
+                            MY_REQUESTS_ROUTE
                         ),
                         onSelected = { selected ->
                             selectedScreen = selected
@@ -188,8 +190,36 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                             MyWait4CommentScreen(uiState, onEvent)
                         }
 
+                        MY_REQUESTS_ROUTE -> {
+                            MyRequestsScreen(uiState, onEvent)
+                        }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlaceHolderScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = "空空如也~",
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        )
+    }
+}
+
+@Composable
+fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    if (uiState.userProfile.booksInRequesting.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(uiState.userProfile.booksInRequesting!!) { book ->
+                BookProfileCard(book = book.toProfileItem())
             }
         }
     }
@@ -233,6 +263,99 @@ fun NotificationCard(notification: ProfileNotification) {
                 bottom.linkTo(icon.bottom)
             }, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
 
+        }
+    }
+}
+
+@Composable
+fun BookProfileCardBorrowed(
+    modifier: Modifier = Modifier,
+    book: BookProfileItem,
+    onDriftingFinish: () -> Unit = {}
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .heightIn(max = 150.dp)
+            .padding(vertical = 8.dp)
+    ) {
+        val (frame, title, author, description, actions, status) = createRefs()
+        ElevatedCard(modifier = Modifier
+            .fillMaxSize()
+            .constrainAs(frame) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            }) {
+
+        }
+
+        FilterChip(
+            selected = true,
+            onClick = { },
+            label = {
+                Text(text = "状态: ${book.status}")
+            },
+
+            modifier = Modifier.constrainAs(status) {
+                bottom.linkTo(frame.bottom, margin = 8.dp)
+                start.linkTo(frame.start, margin = 8.dp)
+            }
+        )
+
+        Text(
+            text = book.title,
+            modifier = Modifier
+                .constrainAs(title) {
+                    top.linkTo(frame.top, margin = 12.dp)
+                    start.linkTo(frame.start)
+                }
+                .padding(horizontal = 12.dp),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(
+            text = book.author,
+            modifier = Modifier
+                .constrainAs(author) {
+                    top.linkTo(title.bottom)
+                    start.linkTo(frame.start, margin = 12.dp)
+                },
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(
+            text = book.description,
+            modifier = Modifier
+                .constrainAs(description) {
+                    start.linkTo(title.end)
+                    top.linkTo(title.top)
+                    end.linkTo(frame.end, margin = 8.dp)
+                    width = Dimension.fillToConstraints
+                },
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Row(modifier = Modifier
+            .constrainAs(actions) {
+                end.linkTo(frame.end, margin = 8.dp)
+                bottom.linkTo(frame.bottom, margin = 8.dp)
+            }) {
+            OutlinedButton(
+                onClick = { onDriftingFinish() },
+                colors = ButtonDefaults.outlinedButtonColors().copy(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    contentColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(text = "追踪")
+            }
         }
     }
 }
@@ -348,10 +471,31 @@ fun BookProfileCard(
 // 这个页面可以查看我借阅的图书，并且决定是否起漂
 @Composable
 fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    uiState.userProfile.booksBorrowed?.let { books ->
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(books) { book ->
-                BookProfileCard(book = book.toProfileItem())
+    if (uiState.userProfile.booksBorrowed.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        uiState.userProfile.booksBorrowed?.let { books ->
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(books) { book ->
+                    if (book.uploaderId == uiState.userProfile.id) {
+                        BookProfileCard(
+                            book = book.toProfileItem(),
+                            onLocateSelected = {
+                                onEvent(
+                                    ProfileEvent.LocatedBook(
+                                        LatLng(book.latitude, book.longitude)
+                                    )
+                                )
+                            })
+                    } else {
+                        BookProfileCardBorrowed(
+                            book = book.toProfileItem(),
+                            onDriftingFinish = {
+                                onEvent(ProfileEvent.DriftingFinish(book))
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -359,14 +503,20 @@ fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 
 @Composable
 fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    uiState.userProfile.booksUploaded?.let { books ->
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(books) { book ->
-                BookProfileCard(book = book.toProfileItem(), onLocateSelected = {
-                    onEvent(ProfileEvent.LocatedBook(
-                        LatLng(book.latitude, book.longitude)
-                    ))
-                })
+    if (uiState.userProfile.booksUploaded.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        uiState.userProfile.booksUploaded?.let { books ->
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(books) { book ->
+                    BookProfileCard(book = book.toProfileItem(), onLocateSelected = {
+                        onEvent(
+                            ProfileEvent.LocatedBook(
+                                LatLng(book.latitude, book.longitude)
+                            )
+                        )
+                    })
+                }
             }
         }
     }
@@ -375,7 +525,17 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 
 @Composable
 fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-
+    if (uiState.userProfile.bookUncommented.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        uiState.userProfile.bookUncommented?.let { books ->
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(books) { book ->
+                    BookProfileCard(book = book.toProfileItem())
+                }
+            }
+        }
+    }
 }
 
 @Composable

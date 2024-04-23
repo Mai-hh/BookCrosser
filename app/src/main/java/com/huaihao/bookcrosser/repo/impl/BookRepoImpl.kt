@@ -22,6 +22,7 @@ class BookRepoImpl : BookRepo {
     companion object {
         private const val TAG = "BookRepoImpl"
     }
+
     override suspend fun loadBooks(): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
         val response = api.selectAllBooks()
@@ -43,9 +44,11 @@ class BookRepoImpl : BookRepo {
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch { it.printStackTrace() }
 
-    override suspend fun requestABook(drifting: Drifting): Flow<ApiResult> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun requestABook(bookId: Long): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.request(bookId)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch { it.printStackTrace() }
 
     override suspend fun search(
         title: String?,
@@ -62,4 +65,46 @@ class BookRepoImpl : BookRepo {
         val response = api.searchByIsbn(isbn)
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch { it.printStackTrace() }
+
+    override suspend fun loadDriftingRequests(): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.selectDriftingToMe()
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+            )
+        )
+        it.printStackTrace()
+    }
+
+    override suspend fun drift(bookId: Long, requesterId: Long): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.drift(bookId, requesterId)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+            )
+        )
+        it.printStackTrace()
+    }
+
+    override suspend fun driftingFinish(bookId: Long): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.driftingFinish(bookId)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+            )
+        )
+        it.printStackTrace()
+    }
 }

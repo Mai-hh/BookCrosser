@@ -3,9 +3,11 @@ package com.huaihao.bookcrosser.viewmodel.main
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.UserProfile
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.AuthRepo
+import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.service.ILocationService
 import com.huaihao.bookcrosser.ui.Destinations.AUTH_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
@@ -36,9 +38,11 @@ sealed interface ProfileEvent {
         val latitude: Double?,
         val longitude: Double?
     ) : ProfileEvent
+
+    data class DriftingFinish(val book: Book): ProfileEvent
 }
 
-class ProfileViewModel(private val authRepo: AuthRepo, private val locationService: ILocationService) :
+class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: BookRepo, private val locationService: ILocationService) :
     BaseViewModel<ProfileUiState, ProfileEvent>() {
 
     companion object {
@@ -94,6 +98,29 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val locationServi
 
             is ProfileEvent.UpdateProfile -> {
                 onUpdateProfile(event.username, event.bio, event.latitude, event.longitude)
+            }
+
+            is ProfileEvent.DriftingFinish -> {
+                onDriftingFinish(event.book)
+            }
+        }
+    }
+
+    private fun onDriftingFinish(book: Book) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.driftingFinish(book.id).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        sendEvent(UiEvent.SnackbarToast("漂流完成"))
+                        sendEvent(UiEvent.NavBack)
+                    }
+
+                    is ApiResult.Error -> {
+                        sendEvent(UiEvent.SnackbarToast("漂流失败"))
+                    }
+
+                    is ApiResult.Loading -> {}
+                }
             }
         }
     }

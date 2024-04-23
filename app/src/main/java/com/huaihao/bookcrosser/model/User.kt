@@ -15,6 +15,7 @@ data class User(
 )
 
 data class UserProfile(
+    var id: Long = 0L,
     var username: String = "Book Crosser",
     var email: String? = null,
     var avatar: String? = null,
@@ -23,5 +24,6 @@ data class UserProfile(
     var longitude: Double? = null,
     var booksUploaded: List<Book>? = emptyList(),
     var booksBorrowed: List<Book>? = emptyList(),
+    var bookUncommented: List<Book>? = emptyList(),
     var booksInRequesting: List<Book>? = emptyList(),
 )

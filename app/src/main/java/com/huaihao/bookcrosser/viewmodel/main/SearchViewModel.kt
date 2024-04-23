@@ -12,22 +12,17 @@ import kotlinx.coroutines.launch
 
 
 sealed interface SearchEvent {
-    data class SearchingTextChange(val text: String) : SearchEvent
     data class Search(val type: SearchType) : SearchEvent
     data object ShowSearchResults : SearchEvent
     data object ResetShouldExpandBottomSheet : SearchEvent
-
     data class NavToBookMarker(val book: Book) : SearchEvent
+    data class RequestBook(val book: Book) : SearchEvent
 }
 
 sealed class SearchType(val value: Int) {
     data class Basic(val title: String, val author: String, val matchComplete: Boolean) :
         SearchType(1)
-
     data class ISBN(val isbn: String) : SearchType(2)
-    data class BCID(val bcid: String) : SearchType(3)
-
-
 }
 
 data class SearchUiState(
@@ -47,9 +42,6 @@ sealed class SearchStateWithType(labels: List<String>) {
         val isbn: String,
     ) : SearchStateWithType(labels = listOf("ISBN"))
 
-    data class BCID(
-        val bcid: String
-    ) : SearchStateWithType(labels = listOf("BCID"))
 }
 
 class SearchViewModel(private val bookRepo: BookRepo) :
@@ -68,13 +60,9 @@ class SearchViewModel(private val bookRepo: BookRepo) :
                 is SearchType.ISBN -> {
                     onISBNSearch(event.type.isbn)
                 }
-
-                is SearchType.BCID -> TODO()
-
             }
         }
 
-        is SearchEvent.SearchingTextChange -> TODO()
         is SearchEvent.ShowSearchResults -> {
             state = state.copy(
                 isSearching = false
@@ -88,9 +76,31 @@ class SearchViewModel(private val bookRepo: BookRepo) :
         is SearchEvent.NavToBookMarker -> {
             sendEvent(UiEvent.Navigate("$MAP_ROUTE/${event.book.latitude}/${event.book.longitude}"))
         }
+
+        is SearchEvent.RequestBook -> {
+            onRequestBook(event.book)
+        }
     }
 
     override fun defaultState(): SearchUiState = SearchUiState()
+
+    private fun onRequestBook(book: Book) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.requestABook(book.id).collect {
+                when (it) {
+                    is ApiResult.Success<*> -> {
+                        sendEvent(UiEvent.SnackbarToast("请求成功"))
+                    }
+
+                    is ApiResult.Error -> {
+                        sendEvent(UiEvent.SnackbarToast("请求失败\n原因: ${it.errorMessage}"))
+                    }
+
+                    is ApiResult.Loading -> {}
+                }
+            }
+        }
+    }
 
     private fun onBasicSearch(title: String?, author: String?, matchComplete: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {

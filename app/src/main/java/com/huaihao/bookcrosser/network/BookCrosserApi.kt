@@ -3,6 +3,8 @@ package com.huaihao.bookcrosser.network
 import android.content.Context
 import android.util.Log
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.Drifting
+import com.huaihao.bookcrosser.model.DriftingRequest
 import com.huaihao.bookcrosser.model.RequestBody
 import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.model.UserProfile
@@ -136,6 +138,22 @@ interface BookCrosserApiService {
 
     @GET("/user/loadUserProfile")
     suspend fun loadUserProfile(): Response<UserProfile>
+
+    // ================== Drifting ==================
+    @GET("/drifting/selectDriftingToMe")
+    suspend fun selectDriftingToMe(): Response<List<DriftingRequest>>
+
+    @GET("/drifting/selectMyRequest")
+    suspend fun selectMyRequest(): Response<List<DriftingRequest>>
+
+    @POST("/drifting/request")
+    suspend fun request(@Query("bookId") bookId: Long): Response<Unit>
+
+    @POST("/drifting/drift")
+    suspend fun drift(@Query("bookId") bookId: Long, @Query("requesterId") requesterId: Long): Response<Unit>
+
+    @POST("/drifting/finish")
+    suspend fun driftingFinish(@Query("bookId") bookId: Long): Response<Unit>
 
 }
 

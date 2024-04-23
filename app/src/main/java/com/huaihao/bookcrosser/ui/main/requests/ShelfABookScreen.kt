@@ -48,7 +48,7 @@ import com.huaihao.bookcrosser.viewmodel.main.ShelfABookEvent
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookUiState
 
 
-private const val exampleImageAddress =
+const val exampleImageAddress =
     "https://i.pinimg.com/564x/cc/e4/ef/cce4ef60f77a3cf3b36f5b9897ae378d.jpg"
 
 @Composable

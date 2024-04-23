@@ -73,6 +73,7 @@ object Destinations {
     const val MY_UPLOADED_BOOKS_ROUTE = "已上传"
     const val MY_BORROWED_BOOKS_ROUTE = "我拥有"
     const val BOOKS_WAITING_FOR_COMMENT_ROUTE = "待评论"
+    const val MY_REQUESTS_ROUTE = "我的请求"
 }
 
 private val IconImageVectors = listOf(

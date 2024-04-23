@@ -35,7 +35,7 @@ val appModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get()) }
     viewModel { ForgetPasswordViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get<ILocationService>()) }
+    viewModel { ProfileViewModel(get(), get(), get<ILocationService>()) }
     viewModel { ReviewsViewModel() }
     viewModel { SearchViewModel(get()) }
     viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>()) }

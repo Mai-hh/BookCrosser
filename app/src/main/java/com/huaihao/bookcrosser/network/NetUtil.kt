@@ -1,5 +1,6 @@
 package com.huaihao.bookcrosser.network
 
+import android.util.Log
 import kotlinx.coroutines.flow.FlowCollector
 import org.json.JSONObject
 import retrofit2.Response
@@ -10,6 +11,7 @@ object NetUtil {
         flow: FlowCollector<ApiResult>
     ) {
         if (response?.isSuccessful == true) {
+            Log.d("NetUtil", "checkResponse isSuccessful: ${response.body()}")
             flow.emit(ApiResult.Success(data = response.body()))
         } else {
             val json = response?.errorBody()?.string()

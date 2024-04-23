@@ -33,6 +33,22 @@ data class BookSearchItem(
     val coverUrl: String?
 )
 
+data class BookRequest(
+    val book: Book,
+    val requesterId: Long,
+    val requesterName: String,
+    val requesterEmail: String,
+    val requesterLatitude: Double,
+    val requesterLongitude: Double,
+)
+
+data class BookRequestItem(
+    val title: String,
+    val author: String,
+    val description: String,
+    val coverUrl: String?
+)
+
 fun Book.toSearchItem() = BookSearchItem(
     title = title,
     author = author,
