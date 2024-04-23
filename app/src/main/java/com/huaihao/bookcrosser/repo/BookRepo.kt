@@ -12,8 +12,8 @@ interface BookRepo {
     suspend fun search(title: String?, author: String?, matchComplete: Boolean): Flow<ApiResult>
     suspend fun searchByIsbn(isbn: String): Flow<ApiResult>
     suspend fun loadDriftingRequests(): Flow<ApiResult>
-
-    suspend fun drift(bookId: Long, requesterId: Long): Flow<ApiResult>
+    suspend fun drift(driftingRequestId: Long): Flow<ApiResult>
+    suspend fun rejectDriftingRequest(driftingRequestId: Long): Flow<ApiResult>
     suspend fun driftingFinish(bookId: Long): Flow<ApiResult>
 
 }

@@ -131,14 +131,19 @@ fun MainScreenRoute(
             exitTransition = { ExitTransition.None }
         ) {
             composable(
-                route = "$MAP_ROUTE/{latitude}/{longitude}",
+                route = "$MAP_ROUTE/{latitude}/{longitude}/{title}/{snippet}",
                 arguments = listOf(
                     navArgument("latitude") { type = NavType.FloatType },
-                    navArgument("longitude") { type = NavType.FloatType }
+                    navArgument("longitude") { type = NavType.FloatType },
+                    navArgument("title") { type = NavType.StringType },
+                    navArgument("snippet") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
                 val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble()
+                val title = backStackEntry.arguments?.getString("title")
+                val snippet = backStackEntry.arguments?.getString("snippet")
+
                 val initialPos: LatLng? = if (latitude != null && longitude != null) {
                     LatLng(latitude, longitude)
                 } else {
@@ -151,7 +156,9 @@ fun MainScreenRoute(
                     MapScreen(
                         uiState = viewModel.state,
                         onEvent = viewModel::onEvent,
-                        initialPosition = initialPos
+                        initialPosition = initialPos,
+                        title = title,
+                        snippet = snippet
                     )
                 }
             }

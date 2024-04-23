@@ -6,14 +6,18 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -42,6 +46,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -51,8 +56,10 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.huaihao.bookcrosser.model.BookMarker
 import com.huaihao.bookcrosser.util.hasLocationPermission
+import com.huaihao.bookcrosser.viewmodel.main.MapDisplayType
 import com.huaihao.bookcrosser.viewmodel.main.MapEvent
 import com.huaihao.bookcrosser.viewmodel.main.MapUiState
 import com.huaihao.bookcrosser.viewmodel.main.MapViewState
@@ -60,7 +67,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition: LatLng? = null) {
+fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition: LatLng? = null, title: String? = null, snippet: String? = null) {
 
     val context = LocalContext.current
 
@@ -87,6 +94,8 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition:
             }
             LaunchedEffect(Unit) {
                 onEvent(MapEvent.LoadBookMarkers)
+                onEvent(MapEvent.LoadUserMarkers)
+                onEvent(MapEvent.UpdateCurrentMarkerInfo(title, snippet))
             }
         }
 
@@ -145,25 +154,27 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition:
 
                 is MapViewState.Success -> {
                     val location = remember { (uiState.viewState as MapViewState.Success).location }
+
                     val currentLoc = initialPosition
                         ?: LatLng(
                             location?.latitude ?: 0.0,
                             location?.longitude ?: 0.0
                         )
 
+                    val currentMarkerState: MarkerState = rememberMarkerState(position = currentLoc)
+
                     LaunchedEffect(key1 = currentLoc) {
                         cameraState.centerOnLocation(currentLoc)
+                        currentMarkerState.showInfoWindow()
                     }
 
                     ConstraintLayout {
-                        val (map, fab) = createRefs()
+                        val (map, fabs) = createRefs()
                         MapContentScreen(
-                            currentPosition = LatLng(
-                                currentLoc.latitude,
-                                currentLoc.longitude
-                            ),
+                            currentMarkerState = currentMarkerState,
                             cameraState = cameraState,
                             bookMarkers = uiState.bookMarkers,
+                            uiState = uiState,
                             modifier = Modifier.constrainAs(map) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
@@ -172,18 +183,44 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition:
                             }
                         )
 
-                        FloatingActionButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    cameraState.centerOnLocation(currentLoc)
-                                }
-                            },
-                            modifier = Modifier.constrainAs(fab) {
+                        Row(
+                            modifier = Modifier.constrainAs(fabs) {
                                 start.linkTo(parent.start, margin = 16.dp)
                                 bottom.linkTo(parent.bottom, margin = 16.dp)
                             }
                         ) {
-                            Icon(Icons.Rounded.MyLocation, contentDescription = "My Location")
+                            FloatingActionButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        cameraState.centerOnLocation(currentLoc)
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Rounded.MyLocation, contentDescription = "我的位置")
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            FloatingActionButton(
+                                onClick = {
+                                    onEvent(MapEvent.ShowBookMarkers)
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.MenuBook,
+                                    contentDescription = "展示图书"
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            FloatingActionButton(
+                                onClick = {
+                                    onEvent(MapEvent.ShowUserMarkers)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Groups, contentDescription = "展示用户")
+                            }
                         }
                     }
                 }
@@ -227,10 +264,11 @@ fun RationaleAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
 
 @Composable
 fun MapContentScreen(
-    currentPosition: LatLng,
-    cameraState: CameraPositionState,
     modifier: Modifier = Modifier,
+    currentMarkerState: MarkerState,
+    cameraState: CameraPositionState,
     bookMarkers: List<BookMarker> = emptyList(),
+    uiState: MapUiState
 ) {
 
     val mapUiSettings = remember {
@@ -238,6 +276,7 @@ fun MapContentScreen(
             zoomControlsEnabled = false
         )
     }
+
 
     GoogleMap(
         modifier = modifier.fillMaxSize(),
@@ -248,19 +287,39 @@ fun MapContentScreen(
         )
     ) {
         Marker(
-            state = MarkerState(position = currentPosition),
-            title = "MyPosition",
-            snippet = "This is a description of this Marker",
+            state = currentMarkerState,
+            title = uiState.currentMarkerInfo.title,
+            snippet = uiState.currentMarkerInfo.snippet,
+            zIndex = 20.0f,
             draggable = false
         )
 
-        bookMarkers.forEach { marker ->
-            Marker(
-                state = MarkerState(position = marker.position),
-                title = marker.book.title,
-                snippet = marker.book.author,
-                draggable = false
-            )
+        if (uiState.mapDisplayType == MapDisplayType.Users) {
+            uiState.userMarkers.forEach { user ->
+                user.latitude?.also { latitude ->
+                    user.longitude?.also { longitude ->
+                        Marker(
+                            state = MarkerState(position = LatLng(latitude, longitude)),
+                            title = user.username,
+                            snippet = user.bio,
+                            alpha = 0.8f,
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                            draggable = false
+                        )
+                    }
+                }
+            }
+        } else {
+            bookMarkers.forEach { marker ->
+                Marker(
+                    state = MarkerState(position = marker.position),
+                    title = marker.book.title,
+                    snippet = marker.book.author,
+                    alpha = 0.8f,
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW),
+                    draggable = false,
+                )
+            }
         }
     }
 }
@@ -271,8 +330,7 @@ private suspend fun CameraPositionState.centerOnLocation(
     update = CameraUpdateFactory.newLatLngZoom(
         location,
         15f
-    ),
-    durationMs = 1500
+    )
 )
 
 @Preview(showBackground = true)

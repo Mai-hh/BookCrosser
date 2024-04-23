@@ -12,4 +12,5 @@ interface AuthRepo {
     suspend fun checkLogin(token: String): Flow<ApiResult>
     suspend fun loadUserProfile(): Flow<ApiResult>
     suspend fun updateProfile(username: String, bio: String?, latitude: Double?, longitude: Double?): Flow<ApiResult>
+    suspend fun loadAllUsers(): Flow<ApiResult>
 }

@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 sealed interface RequestDriftingEvent {
     data object LoadDriftingRequests : RequestDriftingEvent
     data object NavBack : RequestDriftingEvent
+    data class Drift(val driftingRequest: DriftingRequest) : RequestDriftingEvent
+    data class RejectDriftingRequest(val driftingRequest: DriftingRequest) : RequestDriftingEvent
 }
 
 data class RequestDriftingUiState(
@@ -32,6 +34,61 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) : BaseViewModel<R
                 sendEvent(UiEvent.NavBack)
             }
 
+            is RequestDriftingEvent.Drift -> {
+                onDrift(event.driftingRequest)
+            }
+
+            is RequestDriftingEvent.RejectDriftingRequest -> {
+                onRejectDriftingRequest(event.driftingRequest)
+            }
+        }
+    }
+
+    private fun onRejectDriftingRequest(driftingRequest: DriftingRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.rejectDriftingRequest(driftingRequest.id).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 成功"))
+                        Log.d(TAG, "onRejectDriftingRequest: Success")
+                        onLoadDriftingRequests()
+                    }
+
+                    is ApiResult.Error -> {
+                        sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 失败"))
+                        Log.d(TAG, "onRejectDriftingRequest: Error")
+                        onLoadDriftingRequests()
+                    }
+
+                    is ApiResult.Loading -> {
+                        Log.d(TAG, "onRejectDriftingRequest: Loading")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onDrift(driftingRequest: DriftingRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.drift(driftingRequest.id).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        sendEvent(UiEvent.SnackbarToast("起漂 ${driftingRequest.book.title} 成功"))
+                        Log.d(TAG, "onDrift: Success")
+                        onLoadDriftingRequests()
+                    }
+
+                    is ApiResult.Error -> {
+                        sendEvent(UiEvent.SnackbarToast("起漂 ${driftingRequest.book.title} 失败"))
+                        Log.d(TAG, "onDrift: Error")
+                        onLoadDriftingRequests()
+                    }
+
+                    is ApiResult.Loading -> {
+                        Log.d(TAG, "onDrift: Loading")
+                    }
+                }
+            }
         }
     }
 

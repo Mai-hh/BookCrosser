@@ -80,19 +80,34 @@ class BookRepoImpl : BookRepo {
         it.printStackTrace()
     }
 
-    override suspend fun drift(bookId: Long, requesterId: Long): Flow<ApiResult> = flow {
+    override suspend fun drift(driftingRequestId: Long): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
-        val response = api.drift(bookId, requesterId)
+        val response = api.drift(driftingRequestId)
         NetUtil.checkResponse(response, this)
     }.flowOn(dispatcher).catch {
         emit(
             ApiResult.Error(
                 code = 1,
-                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+                errorMessage = "未知错误: ${it.message}",
             )
         )
         it.printStackTrace()
     }
+
+    override suspend fun rejectDriftingRequest(driftingRequestId: Long): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.rejectDriftingRequest(driftingRequestId)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message}",
+            )
+        )
+        it.printStackTrace()
+    }
+
 
     override suspend fun driftingFinish(bookId: Long): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())

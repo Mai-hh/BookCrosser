@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PinDrop
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,6 +65,12 @@ fun RequestDriftingScreen(
                     request = request,
                     onLocateSelected = {
 
+                    },
+                    onDriftSelected = {
+                        onEvent(RequestDriftingEvent.Drift(request))
+                    },
+                    onRejectSelected = {
+                        onEvent(RequestDriftingEvent.RejectDriftingRequest(request))
                     }
                 )
             }
@@ -75,7 +82,9 @@ fun RequestDriftingScreen(
 fun BookRequestCard(
     modifier: Modifier = Modifier,
     request: DriftingRequest,
-    onLocateSelected: () -> Unit = {}
+    onLocateSelected: () -> Unit = {},
+    onDriftSelected: () -> Unit = {},
+    onRejectSelected: () -> Unit = {}
 ) {
     ElevatedCard(
         modifier = Modifier
@@ -124,7 +133,12 @@ fun BookRequestCard(
                 contentAlignment = Alignment.TopEnd
             ) {
                 Column {
-                    request.requester.username?.let { Text(text = it, style = MaterialTheme.typography.bodySmall) }
+                    request.requester.username?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                     request.requester.email?.let { Text(text = it) }
                 }
             }
@@ -135,12 +149,22 @@ fun BookRequestCard(
                     bottom.linkTo(parent.bottom, margin = 8.dp)
                 }) {
                 OutlinedButton(
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        onDriftSelected()
+                    }
                 ) {
                     Text(text = "起漂")
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { onRejectSelected() }
+                ) {
+                    Text(text = "拒绝")
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
 
                 IconButton(
                     colors = IconButtonDefaults.iconButtonColors(

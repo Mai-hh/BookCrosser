@@ -483,7 +483,7 @@ fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                             onLocateSelected = {
                                 onEvent(
                                     ProfileEvent.LocatedBook(
-                                        LatLng(book.latitude, book.longitude)
+                                        book
                                     )
                                 )
                             })
@@ -512,7 +512,7 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                     BookProfileCard(book = book.toProfileItem(), onLocateSelected = {
                         onEvent(
                             ProfileEvent.LocatedBook(
-                                LatLng(book.latitude, book.longitude)
+                                book
                             )
                         )
                     })

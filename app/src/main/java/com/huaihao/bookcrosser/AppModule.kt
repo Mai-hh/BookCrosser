@@ -38,7 +38,7 @@ val appModule = module {
     viewModel { ProfileViewModel(get(), get(), get<ILocationService>()) }
     viewModel { ReviewsViewModel() }
     viewModel { SearchViewModel(get()) }
-    viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>()) }
+    viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>(), get<AuthRepo>()) }
     viewModel { ShelfABookViewModel(get<BookRepo>(), get<ILocationService>()) }
     viewModel { RequestDriftingViewModel(get()) }
     viewModel { ReviewSquareViewModel(get()) }

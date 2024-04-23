@@ -27,7 +27,7 @@ data class ProfileUiState(
 sealed interface ProfileEvent {
     data object Logout : ProfileEvent
     data object LoadUserProfile : ProfileEvent
-    data class LocatedBook(val position: LatLng) : ProfileEvent
+    data class LocatedBook(val book: Book) : ProfileEvent
     data object NavToSettings : ProfileEvent
     data object NavBack : ProfileEvent
     data class SendToast(val message: String) : ProfileEvent
@@ -60,7 +60,7 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
             }
 
             is ProfileEvent.LocatedBook -> {
-                sendEvent(UiEvent.Navigate("${Destinations.MAP_ROUTE}/${event.position.latitude}/${event.position.longitude}"))
+                sendEvent(UiEvent.Navigate("${Destinations.MAP_ROUTE}/${event.book.latitude}/${event.book.longitude}/${event.book.title}/${event.book.author}"))
             }
 
             ProfileEvent.NavToSettings -> {

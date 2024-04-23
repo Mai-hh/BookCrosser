@@ -99,7 +99,7 @@ interface BookCrosserApiService {
     ): Response<Unit>
 
     @GET("/user/selectAll")
-    suspend fun selectAll(): List<User>
+    suspend fun selectAll(): Response<List<User>>
 
     @GET("/user/selectById")
     suspend fun selectById(@Query("id") id: Long): User
@@ -150,7 +150,10 @@ interface BookCrosserApiService {
     suspend fun request(@Query("bookId") bookId: Long): Response<Unit>
 
     @POST("/drifting/drift")
-    suspend fun drift(@Query("bookId") bookId: Long, @Query("requesterId") requesterId: Long): Response<Unit>
+    suspend fun drift(@Query("requestId") requestId: Long): Response<Unit>
+
+    @POST("/drifting/reject")
+    suspend fun rejectDriftingRequest(@Query("requestId") requestId: Long): Response<Unit>
 
     @POST("/drifting/finish")
     suspend fun driftingFinish(@Query("bookId") bookId: Long): Response<Unit>

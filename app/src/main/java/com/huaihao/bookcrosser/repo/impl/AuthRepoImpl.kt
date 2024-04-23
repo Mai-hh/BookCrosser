@@ -112,4 +112,13 @@ class AuthRepoImpl : AuthRepo {
         }
     }
 
+    override suspend fun loadAllUsers(): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.selectAll()
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        Log.e(TAG, "loadAllUsers: ${it.message}")
+        it.printStackTrace()
+    }
+
 }

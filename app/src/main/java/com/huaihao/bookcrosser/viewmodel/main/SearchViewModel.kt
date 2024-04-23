@@ -74,7 +74,7 @@ class SearchViewModel(private val bookRepo: BookRepo) :
         }
 
         is SearchEvent.NavToBookMarker -> {
-            sendEvent(UiEvent.Navigate("$MAP_ROUTE/${event.book.latitude}/${event.book.longitude}"))
+            sendEvent(UiEvent.Navigate("$MAP_ROUTE/${event.book.latitude}/${event.book.longitude}/${event.book.title}/${event.book.author}"))
         }
 
         is SearchEvent.RequestBook -> {
