@@ -126,6 +126,14 @@ interface BookCrosserApiService {
         @Query("longitude") longitude: Double
     ): Response<Unit>
 
+    @POST("/book/update")
+    suspend fun updateBook(
+        @Query("bookId") bookId: Long,
+        @Query("title") title: String,
+        @Query("author") author: String,
+        @Query("description") description: String
+    ): Response<Unit>
+
     @GET("/book/search")
     suspend fun search(
         @Query("title") title: String?,

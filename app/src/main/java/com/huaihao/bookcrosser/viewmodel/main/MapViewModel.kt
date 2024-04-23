@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 data class MarkerInfo(
     var title: String = "当前位置",
-    var snippet: String = ""
+    var snippet: String = "缩放查看周围的图书/用户"
 )
 
 data class MapUiState(

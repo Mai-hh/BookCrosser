@@ -28,7 +28,10 @@ class BookRepoImpl : BookRepo {
         val response = api.selectAllBooks()
         Log.d(TAG, "loadBooks: ${response.body()}")
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+    }.flowOn(dispatcher).catch {
+        it.printStackTrace()
+        Log.e(TAG, "loadBooks: ${it.message}")
+    }
 
     override suspend fun shelfABook(book: RequestBody.Book): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
@@ -42,7 +45,10 @@ class BookRepoImpl : BookRepo {
             longitude = book.longitude
         )
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+    }.flowOn(dispatcher).catch {
+        it.printStackTrace()
+        Log.e(TAG, "shelfABook: ${it.message}")
+    }
 
     override suspend fun requestABook(bookId: Long): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
@@ -58,13 +64,19 @@ class BookRepoImpl : BookRepo {
         emit(ApiResult.Loading())
         val response = api.search(title, author, matchComplete)
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+    }.flowOn(dispatcher).catch {
+        it.printStackTrace()
+        Log.e(TAG, "search: ${it.message}")
+    }
 
     override suspend fun searchByIsbn(isbn: String): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
         val response = api.searchByIsbn(isbn)
         NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+    }.flowOn(dispatcher).catch {
+        Log.e(TAG, "searchByIsbn: ${it.message}")
+        it.printStackTrace()
+    }
 
     override suspend fun loadDriftingRequests(): Flow<ApiResult> = flow {
         emit(ApiResult.Loading())
@@ -74,9 +86,10 @@ class BookRepoImpl : BookRepo {
         emit(
             ApiResult.Error(
                 code = 1,
-                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+                errorMessage = "未知错误: ${it.message}",
             )
         )
+        Log.e(TAG, "loadDriftingRequests: ${it.message}")
         it.printStackTrace()
     }
 
@@ -91,22 +104,25 @@ class BookRepoImpl : BookRepo {
                 errorMessage = "未知错误: ${it.message}",
             )
         )
+        Log.e(TAG, "drift: ${it.message}")
         it.printStackTrace()
     }
 
-    override suspend fun rejectDriftingRequest(driftingRequestId: Long): Flow<ApiResult> = flow {
-        emit(ApiResult.Loading())
-        val response = api.rejectDriftingRequest(driftingRequestId)
-        NetUtil.checkResponse(response, this)
-    }.flowOn(dispatcher).catch {
-        emit(
-            ApiResult.Error(
-                code = 1,
-                errorMessage = "未知错误: ${it.message}",
+    override suspend fun rejectDriftingRequest(driftingRequestId: Long): Flow<ApiResult> =
+        flow {
+            emit(ApiResult.Loading())
+            val response = api.rejectDriftingRequest(driftingRequestId)
+            NetUtil.checkResponse(response, this)
+        }.flowOn(dispatcher).catch {
+            emit(
+                ApiResult.Error(
+                    code = 1,
+                    errorMessage = "未知错误: ${it.message}",
+                )
             )
-        )
-        it.printStackTrace()
-    }
+            Log.e(TAG, "rejectDriftingRequest: ${it.message}")
+            it.printStackTrace()
+        }
 
 
     override suspend fun driftingFinish(bookId: Long): Flow<ApiResult> = flow {
@@ -117,9 +133,30 @@ class BookRepoImpl : BookRepo {
         emit(
             ApiResult.Error(
                 code = 1,
-                errorMessage = "未知错误: ${it.message?.substring(0, 30)}",
+                errorMessage = "未知错误: ${it.message}",
             )
         )
+        Log.e(TAG, "driftingFinish: ${it.message}")
+        it.printStackTrace()
+    }
+
+    override suspend fun updateBook(
+        bookId: Long,
+        title: String,
+        author: String,
+        description: String
+    ): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.updateBook(bookId, title, author, description)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message}",
+            )
+        )
+        Log.e(TAG, "updateBook: ${it.message}")
         it.printStackTrace()
     }
 }

@@ -21,7 +21,9 @@ import kotlinx.coroutines.launch
 
 data class ProfileUiState(
     var userProfile: UserProfile = UserProfile(),
-    var isSaving: Boolean = false
+    var isSaving: Boolean = false,
+    var isUpdatingBook: Boolean = false,
+    var showUpdateBookDialog: Boolean = false
 )
 
 sealed interface ProfileEvent {
@@ -40,6 +42,12 @@ sealed interface ProfileEvent {
     ) : ProfileEvent
 
     data class DriftingFinish(val book: Book): ProfileEvent
+
+    data class UpdateBook(val bookId: Long, val title: String, val author: String, val description: String): ProfileEvent
+
+    data object DismissUpdateBookDialog: ProfileEvent
+
+    data object ShowUpdateBookDialog: ProfileEvent
 }
 
 class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: BookRepo, private val locationService: ILocationService) :
@@ -102,6 +110,38 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
 
             is ProfileEvent.DriftingFinish -> {
                 onDriftingFinish(event.book)
+            }
+
+            is ProfileEvent.UpdateBook -> {
+                updateBook(event.bookId, event.title, event.author, event.description)
+            }
+
+            ProfileEvent.DismissUpdateBookDialog -> state = state.copy(showUpdateBookDialog = false)
+            ProfileEvent.ShowUpdateBookDialog -> state = state.copy(showUpdateBookDialog = true)
+        }
+    }
+
+    private fun updateBook(bookId: Long, title: String, author: String, description: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.updateBook(bookId, title, author, description).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        Log.d(TAG, "updateBook: ${result.data}")
+                        state = state.copy(isUpdatingBook = false, showUpdateBookDialog = false)
+                        sendEvent(UiEvent.SnackbarToast("更新成功"))
+                        onLoadUserProfile()
+                    }
+
+                    is ApiResult.Error -> {
+                        Log.e(TAG, "updateBook: ${result.errorMessage}")
+                        state = state.copy(isUpdatingBook = false)
+                        sendEvent(UiEvent.SnackbarToast("更新失败"))
+                    }
+
+                    is ApiResult.Loading -> {
+                        state = state.copy(isUpdatingBook = true)
+                    }
+                }
             }
         }
     }
