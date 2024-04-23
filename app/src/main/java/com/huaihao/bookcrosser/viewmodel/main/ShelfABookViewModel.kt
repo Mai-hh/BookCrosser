@@ -49,7 +49,7 @@ class ShelfABookViewModel(
             is ShelfABookEvent.DescriptionChange -> onDescriptionChange(description = event.description)
             ShelfABookEvent.ShelfBook -> onShelfBook()
             ShelfABookEvent.NavBack -> sendEvent(UiEvent.NavBack)
-            ShelfABookEvent.UploadCover -> sendEvent(UiEvent.Toast("封面已上传"))
+            ShelfABookEvent.UploadCover -> sendEvent(UiEvent.SnackbarToast("封面已上传"))
 
             is ShelfABookEvent.GetCurrentLocation -> {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -60,9 +60,9 @@ class ShelfABookViewModel(
                             state = state.copy(
                                 location = currentLocation
                             )
-                            sendEvent(UiEvent.Toast("获取位置成功"))
+                            sendEvent(UiEvent.SnackbarToast("获取位置成功"))
                         } else {
-                            sendEvent(UiEvent.Toast("位置获取异常，请确认是否开启定位权限"))
+                            sendEvent(UiEvent.SnackbarToast("位置获取异常，请确认是否开启定位权限"))
                         }
                     }
                 }
@@ -104,7 +104,7 @@ class ShelfABookViewModel(
 
     private fun onShelfBook() {
         if (state.location == null) {
-            sendEvent(UiEvent.Toast("未获取位置信息，请重试"))
+            sendEvent(UiEvent.SnackbarToast("未获取位置信息，请重试"))
             return
         }
 
@@ -126,13 +126,13 @@ class ShelfABookViewModel(
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(isLoading = false)
-                        sendEvent(UiEvent.Toast("上架成功"))
+                        sendEvent(UiEvent.SnackbarToast("上架成功"))
                         sendEvent(UiEvent.NavBack)
                     }
 
                     is ApiResult.Error -> {
                         state = state.copy(isLoading = false)
-                        sendEvent(UiEvent.Toast("上架失败\n ${result.errorMessage}"))
+                        sendEvent(UiEvent.SnackbarToast("上架失败\n ${result.errorMessage}"))
                     }
 
                     is ApiResult.Loading -> {}

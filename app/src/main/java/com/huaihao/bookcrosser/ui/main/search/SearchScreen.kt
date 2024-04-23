@@ -187,11 +187,13 @@ fun BasicSearchScreen(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            if (uiState.isSearching) CircularProgressIndicator(
-                modifier = Modifier.size(14.dp),
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.width(16.dp))
+            if (uiState.isSearching) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(14.dp),
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+            }
             Text(text = "搜索")
         }
     }

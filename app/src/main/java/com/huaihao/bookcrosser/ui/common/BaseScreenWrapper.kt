@@ -65,8 +65,12 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                     navController.navigate(event.route)
                 }
 
-                is UiEvent.Toast -> {
+                is UiEvent.SnackbarToast -> {
                     snackbarHostState.showSnackbar(event.message)
+                }
+
+                is UiEvent.SystemToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
 
                 UiEvent.NavBack -> navController.navigateUp()

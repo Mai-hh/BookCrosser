@@ -76,7 +76,7 @@ class MapViewModel(private val locationService: ILocationService, private val bo
                             }
 
                             is ApiResult.Error -> {
-                                sendEvent(UiEvent.Toast("加载书籍失败"))
+                                sendEvent(UiEvent.SnackbarToast("加载书籍失败"))
                             }
 
                             is ApiResult.Loading -> {

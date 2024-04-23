@@ -158,7 +158,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
                         Log.d(TAG, "MMKV Token: " + MMKVUtil.getString(USER_TOKEN))
                         Log.d(TAG, "Response Message: " + (result.data as TokenResponse).token)
                         MMKVUtil.put(USER_TOKEN, (result.data as TokenResponse).token)
-                        sendEvent(UiEvent.Toast("登录成功"))
+                        sendEvent(UiEvent.SystemToast("登录成功"))
                         sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
                     }
 
@@ -167,7 +167,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
                             isLoading = false,
                             error = result.errorMessage
                         )
-                        sendEvent(UiEvent.Toast("登录失败\n原因: ${result.errorMessage}"))
+                        sendEvent(UiEvent.SnackbarToast("登录失败\n原因: ${result.errorMessage}"))
                     }
 
                     is ApiResult.Loading -> {

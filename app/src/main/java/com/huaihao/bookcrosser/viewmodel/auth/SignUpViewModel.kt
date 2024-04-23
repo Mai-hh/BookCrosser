@@ -2,11 +2,14 @@ package com.huaihao.bookcrosser.viewmodel.auth
 
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.network.ApiResult
+import com.huaihao.bookcrosser.network.TokenResponse
 import com.huaihao.bookcrosser.repo.AuthRepo
 import com.huaihao.bookcrosser.ui.Destinations.MAIN_SCREEN_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.util.AuthUtil
+import com.huaihao.bookcrosser.util.MMKVUtil
+import com.huaihao.bookcrosser.util.USER_TOKEN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -117,16 +120,19 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
                 when (result) {
                     is ApiResult.Success<*> -> {
                         state = state.copy(isLoading = false, isRegistered = true)
-                        sendEvent(UiEvent.Toast("注册成功"))
+                        MMKVUtil.put(USER_TOKEN, (result.data as TokenResponse).token)
+                        sendEvent(UiEvent.SystemToast("注册成功"))
                         sendEvent(UiEvent.Navigate(MAIN_SCREEN_ROUTE))
                     }
 
                     is ApiResult.Error -> {
                         state = state.copy(isLoading = false, error = result.errorMessage)
-                        sendEvent(UiEvent.Toast("注册失败\n原因: ${result.errorMessage}"))
+                        sendEvent(UiEvent.SnackbarToast("注册失败\n原因: ${result.errorMessage}"))
                     }
 
-                    is ApiResult.Loading -> {}
+                    is ApiResult.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
                 }
             }
         }

@@ -60,7 +60,10 @@ class AuthRepoImpl : AuthRepo {
         )
         NetUtil.checkResponse(response, this)
 
-    }.flowOn(dispatcher).catch { it.printStackTrace() }
+    }.flowOn(dispatcher).catch {
+        Log.d(TAG, "register: ${it.message}")
+        it.printStackTrace()
+    }
 
     override suspend fun sendResetCode(email: String): Flow<ApiResult> {
         TODO("Not yet implemented")

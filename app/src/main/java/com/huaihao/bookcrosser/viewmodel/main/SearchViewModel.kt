@@ -105,7 +105,7 @@ class SearchViewModel(private val bookRepo: BookRepo) :
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.Toast("搜索失败\n原因: ${it.errorMessage}"))
+                        sendEvent(UiEvent.SnackbarToast("搜索失败\n原因: ${it.errorMessage}"))
                         state = state.copy(
                             isSearching = false
                         )
@@ -134,7 +134,7 @@ class SearchViewModel(private val bookRepo: BookRepo) :
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.Toast("搜索失败\n原因: ${it.errorMessage}"))
+                        sendEvent(UiEvent.SnackbarToast("搜索失败\n原因: ${it.errorMessage}"))
                         state = state.copy(
                             isSearching = false
                         )

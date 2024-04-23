@@ -3,9 +3,6 @@ package com.huaihao.bookcrosser.viewmodel.main
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.huaihao.bookcrosser.model.ProfileNotification
-import com.huaihao.bookcrosser.model.ProfileNotificationType
-import com.huaihao.bookcrosser.model.User
 import com.huaihao.bookcrosser.model.UserProfile
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.AuthRepo
@@ -71,7 +68,7 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val locationServi
             }
 
             is ProfileEvent.SendToast -> {
-                sendEvent(UiEvent.Toast(event.message))
+                sendEvent(UiEvent.SnackbarToast(event.message))
             }
 
             ProfileEvent.GetCurrentLocation -> {
@@ -86,9 +83,9 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val locationServi
                                 )
                             )
                             Log.d(TAG, "onEvent: $currentLocation")
-                            sendEvent(UiEvent.Toast("获取位置成功"))
+                            sendEvent(UiEvent.SnackbarToast("获取位置成功"))
                         } else {
-                            sendEvent(UiEvent.Toast("位置获取异常，请确认是否开启定位权限"))
+                            sendEvent(UiEvent.SnackbarToast("位置获取异常，请确认是否开启定位权限"))
                         }
                     }
                 }
@@ -114,12 +111,12 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val locationServi
                         state = state.copy(
                             isSaving = false
                         )
-                        sendEvent(UiEvent.Toast("个人信息更新成功"))
+                        sendEvent(UiEvent.SnackbarToast("个人信息更新成功"))
                         sendEvent(UiEvent.NavBack)
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.Toast("个人信息更新失败"))
+                        sendEvent(UiEvent.SnackbarToast("个人信息更新失败"))
                         state = state.copy(isSaving = false)
                     }
 
@@ -144,7 +141,7 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val locationServi
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.Toast("个人信息加载失败"))
+                        sendEvent(UiEvent.SnackbarToast("个人信息加载失败"))
                         MMKVUtil.clear(USER_TOKEN)
                         sendEvent(UiEvent.Navigate(AUTH_ROUTE))
                     }
