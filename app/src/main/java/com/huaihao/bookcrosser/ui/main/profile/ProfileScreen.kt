@@ -2,22 +2,18 @@ package com.huaihao.bookcrosser.ui.main.profile
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -25,25 +21,19 @@ import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PinDrop
+import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,17 +48,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.BookProfileItem
-import com.huaihao.bookcrosser.model.ProfileNotification
-import com.huaihao.bookcrosser.model.ProfileNotificationType
 import com.huaihao.bookcrosser.model.toProfileItem
+import com.huaihao.bookcrosser.ui.common.CommonAlertDialog
 import com.huaihao.bookcrosser.ui.common.FilterChips
-import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
+import com.huaihao.bookcrosser.ui.common.LogoutAlert
+import com.huaihao.bookcrosser.ui.common.UpdateBookDialog
 import com.huaihao.bookcrosser.ui.main.Destinations.BOOKS_WAITING_FOR_COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_REQUESTS_ROUTE
@@ -83,129 +71,127 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
         onEvent(ProfileEvent.LoadUserProfile)
     }
 
-    Scaffold { paddingValues ->
-        Surface(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        ConstraintLayout(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            ConstraintLayout(
-                modifier = Modifier.padding(16.dp)
+            val (avatar, name, bio, settings, my) = createRefs()
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray.copy(alpha = 0.1f))
+                    .constrainAs(avatar) {
+                        top.linkTo(parent.top)
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                val (avatar, name, bio, settings, my) = createRefs()
-                Box(
+                Icon(
+                    Icons.Rounded.Person,
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray.copy(alpha = 0.1f))
-                        .constrainAs(avatar) {
-                            top.linkTo(parent.top)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Rounded.Person,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                    )
-                }
-
-                Text(
-                    text = uiState.userProfile.username,
-                    modifier = Modifier.constrainAs(name) {
-                        start.linkTo(avatar.end, margin = 16.dp)
-                        top.linkTo(avatar.top)
-                        bottom.linkTo(bio.top)
-                    },
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        .fillMaxSize()
+                        .padding(8.dp)
                 )
+            }
 
-                Text(
-                    text = uiState.userProfile.bio ?: "简介空空如也~",
-                    modifier = Modifier.constrainAs(bio) {
-                        start.linkTo(name.start)
-                        bottom.linkTo(avatar.bottom)
-                        top.linkTo(name.bottom)
-                    },
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                var showLogoutAlert by remember { mutableStateOf(false) }
-
-                if (showLogoutAlert) {
-                    LogoutAlert(
-                        onDismiss = { showLogoutAlert = false },
-                        onConfirm = {
-                            onEvent(ProfileEvent.Logout)
-                        }
-                    )
-                }
-
-                Row(modifier = Modifier.constrainAs(settings) {
-                    end.linkTo(parent.end)
+            Text(
+                text = uiState.userProfile.username,
+                modifier = Modifier.constrainAs(name) {
+                    start.linkTo(avatar.end, margin = 16.dp)
                     top.linkTo(avatar.top)
-                    bottom.linkTo(avatar.bottom)
-                }) {
-                    IconButton(onClick = {
-                        onEvent(ProfileEvent.NavToSettings)
-                    }) {
-                        Icon(Icons.Rounded.Settings, contentDescription = "退出")
-                    }
+                    bottom.linkTo(bio.top)
+                },
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
 
-                    IconButton(onClick = {
-                        showLogoutAlert = true
-                    }) {
-                        Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = "退出")
+            Text(
+                text = uiState.userProfile.bio ?: "简介空空如也~",
+                modifier = Modifier.constrainAs(bio) {
+                    start.linkTo(name.start)
+                    bottom.linkTo(avatar.bottom)
+                    top.linkTo(name.bottom)
+                },
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            var showLogoutAlert by remember { mutableStateOf(false) }
+
+            if (showLogoutAlert) {
+                LogoutAlert(
+                    onDismiss = { showLogoutAlert = false },
+                    onConfirm = {
+                        onEvent(ProfileEvent.Logout)
                     }
+                )
+            }
+
+            Row(modifier = Modifier.constrainAs(settings) {
+                end.linkTo(parent.end)
+                top.linkTo(avatar.top)
+                bottom.linkTo(avatar.bottom)
+            }) {
+                IconButton(onClick = {
+                    onEvent(ProfileEvent.NavToSettings)
+                }) {
+                    Icon(Icons.Rounded.Settings, contentDescription = "退出")
                 }
 
-
-                Column(modifier = Modifier.constrainAs(my) {
-                    start.linkTo(parent.start)
-                    top.linkTo(avatar.bottom, margin = 16.dp)
+                IconButton(onClick = {
+                    showLogoutAlert = true
                 }) {
-                    Text(
-                        text = "我的图书",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
+                    Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = "退出")
+                }
+            }
 
-                    var selectedScreen by remember { mutableStateOf(MY_UPLOADED_BOOKS_ROUTE) }
-                    FilterChips(
-                        items = listOf(
-                            MY_UPLOADED_BOOKS_ROUTE,
-                            MY_BORROWED_BOOKS_ROUTE,
-                            BOOKS_WAITING_FOR_COMMENT_ROUTE,
-                            MY_REQUESTS_ROUTE
-                        ),
-                        onSelected = { selected ->
-                            selectedScreen = selected
-                        }
-                    )
 
-                    when (selectedScreen) {
-                        MY_UPLOADED_BOOKS_ROUTE -> {
-                            MyUploadedScreen(uiState, onEvent)
-                        }
+            Column(modifier = Modifier.constrainAs(my) {
+                start.linkTo(parent.start)
+                top.linkTo(avatar.bottom, margin = 16.dp)
+            }) {
+                Text(
+                    text = "我的图书",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
 
-                        MY_BORROWED_BOOKS_ROUTE -> {
-                            MyBorrowedScreen(uiState, onEvent)
-                        }
+                var selectedScreen by remember { mutableStateOf(MY_UPLOADED_BOOKS_ROUTE) }
+                FilterChips(
+                    items = listOf(
+                        MY_UPLOADED_BOOKS_ROUTE,
+                        MY_BORROWED_BOOKS_ROUTE,
+                        MY_REQUESTS_ROUTE
+                    ),
+                    onSelected = { selected ->
+                        selectedScreen = selected
+                    }
+                )
 
-                        BOOKS_WAITING_FOR_COMMENT_ROUTE -> {
-                            MyWait4CommentScreen(uiState, onEvent)
-                        }
+                when (selectedScreen) {
+                    MY_UPLOADED_BOOKS_ROUTE -> {
+                        MyUploadedScreen(uiState, onEvent)
+                    }
 
-                        MY_REQUESTS_ROUTE -> {
-                            MyRequestsScreen(uiState, onEvent)
-                        }
+                    MY_BORROWED_BOOKS_ROUTE -> {
+                        MyBorrowedScreen(uiState, onEvent)
+                    }
+
+                    BOOKS_WAITING_FOR_COMMENT_ROUTE -> {
+                        MyWait4CommentScreen(uiState, onEvent)
+                    }
+
+                    MY_REQUESTS_ROUTE -> {
+                        MyRequestsScreen(uiState, onEvent)
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -234,53 +220,10 @@ fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 }
 
 @Composable
-fun NotificationList(notifications: List<ProfileNotification>, modifier: Modifier) {
-
-    LazyRow(modifier = modifier.fillMaxWidth()) {
-        items(notifications) { notification ->
-            Box(
-                modifier = Modifier
-                    .fillParentMaxWidth(1f / 2f)
-            ) {
-                NotificationCard(notification)
-            }
-        }
-    }
-}
-
-@Composable
-fun NotificationCard(notification: ProfileNotification) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 12.dp)
-            .height(80.dp),
-    ) {
-        ConstraintLayout(modifier = Modifier.padding(10.dp)) {
-            val (icon, title, message) = createRefs()
-            Icon(
-                imageVector = notification.type.iconImageVector,
-                contentDescription = null,
-                modifier = Modifier.constrainAs(icon) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                }
-            )
-            Text(text = notification.title, modifier = Modifier.constrainAs(title) {
-                start.linkTo(icon.end, margin = 8.dp)
-                bottom.linkTo(icon.bottom)
-            }, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-
-        }
-    }
-}
-
-@Composable
 fun BookProfileCardBorrowed(
     modifier: Modifier = Modifier,
     book: BookProfileItem,
     onDriftingFinish: () -> Unit = {}
-
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -298,19 +241,6 @@ fun BookProfileCardBorrowed(
             }) {
 
         }
-
-        FilterChip(
-            selected = true,
-            onClick = { },
-            label = {
-                Text(text = "状态: ${book.status}")
-            },
-
-            modifier = Modifier.constrainAs(status) {
-                bottom.linkTo(frame.bottom, margin = 8.dp)
-                start.linkTo(frame.start, margin = 8.dp)
-            }
-        )
 
         Text(
             text = book.title,
@@ -337,25 +267,13 @@ fun BookProfileCardBorrowed(
             overflow = TextOverflow.Ellipsis
         )
 
-        Text(
-            text = book.description,
-            modifier = Modifier
-                .constrainAs(description) {
-                    start.linkTo(title.end)
-                    top.linkTo(title.top)
-                    end.linkTo(frame.end, margin = 8.dp)
-                    width = Dimension.fillToConstraints
-                },
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
-
         Row(modifier = Modifier
             .constrainAs(actions) {
                 end.linkTo(frame.end, margin = 8.dp)
                 bottom.linkTo(frame.bottom, margin = 8.dp)
-            }) {
+            }
+            .padding(8.dp)
+        ) {
             OutlinedButton(
                 onClick = { onDriftingFinish() },
                 colors = ButtonDefaults.outlinedButtonColors().copy(
@@ -363,7 +281,7 @@ fun BookProfileCardBorrowed(
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(text = "追踪")
+                Text(text = "留言")
             }
         }
     }
@@ -373,10 +291,11 @@ fun BookProfileCardBorrowed(
 fun BookProfileCard(
     book: BookProfileItem,
     onLocateSelected: () -> Unit = {},
-    onBookInfoChanged: () -> Unit = {}
+    onBookInfoChanged: () -> Unit = {},
+    onDriftingFinish: () -> Unit = {}
 ) {
     var showStatusCard by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     Surface {
@@ -390,9 +309,9 @@ fun BookProfileCard(
                 Card(
                     modifier = Modifier
                         .constrainAs(status) {
-                            top.linkTo(actions.top, margin = 8.dp)
+                            top.linkTo(actions.bottom, margin = 8.dp)
                             start.linkTo(parent.start, margin = 8.dp)
-                            end.linkTo(actions.start, margin = 16.dp)
+                            end.linkTo(parent.end, margin = 16.dp)
                             width = Dimension.fillToConstraints
                             bottom.linkTo(parent.bottom, margin = 8.dp)  // 确保卡片底部根据状态文本调整
                         }
@@ -401,36 +320,30 @@ fun BookProfileCard(
                         visible = showStatusCard,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 16.dp)
-                        ) {
-                            Text(
-                                text = "状态: ${book.status}",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "持有者: ${book.status}",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "更新时间: ${book.status}",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "是否在漂: ${book.status}",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            IconButton(
-                                onClick = {
-                                    onBookInfoChanged()
-                                },
+                        Column {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
                             ) {
-                                Icon(Icons.Rounded.EditNote, contentDescription = "收藏")
+                                Text(
+                                    text = "状态: ${book.status}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "持有者: ${book.status}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "更新时间: ${book.status}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "是否在漂: ${book.status}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
                             }
                         }
                     }
@@ -465,9 +378,8 @@ fun BookProfileCard(
                     text = book.description,
                     modifier = Modifier
                         .constrainAs(description) {
-                            start.linkTo(title.end)
-                            top.linkTo(title.top)
-                            end.linkTo(parent.end, margin = 8.dp)
+                            start.linkTo(parent.start, margin = 12.dp)
+                            top.linkTo(author.bottom, margin = 4.dp)
                             width = Dimension.fillToConstraints
                         },
                     style = MaterialTheme.typography.bodyMedium,
@@ -478,7 +390,7 @@ fun BookProfileCard(
                 Row(modifier = Modifier
                     .constrainAs(actions) {
                         end.linkTo(parent.end, margin = 8.dp)
-                        top.linkTo(author.bottom, margin = 8.dp)
+                        top.linkTo(description.bottom, margin = 16.dp)
                     }
                     .padding(8.dp)
                 ) {
@@ -496,6 +408,20 @@ fun BookProfileCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
+                    OutlinedButton(
+                        onClick = {
+                            onDriftingFinish()
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors().copy(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(text = "收漂")
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     IconButton(
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -506,6 +432,19 @@ fun BookProfileCard(
                         },
                     ) {
                         Icon(Icons.Rounded.PinDrop, contentDescription = "收藏")
+                    }
+
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        onClick = {
+                            onBookInfoChanged()
+                        },
+                        modifier = Modifier.padding(start = 4.dp)
+                    ) {
+                        Icon(Icons.Rounded.EditNote, contentDescription = "收藏")
                     }
                 }
             }
@@ -521,26 +460,17 @@ fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
         PlaceHolderScreen()
     } else {
         uiState.userProfile.booksBorrowed?.let { books ->
+            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(books) { book ->
-                    if (book.uploaderId == uiState.userProfile.id) {
-                        BookProfileCard(
-                            book = book.toProfileItem(),
-                            onLocateSelected = {
-                                onEvent(
-                                    ProfileEvent.LocatedBook(
-                                        book
-                                    )
-                                )
-                            })
-                    } else {
-                        BookProfileCardBorrowed(
-                            book = book.toProfileItem(),
-                            onDriftingFinish = {
-                                onEvent(ProfileEvent.DriftingFinish(book))
-                            }
-                        )
-                    }
+                    BookProfileCardBorrowed(
+                        book = book.toProfileItem(),
+                        onDriftingFinish = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                        }
+                    )
                 }
             }
         }
@@ -555,6 +485,18 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 
         uiState.userProfile.booksUploaded?.let { books ->
             var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+
+            if (uiState.showDriftingFinishDialog) {
+                selectedBook?.let { book ->
+                    CommonAlertDialog(
+                        onDismissRequest = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
+                        onConfirmation = { onEvent(ProfileEvent.DriftingFinish(book)) },
+                        dialogTitle = "收漂确认",
+                        dialogText = "你确定要收漂\"${book.title}\"吗？\n这将请求此书的持有者归还图书",
+                        icon = Icons.Rounded.Route
+                    )
+                }
+            }
 
             if (uiState.showUpdateBookDialog) {
                 selectedBook?.let {
@@ -571,18 +513,26 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)) {
                 items(books) { book ->
-                    BookProfileCard(book = book.toProfileItem(), onBookInfoChanged = {
-                        selectedBook = book
-                        onEvent(ProfileEvent.ShowUpdateBookDialog)
-                    }, onLocateSelected = {
-                        onEvent(
-                            ProfileEvent.LocatedBook(
-                                book
+                    BookProfileCard(
+                        book = book.toProfileItem(),
+                        onBookInfoChanged = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowUpdateBookDialog)
+                        },
+                        onLocateSelected = {
+                            onEvent(
+                                ProfileEvent.LocatedBook(
+                                    book
+                                )
                             )
-                        )
-                    })
+                        },
+                        onDriftingFinish = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                        }
+                    )
                 }
             }
         }
@@ -605,117 +555,6 @@ fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Uni
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LogoutAlert(onDismiss: () -> Unit, onConfirm: () -> Unit) {
-
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties()
-    ) {
-        Surface(
-            modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight(),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = AlertDialogDefaults.TonalElevation
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "退出登录？",
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                TextButton(
-                    onClick = {
-                        onConfirm()
-                        onDismiss()
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("确定")
-                }
-            }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun UpdateBookDialog(
-    onDismiss: () -> Unit = {},
-    onConfirm: (ProfileEvent) -> Unit = {},
-    isUpdating: Boolean = false,
-    book: Book
-) {
-    var title by remember { mutableStateOf(book.title) }
-    var author by remember { mutableStateOf(book.author) }
-    var description by remember { mutableStateOf(book.description) }
-
-    BasicAlertDialog(onDismissRequest = { }) {
-        Surface(
-            modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight(),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = AlertDialogDefaults.TonalElevation
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Icon(Icons.Rounded.EditNote, contentDescription = "修改")
-
-                LimitedOutlinedTextField(
-                    label = "书名",
-                    value = book.title,
-                    onValueChange = {
-                        title = it
-                    }, modifier = Modifier
-                )
-                LimitedOutlinedTextField(
-                    label = "作者",
-                    value = book.author,
-                    onValueChange = {
-                        author = it
-                    }, modifier = Modifier
-                )
-                LimitedOutlinedTextField(
-                    label = "简介",
-                    value = book.description,
-                    onValueChange = {
-                        description = it
-                    }, modifier = Modifier
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    OutlinedButton(
-                        onClick = {
-                            onConfirm(
-                                ProfileEvent.UpdateBook(
-                                    bookId = book.id,
-                                    title = title,
-                                    author = author,
-                                    description = description
-                                )
-                            )
-                            onDismiss()
-                        },
-                    ) {
-                        Text("确定")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { onDismiss() }, enabled = !isUpdating) {
-                        Text("取消")
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ProfileScreenPreview() {
@@ -724,35 +563,6 @@ private fun ProfileScreenPreview() {
     }
 }
 
-@Preview
-@Composable
-private fun NotificationListPreview() {
-    MaterialTheme {
-        NotificationList(
-            listOf(
-                ProfileNotification(
-                    type = ProfileNotificationType.BookRequest,
-                    title = "Hello",
-                    message = "Hello, World",
-                    time = "2021-09-01"
-                ),
-                ProfileNotification(
-                    type = ProfileNotificationType.BookReturn,
-                    title = "Hello",
-                    message = "Hello, World",
-                    time = "2021-09-01"
-                ),
-                ProfileNotification(
-                    type = ProfileNotificationType.BookRequest,
-                    title = "Hello",
-                    message = "Hello, World",
-                    time = "2021-09-01"
-                ),
-            ),
-            Modifier,
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -770,4 +580,19 @@ fun BookProfileCardPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun BookProfileCardBorrowedPreview() {
+    MaterialTheme {
+        BookProfileCardBorrowed(
+            book = BookProfileItem(
+                title = "书名",
+                author = "作者",
+                description = "描述",
+                status = "借阅中",
+                coverUrl = null
+            )
+        )
+    }
+}
 

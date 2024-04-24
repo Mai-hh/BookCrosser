@@ -23,7 +23,8 @@ data class ProfileUiState(
     var userProfile: UserProfile = UserProfile(),
     var isSaving: Boolean = false,
     var isUpdatingBook: Boolean = false,
-    var showUpdateBookDialog: Boolean = false
+    var showUpdateBookDialog: Boolean = false,
+    var showDriftingFinishDialog: Boolean = false
 )
 
 sealed interface ProfileEvent {
@@ -41,17 +42,27 @@ sealed interface ProfileEvent {
         val longitude: Double?
     ) : ProfileEvent
 
-    data class DriftingFinish(val book: Book): ProfileEvent
+    data class DriftingFinish(val book: Book) : ProfileEvent
 
-    data class UpdateBook(val bookId: Long, val title: String, val author: String, val description: String): ProfileEvent
+    data class UpdateBook(
+        val bookId: Long,
+        val title: String,
+        val author: String,
+        val description: String
+    ) : ProfileEvent
 
-    data object DismissUpdateBookDialog: ProfileEvent
+    data object DismissUpdateBookDialog : ProfileEvent
+    data object DismissFinishDriftingDialog : ProfileEvent
 
-    data object ShowUpdateBookDialog: ProfileEvent
+    data object ShowUpdateBookDialog : ProfileEvent
+    data object ShowFinishDriftingDialog : ProfileEvent
 }
 
-class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: BookRepo, private val locationService: ILocationService) :
-    BaseViewModel<ProfileUiState, ProfileEvent>() {
+class ProfileViewModel(
+    private val authRepo: AuthRepo,
+    private val bookRepo: BookRepo,
+    private val locationService: ILocationService
+) : BaseViewModel<ProfileUiState, ProfileEvent>() {
 
     companion object {
         const val TAG = "ProfileViewModel"
@@ -84,24 +95,7 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
             }
 
             ProfileEvent.GetCurrentLocation -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    locationService.requestCurrentLocation().collect { location ->
-                        if (location != null) {
-                            val currentLocation = LatLng(location.latitude, location.longitude)
-                            state = state.copy(
-                                userProfile = state.userProfile.copy(
-                                    latitude = currentLocation.latitude,
-                                    longitude = currentLocation.longitude
-                                )
-                            )
-                            Log.d(TAG, "onEvent: $currentLocation")
-                            sendEvent(UiEvent.SnackbarToast("获取位置成功"))
-                        } else {
-                            sendEvent(UiEvent.SnackbarToast("位置获取异常，请确认是否开启定位权限"))
-                        }
-                    }
-                }
-
+                getCurrentLocation()
             }
 
             is ProfileEvent.UpdateProfile -> {
@@ -116,8 +110,40 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
                 updateBook(event.bookId, event.title, event.author, event.description)
             }
 
-            ProfileEvent.DismissUpdateBookDialog -> state = state.copy(showUpdateBookDialog = false)
-            ProfileEvent.ShowUpdateBookDialog -> state = state.copy(showUpdateBookDialog = true)
+            ProfileEvent.DismissUpdateBookDialog -> {
+                state = state.copy(showUpdateBookDialog = false)
+            }
+
+            ProfileEvent.ShowUpdateBookDialog -> {
+                state = state.copy(showUpdateBookDialog = true)
+            }
+
+            ProfileEvent.DismissFinishDriftingDialog -> {
+                state = state.copy(showDriftingFinishDialog = false)
+            }
+            ProfileEvent.ShowFinishDriftingDialog -> {
+                state = state.copy(showDriftingFinishDialog = true)
+            }
+        }
+    }
+
+    private fun getCurrentLocation() {
+        viewModelScope.launch(Dispatchers.IO) {
+            locationService.requestCurrentLocation().collect { location ->
+                if (location != null) {
+                    val currentLocation = LatLng(location.latitude, location.longitude)
+                    state = state.copy(
+                        userProfile = state.userProfile.copy(
+                            latitude = currentLocation.latitude,
+                            longitude = currentLocation.longitude
+                        )
+                    )
+                    Log.d(TAG, "onEvent: $currentLocation")
+                    sendEvent(UiEvent.SnackbarToast("获取位置成功"))
+                } else {
+                    sendEvent(UiEvent.SnackbarToast("位置获取异常，请确认是否开启定位权限"))
+                }
+            }
         }
     }
 
@@ -151,12 +177,20 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
             bookRepo.driftingFinish(book.id).collect { result ->
                 when (result) {
                     is ApiResult.Success<*> -> {
-                        sendEvent(UiEvent.SnackbarToast("漂流完成"))
-                        sendEvent(UiEvent.NavBack)
+                        state = state.copy(
+                            showDriftingFinishDialog = false
+                        )
+                        sendEvent(UiEvent.SnackbarToast("收漂请求已发出"))
+                        onLoadUserProfile()
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.SnackbarToast("漂流失败"))
+                        Log.e(TAG, "onDriftingFinish: ${result.errorMessage}")
+                        state = state.copy(
+                            showDriftingFinishDialog = false
+                        )
+                        sendEvent(UiEvent.SnackbarToast("收漂请求发送失败"))
+                        onLoadUserProfile()
                     }
 
                     is ApiResult.Loading -> {}
@@ -170,7 +204,12 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
         sendEvent(UiEvent.Finish)
     }
 
-    private fun onUpdateProfile(username: String, bio: String?, latitude: Double?, longitude: Double?) {
+    private fun onUpdateProfile(
+        username: String,
+        bio: String?,
+        latitude: Double?,
+        longitude: Double?
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.updateProfile(username, bio, latitude, longitude).collect { result ->
                 when (result) {
@@ -196,7 +235,6 @@ class ProfileViewModel(private val authRepo: AuthRepo, private val bookRepo: Boo
     }
 
     private fun onLoadUserProfile() {
-
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.loadUserProfile().collect { result ->
                 when (result) {

@@ -101,7 +101,7 @@ class MapViewModel(
                 state = state.copy(
                     currentMarkerInfo = MarkerInfo(
                         title = event.title ?: "当前位置",
-                        snippet = event.snippet ?: ""
+                        snippet = event.snippet ?: "缩放查看周围的图书/用户"
                     )
                 )
             }

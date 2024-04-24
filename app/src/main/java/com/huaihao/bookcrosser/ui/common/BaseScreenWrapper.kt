@@ -54,6 +54,7 @@ fun <State, ScreenEvent> BaseScreenWrapper(
     BackHandler {
         onBackPressed()
     }
+
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collect { event ->
             when (event) {

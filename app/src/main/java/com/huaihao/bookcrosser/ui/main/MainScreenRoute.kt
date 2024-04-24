@@ -94,12 +94,12 @@ fun MainScreenRoute(
     var selectedItem by remember { mutableIntStateOf(0) }
 
     // 根据当前路由更新 selectedItem 的值
-    when (currentRoute) {
-        MAP_ROUTE, "$MAP_ROUTE/{latitude}/{longitude}" -> selectedItem = 0
-        SEARCH_ROUTE -> selectedItem = 1
-        REQUESTS_ROUTE -> selectedItem = 2
-        REVIEWS_ROUTE -> selectedItem = 3
-        PROFILE_ROUTE -> selectedItem = 4
+    when {
+        currentRoute == MAP_ROUTE || currentRoute?.startsWith("$MAP_ROUTE/") == true -> selectedItem = 0
+        currentRoute == SEARCH_ROUTE -> selectedItem = 1
+        currentRoute == REQUESTS_ROUTE -> selectedItem = 2
+        currentRoute == REVIEWS_ROUTE -> selectedItem = 3
+        currentRoute == PROFILE_ROUTE || currentRoute == PROFILE_SETTINGS_ROUTE -> selectedItem = 4
     }
 
 
