@@ -195,10 +195,10 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 }
 
 @Composable
-fun PlaceHolderScreen() {
+fun PlaceHolderScreen(text: String = "空空如也~") {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "空空如也~",
+            text = text,
             style = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -211,9 +211,125 @@ fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     if (uiState.userProfile.booksInRequesting.isNullOrEmpty()) {
         PlaceHolderScreen()
     } else {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp)) {
             items(uiState.userProfile.booksInRequesting!!) { book ->
-                BookProfileCard(book = book.toProfileItem())
+                BookProfileCard(
+                    book = book.toProfileItem(),
+                    onLocateSelected = {
+                        onEvent(ProfileEvent.LocatedBook(book))
+                    },
+                    showUpdateBookBtn = false
+                )
+            }
+        }
+    }
+}
+
+
+// 这个页面可以查看我借阅的图书，并且决定是否起漂
+@Composable
+fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    if (uiState.userProfile.booksBorrowed.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        uiState.userProfile.booksBorrowed?.let { books ->
+            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+
+            LazyColumn(modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp)) {
+                items(books) { book ->
+                    BookProfileCardBorrowed(
+                        book = book.toProfileItem(),
+                        onDriftingFinish = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    if (uiState.userProfile.booksUploaded.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+
+        uiState.userProfile.booksUploaded?.let { books ->
+            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+
+            if (uiState.showDriftingFinishDialog) {
+                selectedBook?.let { book ->
+                    CommonAlertDialog(
+                        onDismissRequest = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
+                        onConfirmation = { onEvent(ProfileEvent.DriftingFinish(book)) },
+                        dialogTitle = "收漂确认",
+                        dialogText = "你确定要收漂\"${book.title}\"吗？\n这将请求此书的持有者归还图书",
+                        icon = Icons.Rounded.Route
+                    )
+                }
+            }
+
+            if (uiState.showUpdateBookDialog) {
+                selectedBook?.let {
+                    UpdateBookDialog(
+                        onDismiss = {
+                            onEvent(ProfileEvent.DismissUpdateBookDialog)
+                        },
+                        onConfirm = { event ->
+                            onEvent(event)
+                        },
+                        book = it,
+                        isUpdating = uiState.isUpdatingBook
+                    )
+                }
+            }
+
+            LazyColumn(modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp)) {
+                items(books) { book ->
+
+                    BookProfileCard(
+                        book = book.toProfileItem(),
+                        onBookInfoChanged = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowUpdateBookDialog)
+                        },
+                        onLocateSelected = {
+                            onEvent(
+                                ProfileEvent.LocatedBook(
+                                    book
+                                )
+                            )
+                        },
+                        onDriftingFinish = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+    if (uiState.userProfile.bookUncommented.isNullOrEmpty()) {
+        PlaceHolderScreen()
+    } else {
+        uiState.userProfile.bookUncommented?.let { books ->
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(books) { book ->
+                    BookProfileCard(book = book.toProfileItem())
+                }
             }
         }
     }
@@ -292,10 +408,15 @@ fun BookProfileCard(
     book: BookProfileItem,
     onLocateSelected: () -> Unit = {},
     onBookInfoChanged: () -> Unit = {},
-    onDriftingFinish: () -> Unit = {}
+    onDriftingFinish: () -> Unit = {},
+    showUpdateBookBtn: Boolean = true
 ) {
     var showStatusCard by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
+    }
+
+    val showDriftingFinishBtn by remember {
+        mutableStateOf(book.ownerId != book.uploaderId)
     }
 
     Surface {
@@ -326,22 +447,17 @@ fun BookProfileCard(
                                     .padding(16.dp)
                             ) {
                                 Text(
+                                    text = "持有者: ${book.ownerUsername ?: "未知"}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "更新时间: ${book.updatedAt}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
                                     text = "状态: ${book.status}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                                Text(
-                                    text = "持有者: ${book.status}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                                Text(
-                                    text = "更新时间: ${book.status}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                                Text(
-                                    text = "是否在漂: ${book.status}",
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
@@ -408,16 +524,18 @@ fun BookProfileCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    OutlinedButton(
-                        onClick = {
-                            onDriftingFinish()
-                        },
-                        colors = ButtonDefaults.outlinedButtonColors().copy(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            contentColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(text = "收漂")
+                    if (showDriftingFinishBtn) {
+                        OutlinedButton(
+                            onClick = {
+                                onDriftingFinish()
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors().copy(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text(text = "收漂")
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -434,121 +552,20 @@ fun BookProfileCard(
                         Icon(Icons.Rounded.PinDrop, contentDescription = "收藏")
                     }
 
-                    IconButton(
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        onClick = {
-                            onBookInfoChanged()
-                        },
-                        modifier = Modifier.padding(start = 4.dp)
-                    ) {
-                        Icon(Icons.Rounded.EditNote, contentDescription = "收藏")
+                    if (showUpdateBookBtn) {
+                        IconButton(
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            onClick = {
+                                onBookInfoChanged()
+                            },
+                            modifier = Modifier.padding(start = 4.dp)
+                        ) {
+                            Icon(Icons.Rounded.EditNote, contentDescription = "收藏")
+                        }
                     }
-                }
-            }
-        }
-    }
-}
-
-
-// 这个页面可以查看我借阅的图书，并且决定是否起漂
-@Composable
-fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    if (uiState.userProfile.booksBorrowed.isNullOrEmpty()) {
-        PlaceHolderScreen()
-    } else {
-        uiState.userProfile.booksBorrowed?.let { books ->
-            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
-
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(books) { book ->
-                    BookProfileCardBorrowed(
-                        book = book.toProfileItem(),
-                        onDriftingFinish = {
-                            selectedBook = book
-                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    if (uiState.userProfile.booksUploaded.isNullOrEmpty()) {
-        PlaceHolderScreen()
-    } else {
-
-        uiState.userProfile.booksUploaded?.let { books ->
-            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
-
-            if (uiState.showDriftingFinishDialog) {
-                selectedBook?.let { book ->
-                    CommonAlertDialog(
-                        onDismissRequest = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
-                        onConfirmation = { onEvent(ProfileEvent.DriftingFinish(book)) },
-                        dialogTitle = "收漂确认",
-                        dialogText = "你确定要收漂\"${book.title}\"吗？\n这将请求此书的持有者归还图书",
-                        icon = Icons.Rounded.Route
-                    )
-                }
-            }
-
-            if (uiState.showUpdateBookDialog) {
-                selectedBook?.let {
-                    UpdateBookDialog(
-                        onDismiss = {
-                            onEvent(ProfileEvent.DismissUpdateBookDialog)
-                        },
-                        onConfirm = { event ->
-                            onEvent(event)
-                        },
-                        book = it,
-                        isUpdating = uiState.isUpdatingBook
-                    )
-                }
-            }
-
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)) {
-                items(books) { book ->
-                    BookProfileCard(
-                        book = book.toProfileItem(),
-                        onBookInfoChanged = {
-                            selectedBook = book
-                            onEvent(ProfileEvent.ShowUpdateBookDialog)
-                        },
-                        onLocateSelected = {
-                            onEvent(
-                                ProfileEvent.LocatedBook(
-                                    book
-                                )
-                            )
-                        },
-                        onDriftingFinish = {
-                            selectedBook = book
-                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    if (uiState.userProfile.bookUncommented.isNullOrEmpty()) {
-        PlaceHolderScreen()
-    } else {
-        uiState.userProfile.bookUncommented?.let { books ->
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(books) { book ->
-                    BookProfileCard(book = book.toProfileItem())
                 }
             }
         }
@@ -574,7 +591,10 @@ fun BookProfileCardPreview() {
                 author = "作者",
                 description = "描述",
                 status = "借阅中",
-                coverUrl = null
+                coverUrl = null,
+                updatedAt = "2021-09-09",
+                uploaderId = 1,
+                ownerId = 2,
             )
         )
     }
@@ -590,7 +610,10 @@ fun BookProfileCardBorrowedPreview() {
                 author = "作者",
                 description = "描述",
                 status = "借阅中",
-                coverUrl = null
+                coverUrl = null,
+                updatedAt = "2021-09-09",
+                uploaderId = 1,
+                ownerId = 1,
             )
         )
     }

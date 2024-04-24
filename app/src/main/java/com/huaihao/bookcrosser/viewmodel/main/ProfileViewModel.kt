@@ -32,6 +32,8 @@ sealed interface ProfileEvent {
     data object LoadUserProfile : ProfileEvent
     data class LocatedBook(val book: Book) : ProfileEvent
     data object NavToSettings : ProfileEvent
+
+    data object ResetState : ProfileEvent
     data object NavBack : ProfileEvent
     data class SendToast(val message: String) : ProfileEvent
     data object GetCurrentLocation : ProfileEvent
@@ -124,6 +126,8 @@ class ProfileViewModel(
             ProfileEvent.ShowFinishDriftingDialog -> {
                 state = state.copy(showDriftingFinishDialog = true)
             }
+
+            ProfileEvent.ResetState -> state = state.copy(isSaving = false)
         }
     }
 

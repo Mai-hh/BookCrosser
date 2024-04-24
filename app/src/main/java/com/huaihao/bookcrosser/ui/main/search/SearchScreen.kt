@@ -52,6 +52,7 @@ import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.model.BookSearchItem
+import com.huaihao.bookcrosser.model.BookStatus
 import com.huaihao.bookcrosser.model.toSearchItem
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
@@ -353,14 +354,16 @@ fun BookSearchCard(
                 top.linkTo(image.top, margin = 8.dp)
                 end.linkTo(frame.end, margin = 8.dp)
             }) {
+
             OutlinedButton(
                 onClick = { onRequestSelected() },
                 colors = ButtonDefaults.outlinedButtonColors().copy(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     contentColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                enabled = (book.status != BookStatus.REQUESTED.statusString)
             ) {
-                Text(text = "求漂")
+                Text(text = if (book.status == BookStatus.REQUESTED.statusString) "已请求" else "求漂")
             }
 
             Spacer(modifier = Modifier.width(8.dp))

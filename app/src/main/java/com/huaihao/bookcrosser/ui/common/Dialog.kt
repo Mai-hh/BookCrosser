@@ -216,6 +216,7 @@ fun UpdateBookDialogPreview() {
             book = Book(
                 id = 1,
                 ownerId = 1,
+                "ownerUsername",
                 uploaderId = 1,
                 0.0,
                 0.0,

@@ -4,6 +4,7 @@ package com.huaihao.bookcrosser.model
 data class Book(
     val id: Long,
     val ownerId: Long,
+    val ownerUsername: String? = null,
     val uploaderId: Long,
     val latitude: Double,
     val longitude: Double,
@@ -22,7 +23,11 @@ data class BookProfileItem(
     val author: String,
     val description: String,
     val status: String,
-    val coverUrl: String?
+    var coverUrl: String?,
+    val updatedAt: String,
+    var ownerUsername: String? = null,
+    var ownerId: Long,
+    val uploaderId: Long,
 )
 
 data class BookSearchItem(
@@ -62,6 +67,19 @@ fun Book.toProfileItem() = BookProfileItem(
     author = author,
     description = description,
     status = status,
-    coverUrl = coverUrl
+    updatedAt = updatedAt,
+    coverUrl = coverUrl,
+    ownerId = ownerId,
+    uploaderId = uploaderId,
+    ownerUsername = ownerUsername
 )
+
+
+enum class BookStatus(val statusString: String) {
+    AVAILABLE("available"),
+    BORROWED("borrowed"),
+    REQUESTED("requested"),
+    UNAVAILABLE("unavailable")
+}
+
 

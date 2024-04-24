@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -62,12 +63,16 @@ fun ProfileSettingsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Un
             )
         }
     ) { innerPadding ->
+        DisposableEffect(Unit) {
+            onDispose { onEvent(ProfileEvent.ResetState) }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
+
             var newUsername by rememberSaveable { mutableStateOf(uiState.userProfile.username) }
             var newBio by rememberSaveable { mutableStateOf(uiState.userProfile.bio) }
 

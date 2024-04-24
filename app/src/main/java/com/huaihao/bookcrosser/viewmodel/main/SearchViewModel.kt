@@ -2,11 +2,13 @@ package com.huaihao.bookcrosser.viewmodel.main
 
 import androidx.lifecycle.viewModelScope
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.BookStatus
 import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -90,6 +92,15 @@ class SearchViewModel(private val bookRepo: BookRepo) :
                 when (it) {
                     is ApiResult.Success<*> -> {
                         sendEvent(UiEvent.SnackbarToast("请求成功"))
+                        state = state.copy(
+                            books = state.books.map { oldBook ->
+                                if (oldBook.id == book.id ) {
+                                    oldBook.copy(status = BookStatus.REQUESTED.statusString)
+                                } else {
+                                    oldBook
+                                }
+                            }
+                        )
                     }
 
                     is ApiResult.Error -> {
