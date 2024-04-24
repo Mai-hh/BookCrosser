@@ -28,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.google.android.gms.maps.model.LatLng
 import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
@@ -41,13 +40,12 @@ import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileSettingsScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
-import com.huaihao.bookcrosser.ui.main.reviews.ReviewsRoute
+import com.huaihao.bookcrosser.ui.main.comment.ReviewsRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
 import com.huaihao.bookcrosser.viewmodel.main.ProfileViewModel
 import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
-import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.compose.navigation.koinNavViewModel
 
 val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
@@ -65,8 +63,8 @@ object Destinations {
     const val REQUEST_BOOK_ROUTE = "求漂"
 
     const val REVIEWS_ROUTE = "评论"
-    const val REVIEW_SQUARE_ROUTE = "广场"
-    const val MY_REVIEW_ROUTE = "我的评论"
+    const val REVIEW_SQUARE_ROUTE = "留言广场"
+    const val MY_REVIEW_ROUTE = "我的留言"
 
     const val PROFILE_ROUTE = "我的"
     const val PROFILE_SETTINGS_ROUTE = "设置"

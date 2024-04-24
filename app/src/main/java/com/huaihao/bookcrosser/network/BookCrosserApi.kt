@@ -3,6 +3,7 @@ package com.huaihao.bookcrosser.network
 import android.content.Context
 import android.util.Log
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.CommentDTO
 import com.huaihao.bookcrosser.model.Drifting
 import com.huaihao.bookcrosser.model.DriftingRequest
 import com.huaihao.bookcrosser.model.RequestBody
@@ -165,6 +166,23 @@ interface BookCrosserApiService {
 
     @POST("/drifting/finish")
     suspend fun driftingFinish(@Query("bookId") bookId: Long): Response<Unit>
+
+    // ================== Comment ==================
+
+    @GET("/comment/selectAll")
+    suspend fun selectAllComments(): Response<List<CommentDTO>>
+
+    @GET("/comment/selectMyComments")
+    suspend fun selectMyComments(): Response<List<CommentDTO>>
+
+    @POST("/comment/update")
+    suspend fun updateComment(
+        @Query("id") commentId: Long,
+        @Query("content") content: String
+    ): Response<Unit>
+
+    @DELETE("/comment/delete")
+    suspend fun deleteComment(@Query("id") commentId: Long): Response<Unit>
 
 }
 

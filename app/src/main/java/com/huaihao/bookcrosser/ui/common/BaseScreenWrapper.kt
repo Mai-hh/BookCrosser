@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.lifecycleScope
@@ -82,7 +84,12 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                 }
 
                 is UiEvent.PopUpToStartDestination -> {
-                    navController.graph.startDestinationRoute?.let { navController.popBackStack(route = it, inclusive = event.inclusive) }
+                    navController.graph.startDestinationRoute?.let {
+                        navController.popBackStack(
+                            route = it,
+                            inclusive = event.inclusive
+                        )
+                    }
                 }
             }
 
@@ -90,7 +97,7 @@ fun <State, ScreenEvent> BaseScreenWrapper(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState)}
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             content()
@@ -106,10 +113,12 @@ fun LimitedOutlinedTextField(
     maxLength: Int = 20,
     label: String = "",
     modifier: Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
     singLine: Boolean = true,
     isError: Boolean = false,
     supportingText: @Composable (() -> Unit)? = null,
-    enabled : Boolean = true,
+    placeholder: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -129,7 +138,9 @@ fun LimitedOutlinedTextField(
         maxLines = maxLines,
         isError = isError,
         singleLine = singLine,
+        textStyle = textStyle,
         supportingText = supportingText,
+        placeholder = placeholder,
         label = { Text(label, color = Color.Unspecified.copy(alpha = 0.5f)) },
         modifier = modifier,
         keyboardOptions = keyboardOptions,

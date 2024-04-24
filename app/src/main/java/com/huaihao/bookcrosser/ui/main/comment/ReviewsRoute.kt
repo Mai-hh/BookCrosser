@@ -1,4 +1,4 @@
-package com.huaihao.bookcrosser.ui.main.reviews
+package com.huaihao.bookcrosser.ui.main.comment
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -27,8 +27,8 @@ import com.huaihao.bookcrosser.ui.common.BaseScreenWrapper
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_REVIEW_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEW_SQUARE_ROUTE
-import com.huaihao.bookcrosser.viewmodel.main.MyReviewViewModel
-import com.huaihao.bookcrosser.viewmodel.main.ReviewSquareViewModel
+import com.huaihao.bookcrosser.viewmodel.main.MyCommentViewModel
+import com.huaihao.bookcrosser.viewmodel.main.CommentSquareViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -72,12 +72,12 @@ fun ReviewsRoute(navController: NavHostController = rememberNavController()) {
         }
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
-            val squareViewModel = koinViewModel<ReviewSquareViewModel>()
-            val myReviewViewModel = koinViewModel<MyReviewViewModel>()
+            val squareViewModel = koinViewModel<CommentSquareViewModel>()
+            val myCommentViewModel = koinViewModel<MyCommentViewModel>()
             when (selectedScreen) {
                 REVIEW_SQUARE_ROUTE -> {
                     BaseScreenWrapper(navController = navController, viewModel = squareViewModel) {
-                        ReviewSquareScreen(
+                        CommentSquareScreen(
                             uiState = squareViewModel.state,
                             onEvent = squareViewModel::onEvent
                         )
@@ -85,10 +85,10 @@ fun ReviewsRoute(navController: NavHostController = rememberNavController()) {
                 }
 
                 MY_REVIEW_ROUTE -> {
-                    BaseScreenWrapper(navController = navController, viewModel = myReviewViewModel) {
-                        MyReviewScreen(
-                            uiState = myReviewViewModel.state,
-                            onEvent = myReviewViewModel::onEvent
+                    BaseScreenWrapper(navController = navController, viewModel = myCommentViewModel) {
+                        MyCommentScreen(
+                            uiState = myCommentViewModel.state,
+                            onEvent = myCommentViewModel::onEvent
                         )
                     }
                 }

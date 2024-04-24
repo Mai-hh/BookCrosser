@@ -273,7 +273,8 @@ fun MapContentScreen(
 
     val mapUiSettings = remember {
         MapUiSettings(
-            zoomControlsEnabled = false
+            zoomControlsEnabled = false,
+            myLocationButtonEnabled = false
         )
     }
 
@@ -283,16 +284,17 @@ fun MapContentScreen(
         cameraPositionState = cameraState,
         uiSettings = mapUiSettings,
         properties = MapProperties(
-            mapType = MapType.HYBRID,
+            mapType = MapType.NORMAL,
+            isMyLocationEnabled = true
         )
     ) {
-        Marker(
-            state = currentMarkerState,
-            title = uiState.currentMarkerInfo.title,
-            snippet = uiState.currentMarkerInfo.snippet,
-            zIndex = 20.0f,
-            draggable = false
-        )
+//        Marker(
+//            state = currentMarkerState,
+//            title = uiState.currentMarkerInfo.title,
+//            snippet = uiState.currentMarkerInfo.snippet,
+//            zIndex = 20.0f,
+//            draggable = false
+//        )
 
         if (uiState.mapDisplayType == MapDisplayType.Users) {
             uiState.userMarkers.forEach { user ->
