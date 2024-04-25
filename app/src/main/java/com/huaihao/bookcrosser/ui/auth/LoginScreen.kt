@@ -1,21 +1,27 @@
 package com.huaihao.bookcrosser.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,16 +46,39 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
     ) {
         val (title, content, action) = createRefs()
 
-        Text(
-            text = stringResource(id = R.string.app_name_space),
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.constrainAs(title) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(content.top)
-            }
-        )
+        val appName = stringResource(id = R.string.app_name_space)
+        val firstWordLength = appName.indexOf(' ')
+
+        Column(modifier = Modifier.constrainAs(title) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            bottom.linkTo(content.top)
+        }) {
+
+            Image(
+                painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clip(CircleShape)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = buildAnnotatedString {
+                    append(appName)
+                    addStyle(
+                        style = SpanStyle(color = MaterialTheme.colorScheme.primary),
+                        start = 0,
+                        end = firstWordLength
+                    )
+                },
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+            )
+        }
+
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,14 +140,14 @@ fun LoginScreen(uiState: LoginUiState, onEvent: (event: LoginEvent) -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = stringResource(id = R.string.forget_password),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.clickable {
-                    onEvent(LoginEvent.NavTo(FORGET_PASSWORD_ROUTE))
-                }
-            )
+//            Text(
+//                text = stringResource(id = R.string.forget_password),
+//                color = MaterialTheme.colorScheme.primary,
+//                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+//                modifier = Modifier.clickable {
+//                    onEvent(LoginEvent.NavTo(FORGET_PASSWORD_ROUTE))
+//                }
+//            )
         }
 
         OutlinedButton(onClick = {

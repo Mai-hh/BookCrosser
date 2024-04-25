@@ -35,7 +35,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
-import com.huaihao.bookcrosser.ui.common.UploadCoverDialog
 import com.huaihao.bookcrosser.ui.common.UploadImageDialog
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookEvent
