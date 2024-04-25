@@ -104,7 +104,7 @@ class CommentSquareViewModel(private val commentRepo: CommentRepo, private val b
     }
 
     private fun dismissRequestDialog() {
-        state = state.copy(showRequestDialog = false)
+        state = state.copy(showRequestDialog = false, selectedBook = null)
     }
 
     private fun loadAllComments() {

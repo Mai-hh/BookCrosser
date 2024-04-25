@@ -119,11 +119,12 @@ class ShelfABookViewModel(
     }
 
     private fun onShelfBook() {
+        sendEvent(UiEvent.ClearFocus)
+
         if (state.location == null) {
             sendEvent(UiEvent.SnackbarToast("未获取位置信息，请重试"))
             return
         }
-
 
         val book = RequestBody.Book(
             coverUrl = state.coverUrl,
@@ -134,8 +135,6 @@ class ShelfABookViewModel(
             latitude = state.location!!.latitude,
             longitude = state.location!!.longitude
         )
-
-        state = state.copy(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             bookRepo.shelfABook(book).collect { result ->
@@ -151,7 +150,9 @@ class ShelfABookViewModel(
                         sendEvent(UiEvent.SnackbarToast("上架失败\n ${result.errorMessage}"))
                     }
 
-                    is ApiResult.Loading -> {}
+                    is ApiResult.Loading -> {
+                        state = state.copy(isLoading = true)
+                    }
                 }
             }
         }

@@ -106,7 +106,7 @@ class MyCommentViewModel(private val commentRepo: CommentRepo) :
     }
 
     private fun dismissDeleteDialog() {
-        state = state.copy(showDeleteDialog = false)
+        state = state.copy(showDeleteDialog = false, selectedComment = null)
     }
 
     private fun showDeleteDialog() {
@@ -117,7 +117,7 @@ class MyCommentViewModel(private val commentRepo: CommentRepo) :
     }
 
     private fun dismissUpdateDialog() {
-        state = state.copy(showUpdateDialog = false)
+        state = state.copy(showUpdateDialog = false, selectedComment = null)
     }
 
     private fun updateComment(commentId: Long, content: String) {

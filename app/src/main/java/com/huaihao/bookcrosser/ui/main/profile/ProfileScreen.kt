@@ -32,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,21 +45,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.BookProfileItem
 import com.huaihao.bookcrosser.model.toProfileItem
 import com.huaihao.bookcrosser.ui.common.CommonTextAlertDialog
 import com.huaihao.bookcrosser.ui.common.FilterChips
-import com.huaihao.bookcrosser.ui.common.LogoutAlert
 import com.huaihao.bookcrosser.ui.common.PostBookCommentDialog
 import com.huaihao.bookcrosser.ui.common.UpdateBookDialog
-import com.huaihao.bookcrosser.ui.main.Destinations.BOOKS_WAITING_FOR_COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_REQUESTS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_UPLOADED_BOOKS_ROUTE
@@ -133,11 +134,14 @@ fun ProfileScreen(
             var showLogoutAlert by remember { mutableStateOf(false) }
 
             if (showLogoutAlert) {
-                LogoutAlert(
+                CommonTextAlertDialog(
                     onDismiss = { showLogoutAlert = false },
                     onConfirm = {
                         onEvent(ProfileEvent.Logout)
-                    }
+                    },
+                    dialogTitle = "退出确认",
+                    dialogText = "你确定要退出登录吗？",
+                    icon = Icons.AutoMirrored.Rounded.Logout
                 )
             }
 
@@ -187,10 +191,6 @@ fun ProfileScreen(
 
                     MY_BORROWED_BOOKS_ROUTE -> {
                         MyBorrowedScreen(uiState, onEvent)
-                    }
-
-                    BOOKS_WAITING_FOR_COMMENT_ROUTE -> {
-                        MyWait4CommentScreen(uiState, onEvent)
                     }
 
                     MY_REQUESTS_ROUTE -> {
@@ -350,22 +350,6 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     }
 }
 
-
-@Composable
-fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
-    if (uiState.userProfile.bookUncommented.isNullOrEmpty()) {
-        PlaceHolderScreen()
-    } else {
-        uiState.userProfile.bookUncommented?.let { books ->
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(books) { book ->
-                    BookProfileCard(book = book.toProfileItem())
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun BookProfileCardBorrowed(
     modifier: Modifier = Modifier,
@@ -378,7 +362,7 @@ fun BookProfileCardBorrowed(
             .heightIn(max = 150.dp)
             .padding(vertical = 8.dp)
     ) {
-        val (frame, title, author, description, actions, status) = createRefs()
+        val (frame, title, author, actions) = createRefs()
         ElevatedCard(modifier = Modifier
             .fillMaxSize()
             .constrainAs(frame) {
@@ -398,13 +382,13 @@ fun BookProfileCardBorrowed(
                     start.linkTo(frame.start)
                 }
                 .padding(horizontal = 12.dp),
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
         Text(
-            text = book.author,
+            text = "作者: ${book.author}",
             modifier = Modifier
                 .constrainAs(author) {
                     top.linkTo(title.bottom)
@@ -460,14 +444,14 @@ fun BookProfileCard(
     }
 
     Surface {
-        ElevatedCard(modifier = Modifier.padding(vertical = 8.dp)) {
+        Card(modifier = Modifier.padding(vertical = 8.dp)) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
                 val (title, author, description, actions, status) = createRefs()
-                Card(
+                OutlinedCard(
                     modifier = Modifier
                         .constrainAs(status) {
                             top.linkTo(actions.bottom, margin = 8.dp)
@@ -519,13 +503,13 @@ fun BookProfileCard(
                             start.linkTo(parent.start)
                         }
                         .padding(horizontal = 12.dp),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Text(
-                    text = book.author,
+                    text = "作者: ${book.author}",
                     modifier = Modifier
                         .constrainAs(author) {
                             top.linkTo(title.bottom)
@@ -541,7 +525,8 @@ fun BookProfileCard(
                     modifier = Modifier
                         .constrainAs(description) {
                             start.linkTo(parent.start, margin = 12.dp)
-                            top.linkTo(author.bottom, margin = 4.dp)
+                            top.linkTo(author.bottom, margin = 8.dp)
+                            end.linkTo(parent.end, margin = 12.dp)
                             width = Dimension.fillToConstraints
                         },
                     style = MaterialTheme.typography.bodyMedium,
@@ -635,7 +620,7 @@ fun BookProfileCardPreview() {
             book = BookProfileItem(
                 title = "书名",
                 author = "作者",
-                description = "描述",
+                description = stringResource(id = R.string.content_test),
                 status = "借阅中",
                 coverUrl = null,
                 updatedAt = "2021-09-09",

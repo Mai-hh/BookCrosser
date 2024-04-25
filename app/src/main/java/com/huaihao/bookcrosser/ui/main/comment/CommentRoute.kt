@@ -29,7 +29,9 @@ import com.huaihao.bookcrosser.ui.main.Destinations.MY_REVIEW_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REVIEW_SQUARE_ROUTE
 import com.huaihao.bookcrosser.viewmodel.main.MyCommentViewModel
 import com.huaihao.bookcrosser.viewmodel.main.CommentSquareViewModel
+import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.navigation.koinNavViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,8 +74,13 @@ fun CommentRoute(navController: NavHostController = rememberNavController(), boo
         }
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
-            val squareViewModel = koinViewModel<CommentSquareViewModel>()
-            val myCommentViewModel = koinViewModel<MyCommentViewModel>()
+            val squareViewModel = koinNavViewModel<CommentSquareViewModel>(
+                viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+            )
+            val myCommentViewModel = koinNavViewModel<MyCommentViewModel>(
+                viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+            )
+
             when (selectedScreen) {
                 REVIEW_SQUARE_ROUTE -> {
                     BaseScreenWrapper(navController = navController, viewModel = squareViewModel) {

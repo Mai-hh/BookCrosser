@@ -8,7 +8,6 @@ import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
-import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -32,19 +31,6 @@ data class SearchUiState(
     val books: List<Book> = mutableListOf(),
     val shouldExpandBottomSheet: Boolean = false
 )
-
-sealed class SearchStateWithType(labels: List<String>) {
-    data class Basic(
-        val title: String,
-        val author: String,
-        val matchComplete: Boolean
-    ) : SearchStateWithType(labels = listOf("书名", "作者"))
-
-    data class ISBN(
-        val isbn: String,
-    ) : SearchStateWithType(labels = listOf("ISBN"))
-
-}
 
 class SearchViewModel(private val bookRepo: BookRepo) :
     BaseViewModel<SearchUiState, SearchEvent>() {
@@ -114,6 +100,7 @@ class SearchViewModel(private val bookRepo: BookRepo) :
     }
 
     private fun onBasicSearch(title: String?, author: String?, matchComplete: Boolean) {
+        sendEvent(UiEvent.ClearFocus)
         viewModelScope.launch(Dispatchers.IO) {
             bookRepo.search(title, author, matchComplete).collect {
                 when (it) {
@@ -143,6 +130,7 @@ class SearchViewModel(private val bookRepo: BookRepo) :
     }
 
     private fun onISBNSearch(isbn: String) {
+        sendEvent(UiEvent.ClearFocus)
         viewModelScope.launch(Dispatchers.IO) {
             bookRepo.searchByIsbn(isbn).collect {
                 when (it) {

@@ -26,9 +26,11 @@ import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUEST_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SHELF_BOOK_ROUTE
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
+import com.huaihao.bookcrosser.viewmodel.main.MyCommentViewModel
 import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingViewModel
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.navigation.koinNavViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +59,12 @@ fun DriftingRoute(navController: NavHostController = rememberNavController()) {
         }
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
-            val shelfViewModel = koinViewModel<ShelfABookViewModel>()
-            val requestViewModel = koinViewModel<RequestDriftingViewModel>()
+            val shelfViewModel = koinNavViewModel<ShelfABookViewModel>(
+                viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+            )
+            val requestViewModel = koinNavViewModel<RequestDriftingViewModel>(
+                viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+            )
             when (selectedScreen) {
                 SHELF_BOOK_ROUTE -> {
                     BaseScreenWrapper(navController = navController, viewModel = shelfViewModel) {

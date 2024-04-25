@@ -20,9 +20,10 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
@@ -39,6 +40,8 @@ fun <State, ScreenEvent> BaseScreenWrapper(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     val backPressedTime = remember { mutableLongStateOf(0L) }
@@ -84,6 +87,10 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                     }
                 }
 
+                UiEvent.HideSoftwareKeyboard -> {
+                    keyboardController?.hide()
+                }
+
                 is UiEvent.PopUpToStartDestination -> {
                     navController.graph.startDestinationRoute?.let {
                         navController.popBackStack(
@@ -92,6 +99,11 @@ fun <State, ScreenEvent> BaseScreenWrapper(
                         )
                     }
                 }
+
+                UiEvent.ClearFocus -> {
+                    focusManager.clearFocus()
+                }
+
             }
 
         }

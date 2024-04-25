@@ -112,9 +112,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
     }
 
     private fun onLoginByUsername(username: String, password: String) {
-        state = state.copy(
-            isLoading = true
-        )
+        sendEvent(UiEvent.ClearFocus)
         viewModelScope.launch {
             authRepo.loginByUsername(username, password).collect { result ->
                 when (result) {
@@ -144,9 +142,7 @@ class LoginViewModel(private val authRepo: AuthRepo) :
     }
 
     private fun onLoginByEmail(email: String, password: String) {
-        state = state.copy(
-            isLoading = true
-        )
+        sendEvent(UiEvent.ClearFocus)
         viewModelScope.launch {
             authRepo.loginByEmail(email, password).collect { result ->
                 when (result) {

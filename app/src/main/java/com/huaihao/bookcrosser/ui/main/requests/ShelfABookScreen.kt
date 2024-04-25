@@ -17,10 +17,10 @@ import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,7 +77,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                     .fillMaxWidth()
             ) {
                 val (cover, action) = createRefs()
-                Card(modifier = Modifier
+                OutlinedCard(modifier = Modifier
                     .constrainAs(cover) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
@@ -93,7 +93,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-                        return@Card
+                        return@OutlinedCard
                     }
 
                     AsyncImage(

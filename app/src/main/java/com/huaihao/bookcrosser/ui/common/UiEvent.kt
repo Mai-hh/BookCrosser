@@ -9,4 +9,7 @@ sealed interface UiEvent {
     data class PopUpToStartDestination(val inclusive: Boolean): UiEvent
     data object NavBack: UiEvent
     data object Finish: UiEvent
+    data object ClearFocus: UiEvent
+
+    data object HideSoftwareKeyboard: UiEvent
 }

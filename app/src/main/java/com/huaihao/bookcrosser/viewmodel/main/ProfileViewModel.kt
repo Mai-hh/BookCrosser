@@ -275,6 +275,8 @@ class ProfileViewModel(
         latitude: Double?,
         longitude: Double?
     ) {
+        sendEvent(UiEvent.ClearFocus)
+
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.updateProfile(username, bio, latitude, longitude).collect { result ->
                 when (result) {

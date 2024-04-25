@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,7 +19,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PinDrop
+import androidx.compose.material.icons.rounded.RoundaboutRight
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,13 +34,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.huaihao.bookcrosser.R
+import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.DriftingRequest
+import com.huaihao.bookcrosser.model.User
+import com.huaihao.bookcrosser.ui.common.CommonTextAlertDialog
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingEvent
 import com.huaihao.bookcrosser.viewmodel.main.RequestDriftingUiState
@@ -47,6 +59,17 @@ fun RequestDriftingScreen(
     uiState: RequestDriftingUiState,
     onEvent: (RequestDriftingEvent) -> Unit
 ) {
+
+    if (uiState.showDriftDialog) {
+        CommonTextAlertDialog(
+            onDismiss = { onEvent(RequestDriftingEvent.DismissDriftDialog) },
+            onConfirm = { onEvent(RequestDriftingEvent.Drift(uiState.selectedRequest!!)) },
+            dialogTitle = "起漂",
+            dialogText = "确认起漂\"${uiState.selectedRequest!!.book.title}\"吗？",
+            icon = Icons.Rounded.RoundaboutRight
+        )
+    }
+
     LaunchedEffect(Unit) {
         onEvent(RequestDriftingEvent.LoadDriftingRequests)
     }
@@ -67,10 +90,10 @@ fun RequestDriftingScreen(
                         onEvent(RequestDriftingEvent.Locate(request))
                     },
                     onDriftSelected = {
-                        onEvent(RequestDriftingEvent.Drift(request))
+                        onEvent(RequestDriftingEvent.ShowDriftDialog(request))
                     },
                     onRejectSelected = {
-                        onEvent(RequestDriftingEvent.RejectDriftingRequest(request))
+                        onEvent(RequestDriftingEvent.ShowRejectDialog(request))
                     }
                 )
             }
@@ -86,7 +109,7 @@ fun BookRequestCard(
     onDriftSelected: () -> Unit = {},
     onRejectSelected: () -> Unit = {}
 ) {
-    ElevatedCard(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = 150.dp)
@@ -104,17 +127,18 @@ fun BookRequestCard(
                         start.linkTo(parent.start)
                         bottom.linkTo(parent.bottom)
                     }
-                    .wrapContentWidth()
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(8.dp),
+                    .width(80.dp)
+                    .fillMaxHeight(),
             ) {
-                Text(
-                    text = request.book.title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    overflow = TextOverflow.Ellipsis
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(request.book.coverUrl)
+                        .error(R.mipmap.bc_logo_foreground)
+                        .build(),
+                    contentDescription = request.book.title,
+                    modifier = Modifier.fillMaxHeight(),
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.5f
                 )
             }
 
@@ -127,24 +151,39 @@ fun BookRequestCard(
                         bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                     }
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(8.dp),
-                contentAlignment = Alignment.TopEnd
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopStart
             ) {
-                Column {
-                    request.requester.username?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = request.book.title,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        request.requester.username?.let {
+                            AssistChip(onClick = {},
+                                label = { Text(text = "来自: $it") }
+                            )
+                        }
                     }
-                    request.requester.email?.let { Text(text = it) }
                 }
             }
 
-            Row(modifier = Modifier
+            Column(modifier = Modifier
                 .constrainAs(actions) {
+                    top.linkTo(box2.top, margin = 8.dp)
                     end.linkTo(parent.end, margin = 8.dp)
                     bottom.linkTo(parent.bottom, margin = 8.dp)
                 }) {
@@ -156,15 +195,11 @@ fun BookRequestCard(
                     Text(text = "起漂")
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 Button(
                     onClick = { onRejectSelected() }
                 ) {
                     Text(text = "拒绝")
                 }
-
-                Spacer(modifier = Modifier.width(4.dp))
 
                 IconButton(
                     colors = IconButtonDefaults.iconButtonColors(
@@ -199,5 +234,37 @@ fun RequestPlaceHolderScreen() {
 fun PreviewRequestDriftingScreen() {
     BookCrosserTheme {
         RequestPlaceHolderScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBookRequestCard() {
+    BookCrosserTheme {
+        BookRequestCard(
+            request = DriftingRequest(
+                id = 1,
+                book = Book(
+                    id = 1,
+                    ownerId = 1,
+                    ownerUsername = null,
+                    uploaderId = 1,
+                    title = "书名",
+                    coverUrl = "https://img3.doubanio.com/view/subject/l/public/s3365739.jpg",
+                    latitude = 0.0,
+                    longitude = 0.0,
+                    status = "AVAILABLE",
+                    author = "作者",
+                    isbn = "ISBN",
+                    description = "描述",
+                    createdAt = "创建时间",
+                    updatedAt = "更新时间"
+                ),
+                requester = User(
+                    username = "用户名",
+                    email = "邮箱"
+                )
+            )
+        )
     }
 }

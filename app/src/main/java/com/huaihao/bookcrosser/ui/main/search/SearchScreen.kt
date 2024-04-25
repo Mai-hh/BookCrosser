@@ -87,6 +87,13 @@ fun SearchScreen(uiState: SearchUiState, onEvent: (event: SearchEvent) -> Unit) 
             scaffoldState = sheetState,
             sheetContent = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    item {
+                        Text(
+                            text = "搜索到${uiState.books.size}个结果",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+                        )
+                    }
                     items(uiState.books) { book ->
                         BookSearchCard(book = book.toSearchItem(),
                             onLocateSelected = { onEvent(SearchEvent.NavToBookMarker(book)) },
@@ -370,7 +377,8 @@ fun BookSearchCard(
                 onClick = { onRequestSelected() },
                 colors = ButtonDefaults.outlinedButtonColors().copy(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.5f),
                 ),
                 enabled = (book.status != BookStatus.REQUESTED.statusString)
             ) {

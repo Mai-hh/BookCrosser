@@ -108,8 +108,7 @@ class SignUpViewModel(private val authRepo: AuthRepo) :
             confirmPasswordError = confirmPasswordError
         )
 
-
-        state = state.copy(isLoading = true)
+        sendEvent(UiEvent.ClearFocus)
 
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.register(

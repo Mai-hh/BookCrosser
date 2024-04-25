@@ -18,11 +18,20 @@ sealed interface RequestDriftingEvent {
     data object NavBack : RequestDriftingEvent
     data class Locate(val driftingRequest: DriftingRequest) : RequestDriftingEvent
     data class Drift(val driftingRequest: DriftingRequest) : RequestDriftingEvent
-    data class RejectDriftingRequest(val driftingRequest: DriftingRequest) : RequestDriftingEvent
+    data object RejectDriftingRequest : RequestDriftingEvent
+    data class ShowDriftDialog(val driftingRequest: DriftingRequest) : RequestDriftingEvent
+    data object DismissDriftDialog : RequestDriftingEvent
+
+    data class ShowRejectDialog(val driftingRequest: DriftingRequest) : RequestDriftingEvent
+
+    data object DismissRejectDialog : RequestDriftingEvent
 }
 
 data class RequestDriftingUiState(
     val request: List<DriftingRequest> = emptyList(),
+    val selectedRequest: DriftingRequest? = null,
+    val showDriftDialog: Boolean = false,
+    val showRejectDialog: Boolean = false,
     var isLoading: Boolean = false
 )
 
@@ -43,7 +52,7 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
             }
 
             is RequestDriftingEvent.RejectDriftingRequest -> {
-                onRejectDriftingRequest(event.driftingRequest)
+                onRejectDriftingRequest(state.selectedRequest!!)
             }
 
             is RequestDriftingEvent.Locate -> {
@@ -67,7 +76,39 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
                     )
                 )
             }
+
+            RequestDriftingEvent.DismissDriftDialog -> {
+                dismissDriftDialog()
+            }
+            is RequestDriftingEvent.ShowDriftDialog -> {
+                state = state.copy(selectedRequest = event.driftingRequest)
+                showDriftDialog()
+            }
+
+            RequestDriftingEvent.DismissRejectDialog -> {
+                dismissRejectDialog()
+            }
+            is RequestDriftingEvent.ShowRejectDialog -> {
+                state = state.copy(selectedRequest = event.driftingRequest)
+                showRejectDialog()
+            }
         }
+    }
+
+    private fun showRejectDialog() {
+        state = state.copy(showRejectDialog = true)
+    }
+
+    private fun dismissRejectDialog() {
+        state = state.copy(showRejectDialog = false, selectedRequest = null)
+    }
+
+    private fun dismissDriftDialog() {
+        state = state.copy(showDriftDialog = false, selectedRequest = null)
+    }
+
+    private fun showDriftDialog() {
+        state = state.copy(showDriftDialog = true)
     }
 
     private fun onRejectDriftingRequest(driftingRequest: DriftingRequest) {
