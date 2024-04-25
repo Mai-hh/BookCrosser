@@ -206,7 +206,7 @@ fun UpdateBookCommentDialog(
                         content = it
                     },
                     maxLines = 5,
-                    maxLength = 200,
+                    maxLength = 250,
                     textStyle = MaterialTheme.typography.bodyMedium,
                     singleLine = false,
                     modifier = Modifier,
@@ -308,13 +308,6 @@ fun PostBookCommentDialog(
             }
         }
     }
-}
-
-@Composable
-fun UploadCoverDialog(
-
-) {
-
 }
 
 @Composable
