@@ -64,7 +64,7 @@ fun RequestDriftingScreen(
                 BookRequestCard(
                     request = request,
                     onLocateSelected = {
-
+                        onEvent(RequestDriftingEvent.Locate(request))
                     },
                     onDriftSelected = {
                         onEvent(RequestDriftingEvent.Drift(request))

@@ -35,10 +35,10 @@ fun MyCommentScreen(uiState: MyCommentUiState, onEvent: (MyCommentEvent) -> Unit
     if (uiState.showDeleteDialog) {
         uiState.selectedComment?.comment?.let { comment ->
             CommonTextAlertDialog(
-                onDismissRequest = {
+                onDismiss = {
                     onEvent(MyCommentEvent.DismissDeleteDialog)
                 },
-                onConfirmation = {
+                onConfirm = {
                     onEvent(MyCommentEvent.DeleteComment(comment.id))
                 },
                 dialogTitle = "删除留言",

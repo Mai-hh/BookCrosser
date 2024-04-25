@@ -22,11 +22,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Comment
+import androidx.compose.material.icons.automirrored.rounded.LibraryBooks
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.LibraryBooks
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,21 +54,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.model.Book
+import com.huaihao.bookcrosser.model.BookStatus
 import com.huaihao.bookcrosser.model.Comment
 import com.huaihao.bookcrosser.model.CommentDTO
 import com.huaihao.bookcrosser.model.User
+import com.huaihao.bookcrosser.ui.common.CommonTextAlertDialog
 import com.huaihao.bookcrosser.ui.main.profile.PlaceHolderScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.CommentSquareEvent
 import com.huaihao.bookcrosser.viewmodel.main.CommentSquareUiState
 
 @Composable
-fun CommentSquareScreen(uiState: CommentSquareUiState, onEvent: (CommentSquareEvent) -> Unit) {
+fun CommentSquareScreen(
+    uiState: CommentSquareUiState,
+    bookId: Long? = null,
+    onEvent: (CommentSquareEvent) -> Unit
+) {
 
     LaunchedEffect(uiState.comments) {
         onEvent(CommentSquareEvent.LoadAllComments)
+    }
+
+    if (uiState.showRequestDialog) {
+        CommonTextAlertDialog(
+            onDismiss = { onEvent(CommentSquareEvent.DismissRequestDialog) },
+            onConfirm = { onEvent(CommentSquareEvent.Request) },
+            dialogTitle = uiState.selectedBook?.title ?: "求漂",
+            dialogText = "是否请求此书",
+            icon = Icons.AutoMirrored.Rounded.LibraryBooks
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -90,13 +111,18 @@ fun CommentSquareScreen(uiState: CommentSquareUiState, onEvent: (CommentSquareEv
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            items(uiState.comments) { comment ->
+            val displayItems =
+                if (bookId == null) uiState.comments else uiState.comments.filter { it.book.id == bookId }
+            items(displayItems) { comment ->
                 CommentCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                         .padding(horizontal = 16.dp),
-                    comment = comment
+                    comment = comment,
+                    onRequestSelected = {
+                        onEvent(CommentSquareEvent.ShowRequestDialog(comment.book))
+                    }
                 )
             }
         }
@@ -119,7 +145,7 @@ fun CommentSquareScreen(uiState: CommentSquareUiState, onEvent: (CommentSquareEv
 fun CommentCard(
     modifier: Modifier = Modifier,
     comment: CommentDTO,
-    onRequestSelected: (() -> Unit)? = {},
+    onRequestSelected: (() -> Unit)? = null,
     onCommentUpdateSelected: (() -> Unit)? = null,
     onCommentDeleteSelected: (() -> Unit)? = null,
 ) {
@@ -138,8 +164,13 @@ fun CommentCard(
             val cardHeight = maxHeight
             ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                 val (content, preview, actions, sender) = createRefs()
-                Image(
-                    painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(comment.book.coverUrl)
+                        .fallback(R.mipmap.bc_logo_foreground)
+                        .error(R.mipmap.bc_logo_foreground)
+                        .build(),
+                    placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
                     contentDescription = comment.book.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.constrainAs(preview) {
@@ -199,8 +230,15 @@ fun CommentCard(
                     end.linkTo(parent.end, margin = 16.dp)
                 }) {
                     onRequestSelected?.let {
-                        OutlinedButton(onClick = it) {
-                            Text(text = "求漂")
+                        OutlinedButton(
+                            onClick = it,
+                            colors = ButtonDefaults.outlinedButtonColors().copy(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            enabled = (comment.book.status != BookStatus.REQUESTED.statusString)
+                        ) {
+                            Text(text = if (comment.book.status == BookStatus.REQUESTED.statusString) "已请求" else "求漂")
                         }
                     }
 
@@ -208,13 +246,6 @@ fun CommentCard(
                         Spacer(modifier = Modifier.width(8.dp))
                         OutlinedButton(onClick = it) {
                             Text(text = "编辑")
-                        }
-                    }
-
-                    onCommentDeleteSelected?.let {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedButton(onClick = it) {
-                            Text(text = "删除")
                         }
                     }
 

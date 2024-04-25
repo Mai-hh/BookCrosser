@@ -34,7 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReviewsRoute(navController: NavHostController = rememberNavController()) {
+fun CommentRoute(navController: NavHostController = rememberNavController(), bookId: Long? = null) {
 
     var selectedScreen by rememberSaveable { mutableStateOf(REVIEW_SQUARE_ROUTE) }
 
@@ -79,6 +79,7 @@ fun ReviewsRoute(navController: NavHostController = rememberNavController()) {
                     BaseScreenWrapper(navController = navController, viewModel = squareViewModel) {
                         CommentSquareScreen(
                             uiState = squareViewModel.state,
+                            bookId = bookId,
                             onEvent = squareViewModel::onEvent
                         )
                     }

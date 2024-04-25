@@ -34,13 +34,13 @@ import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_SETTINGS_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.REQUESTS_ROUTE
-import com.huaihao.bookcrosser.ui.main.Destinations.REVIEWS_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.SEARCH_ROUTE
 import com.huaihao.bookcrosser.ui.main.map.MapScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileScreen
 import com.huaihao.bookcrosser.ui.main.profile.ProfileSettingsScreen
 import com.huaihao.bookcrosser.ui.main.requests.DriftingRoute
-import com.huaihao.bookcrosser.ui.main.comment.ReviewsRoute
+import com.huaihao.bookcrosser.ui.main.comment.CommentRoute
 import com.huaihao.bookcrosser.ui.main.search.SearchScreen
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MapViewModel
@@ -48,7 +48,7 @@ import com.huaihao.bookcrosser.viewmodel.main.ProfileViewModel
 import com.huaihao.bookcrosser.viewmodel.main.SearchViewModel
 import org.koin.androidx.compose.navigation.koinNavViewModel
 
-val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, REVIEWS_ROUTE, PROFILE_ROUTE)
+val items = listOf(MAP_ROUTE, SEARCH_ROUTE, REQUESTS_ROUTE, COMMENT_ROUTE, PROFILE_ROUTE)
 
 object Destinations {
     const val MAP_ROUTE = "地图"
@@ -62,7 +62,7 @@ object Destinations {
     const val SHELF_BOOK_ROUTE = "上架"
     const val REQUEST_BOOK_ROUTE = "求漂"
 
-    const val REVIEWS_ROUTE = "评论"
+    const val COMMENT_ROUTE = "留言"
     const val REVIEW_SQUARE_ROUTE = "留言广场"
     const val MY_REVIEW_ROUTE = "我的留言"
 
@@ -94,9 +94,9 @@ fun MainScreenRoute(
     // 根据当前路由更新 selectedItem 的值
     when {
         currentRoute == MAP_ROUTE || currentRoute?.startsWith("$MAP_ROUTE/") == true -> selectedItem = 0
-        currentRoute == SEARCH_ROUTE -> selectedItem = 1
-        currentRoute == REQUESTS_ROUTE -> selectedItem = 2
-        currentRoute == REVIEWS_ROUTE -> selectedItem = 3
+        currentRoute == SEARCH_ROUTE || currentRoute?.startsWith("$SEARCH_ROUTE/") == true -> selectedItem = 1
+        currentRoute == REQUESTS_ROUTE || currentRoute?.startsWith("$REQUESTS_ROUTE/") == true -> selectedItem = 2
+        currentRoute == COMMENT_ROUTE || currentRoute?.startsWith("$COMMENT_ROUTE/") == true -> selectedItem = 3
         currentRoute == PROFILE_ROUTE || currentRoute == PROFILE_SETTINGS_ROUTE || currentRoute?.startsWith("$PROFILE_ROUTE/") == true -> selectedItem = 4
     }
 
@@ -134,7 +134,7 @@ fun MainScreenRoute(
                     navArgument("latitude") { type = NavType.FloatType },
                     navArgument("longitude") { type = NavType.FloatType },
                     navArgument("title") { type = NavType.StringType },
-                    navArgument("snippet") { type = NavType.StringType }
+                    navArgument("snippet") { type = NavType.StringType },
                 )
             ) { backStackEntry ->
                 val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
@@ -157,6 +157,42 @@ fun MainScreenRoute(
                         initialPosition = initialPos,
                         title = title,
                         snippet = snippet
+                    )
+                }
+            }
+
+            composable(
+                route = "$MAP_ROUTE/{latitude}/{longitude}/{title}/{snippet}/{type}",
+                arguments = listOf(
+                    navArgument("latitude") { type = NavType.FloatType },
+                    navArgument("longitude") { type = NavType.FloatType },
+                    navArgument("title") { type = NavType.StringType },
+                    navArgument("snippet") { type = NavType.StringType },
+                    navArgument("type") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
+                val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble()
+                val title = backStackEntry.arguments?.getString("title")
+                val snippet = backStackEntry.arguments?.getString("snippet")
+                val type = backStackEntry.arguments?.getString("type")
+
+                val initialPos: LatLng? = if (latitude != null && longitude != null) {
+                    LatLng(latitude, longitude)
+                } else {
+                    null
+                }
+                val viewModel = koinNavViewModel<MapViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    MapScreen(
+                        uiState = viewModel.state,
+                        onEvent = viewModel::onEvent,
+                        initialPosition = initialPos,
+                        title = title,
+                        snippet = snippet,
+                        initialType = type
                     )
                 }
             }
@@ -188,8 +224,19 @@ fun MainScreenRoute(
             composable(REQUESTS_ROUTE) {
                 DriftingRoute(navController = navController)
             }
-            composable(REVIEWS_ROUTE) {
-                ReviewsRoute(navController = navController)
+
+            composable(COMMENT_ROUTE) {
+                CommentRoute(navController = navController)
+            }
+
+            composable(
+                route = "${COMMENT_ROUTE}/{bookId}",
+                arguments = listOf(
+                    navArgument("bookId") { type = NavType.LongType },
+                )
+            ) { backStackEntry ->
+                val bookId = backStackEntry.arguments?.getLong("bookId")
+                CommentRoute(navController = navController, bookId = bookId)
             }
 
             composable(PROFILE_ROUTE) {

@@ -39,6 +39,6 @@ val appModule = module {
     viewModel { MapViewModel(get<ILocationService>(), get<BookRepo>(), get<AuthRepo>()) }
     viewModel { ShelfABookViewModel(get<BookRepo>(), get<ILocationService>()) }
     viewModel { RequestDriftingViewModel(get()) }
-    viewModel { CommentSquareViewModel(get()) }
+    viewModel { CommentSquareViewModel(get(), get()) }
     viewModel { MyCommentViewModel(get()) }
 }

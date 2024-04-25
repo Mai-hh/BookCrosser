@@ -58,6 +58,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.huaihao.bookcrosser.model.BookMarker
+import com.huaihao.bookcrosser.ui.main.map.Type.BOOK
+import com.huaihao.bookcrosser.ui.main.map.Type.USER
 import com.huaihao.bookcrosser.util.hasLocationPermission
 import com.huaihao.bookcrosser.viewmodel.main.MapDisplayType
 import com.huaihao.bookcrosser.viewmodel.main.MapEvent
@@ -65,9 +67,21 @@ import com.huaihao.bookcrosser.viewmodel.main.MapUiState
 import com.huaihao.bookcrosser.viewmodel.main.MapViewState
 import kotlinx.coroutines.launch
 
+object Type {
+    const val BOOK = "book"
+    const val USER = "user"
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition: LatLng? = null, title: String? = null, snippet: String? = null) {
+fun MapScreen(
+    uiState: MapUiState,
+    onEvent: (MapEvent) -> Unit,
+    initialPosition: LatLng? = null,
+    title: String? = null,
+    snippet: String? = null,
+    initialType: String? = BOOK
+) {
 
     val context = LocalContext.current
 
@@ -166,6 +180,11 @@ fun MapScreen(uiState: MapUiState, onEvent: (MapEvent) -> Unit, initialPosition:
                     LaunchedEffect(key1 = currentLoc) {
                         cameraState.centerOnLocation(currentLoc)
                         currentMarkerState.showInfoWindow()
+                        if (initialType == BOOK) {
+                            onEvent(MapEvent.ShowBookMarkers)
+                        } else if (initialType == USER) {
+                            onEvent(MapEvent.ShowUserMarkers)
+                        }
                     }
 
                     ConstraintLayout {

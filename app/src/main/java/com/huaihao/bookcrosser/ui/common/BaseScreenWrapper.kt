@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -141,7 +142,7 @@ fun LimitedOutlinedTextField(
         textStyle = textStyle,
         supportingText = supportingText,
         placeholder = placeholder,
-        label = { Text(label, color = Color.Unspecified.copy(alpha = 0.5f)) },
+        label = { Text(label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)) },
         modifier = modifier,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions

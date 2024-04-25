@@ -23,6 +23,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PinDrop
 import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
@@ -271,6 +272,9 @@ fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                         onComment = {
                             selectedBook = book
                             onEvent(ProfileEvent.ShowCommentDialog)
+                        },
+                        onLookForComment = {
+                            onEvent(ProfileEvent.NavToBookComments(book.id))
                         }
                     )
                 }
@@ -291,8 +295,8 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
             if (uiState.showDriftingFinishDialog) {
                 selectedBook?.let { book ->
                     CommonTextAlertDialog(
-                        onDismissRequest = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
-                        onConfirmation = { onEvent(ProfileEvent.DriftingFinish(book)) },
+                        onDismiss = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
+                        onConfirm = { onEvent(ProfileEvent.DriftingFinish(book)) },
                         dialogTitle = "收漂确认",
                         dialogText = "你确定要收漂\"${book.title}\"吗？\n这将请求此书的持有者归还图书",
                         icon = Icons.Rounded.Route
@@ -366,7 +370,8 @@ fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Uni
 fun BookProfileCardBorrowed(
     modifier: Modifier = Modifier,
     book: BookProfileItem,
-    onComment: () -> Unit = {}
+    onComment: () -> Unit = {},
+    onLookForComment: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -424,7 +429,15 @@ fun BookProfileCardBorrowed(
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text(text = "留言")
+                Text(text = "写留言")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = { onLookForComment() },
+            ) {
+                Text(text = "查看留言")
             }
         }
     }
@@ -485,6 +498,12 @@ fun BookProfileCard(
                                 )
                                 Text(
                                     text = "状态: ${book.status}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+
+                                Text(
+                                    text = "ISBN: ${book.isbn}",
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
@@ -622,6 +641,7 @@ fun BookProfileCardPreview() {
                 updatedAt = "2021-09-09",
                 uploaderId = 1,
                 ownerId = 2,
+                isbn = "1234567890"
             )
         )
     }
@@ -641,6 +661,7 @@ fun BookProfileCardBorrowedPreview() {
                 updatedAt = "2021-09-09",
                 uploaderId = 1,
                 ownerId = 1,
+                isbn = "1234567890"
             )
         )
     }

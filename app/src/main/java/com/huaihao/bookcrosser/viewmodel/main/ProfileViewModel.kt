@@ -13,6 +13,7 @@ import com.huaihao.bookcrosser.ui.Destinations.AUTH_ROUTE
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
 import com.huaihao.bookcrosser.ui.main.Destinations
+import com.huaihao.bookcrosser.ui.main.Destinations.COMMENT_ROUTE
 import com.huaihao.bookcrosser.util.MMKVUtil
 import com.huaihao.bookcrosser.util.USER_TOKEN
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ sealed interface ProfileEvent {
     data object LoadUserProfile : ProfileEvent
     data class LocatedBook(val book: Book) : ProfileEvent
     data object NavToSettings : ProfileEvent
-
+    data class NavToBookComments(val bookId: Long) : ProfileEvent
     data object ResetState : ProfileEvent
     data object NavBack : ProfileEvent
     data class SendToast(val message: String) : ProfileEvent
@@ -148,6 +149,10 @@ class ProfileViewModel(
 
             ProfileEvent.ShowCommentDialog -> {
                 showCommentDialog()
+            }
+
+            is ProfileEvent.NavToBookComments -> {
+                sendEvent(UiEvent.Navigate("${COMMENT_ROUTE}/${event.bookId}"))
             }
         }
     }

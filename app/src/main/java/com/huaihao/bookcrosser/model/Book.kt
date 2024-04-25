@@ -27,6 +27,7 @@ data class BookProfileItem(
     val updatedAt: String,
     var ownerUsername: String? = null,
     var ownerId: Long,
+    val isbn: String,
     val uploaderId: Long,
 )
 
@@ -71,7 +72,8 @@ fun Book.toProfileItem() = BookProfileItem(
     coverUrl = coverUrl,
     ownerId = ownerId,
     uploaderId = uploaderId,
-    ownerUsername = ownerUsername
+    ownerUsername = ownerUsername,
+    isbn = isbn
 )
 
 

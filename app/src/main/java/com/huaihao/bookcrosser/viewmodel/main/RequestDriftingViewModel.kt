@@ -8,12 +8,15 @@ import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.ui.main.Destinations.MAP_ROUTE
+import com.huaihao.bookcrosser.ui.main.map.Type
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface RequestDriftingEvent {
     data object LoadDriftingRequests : RequestDriftingEvent
     data object NavBack : RequestDriftingEvent
+    data class Locate(val driftingRequest: DriftingRequest) : RequestDriftingEvent
     data class Drift(val driftingRequest: DriftingRequest) : RequestDriftingEvent
     data class RejectDriftingRequest(val driftingRequest: DriftingRequest) : RequestDriftingEvent
 }
@@ -23,7 +26,8 @@ data class RequestDriftingUiState(
     var isLoading: Boolean = false
 )
 
-class RequestDriftingViewModel(private val bookRepo: BookRepo) : BaseViewModel<RequestDriftingUiState, RequestDriftingEvent>() {
+class RequestDriftingViewModel(private val bookRepo: BookRepo) :
+    BaseViewModel<RequestDriftingUiState, RequestDriftingEvent>() {
     override fun onEvent(event: RequestDriftingEvent) {
         when (event) {
             RequestDriftingEvent.LoadDriftingRequests -> {
@@ -41,6 +45,28 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) : BaseViewModel<R
             is RequestDriftingEvent.RejectDriftingRequest -> {
                 onRejectDriftingRequest(event.driftingRequest)
             }
+
+            is RequestDriftingEvent.Locate -> {
+                if (event.driftingRequest.requester.latitude == null || event.driftingRequest.requester.longitude == null) {
+                    sendEvent(UiEvent.SnackbarToast("用户未确定位置，谨慎起漂"))
+                    return
+                }
+
+                sendEvent(
+                    UiEvent.Navigate(
+                        MAP_ROUTE +
+                                "/" +
+                                "${event.driftingRequest.requester.latitude}" +
+                                "/" +
+                                "${event.driftingRequest.requester.longitude}" +
+                                "/" +
+                                "${event.driftingRequest.requester.username}" +
+                                "/" +
+                                "${event.driftingRequest.requester.bio}" + "/" +
+                                Type.USER
+                    )
+                )
+            }
         }
     }
 
@@ -55,7 +81,7 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) : BaseViewModel<R
                     }
 
                     is ApiResult.Error -> {
-                        sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 失败"))
+                        sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 失败\n原因: ${result.errorMessage}"))
                         Log.d(TAG, "onRejectDriftingRequest: Error")
                         onLoadDriftingRequests()
                     }

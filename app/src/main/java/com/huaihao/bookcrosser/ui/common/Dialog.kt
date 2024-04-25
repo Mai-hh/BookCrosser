@@ -319,8 +319,8 @@ fun UploadCoverDialog(
 
 @Composable
 fun CommonTextAlertDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
@@ -337,19 +337,19 @@ fun CommonTextAlertDialog(
             Text(text = dialogText)
         },
         onDismissRequest = {
-            onDismissRequest()
+            onDismiss()
         },
         confirmButton = {
             OutlinedButton(
                 onClick = {
-                    onConfirmation()
+                    onConfirm()
                 }
             ) {
                 Text("确认")
             }
         },
         dismissButton = {
-            Button(onClick = { onDismissRequest() }, enabled = isCancellable) {
+            Button(onClick = { onDismiss() }, enabled = isCancellable) {
                 Text("取消")
             }
         }
@@ -457,8 +457,8 @@ fun UploadImagePreview() {
 fun CommonAlertDialogPreview() {
     BookCrosserTheme {
         CommonTextAlertDialog(
-            onDismissRequest = {},
-            onConfirmation = {},
+            onDismiss = {},
+            onConfirm = {},
             dialogTitle = "Title",
             dialogText = "Text",
             icon = Icons.Rounded.EditNote
