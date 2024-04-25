@@ -1,5 +1,6 @@
 package com.huaihao.bookcrosser.ui.main.search
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -300,13 +301,23 @@ fun BookSearchCard(
                 end.linkTo(frame.end)
                 height = Dimension.percent(0.5f)
             }) {
-            AsyncImage(
-                model = exampleImageAddress,
-                placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+
+            if (book.coverUrl.isNullOrBlank()) {
+                Image(
+                    painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                AsyncImage(
+                    model = book.coverUrl,
+                    placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Text(

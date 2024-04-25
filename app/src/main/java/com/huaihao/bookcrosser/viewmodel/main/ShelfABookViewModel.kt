@@ -16,7 +16,8 @@ sealed interface ShelfABookEvent {
     data class TitleChange(val title: String) : ShelfABookEvent
     data class AuthorChange(val author: String) : ShelfABookEvent
     data class IsbnChange(val isbn: String) : ShelfABookEvent
-    data object UploadCover : ShelfABookEvent
+    data object ShowUploadCoverDialog : ShelfABookEvent
+    data object DismissUploadCoverDialog : ShelfABookEvent
     data class DescriptionChange(val description: String) : ShelfABookEvent
     data object ShelfBook : ShelfABookEvent
     data object NavBack : ShelfABookEvent
@@ -26,13 +27,14 @@ sealed interface ShelfABookEvent {
 }
 
 data class ShelfABookUiState(
-    var coverUrl: String = "",
+    val coverUrl: String = "",
     var title: String = "",
     var author: String = "",
     var isbn: String = "",
     var description: String = "",
     var isLoading: Boolean = false,
-    var location: LatLng? = null
+    var location: LatLng? = null,
+    val showUploadDialog: Boolean = false
 )
 
 class ShelfABookViewModel(
@@ -49,7 +51,6 @@ class ShelfABookViewModel(
             is ShelfABookEvent.DescriptionChange -> onDescriptionChange(description = event.description)
             ShelfABookEvent.ShelfBook -> onShelfBook()
             ShelfABookEvent.NavBack -> sendEvent(UiEvent.NavBack)
-            ShelfABookEvent.UploadCover -> sendEvent(UiEvent.SnackbarToast("封面已上传"))
 
             is ShelfABookEvent.GetCurrentLocation -> {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -67,7 +68,22 @@ class ShelfABookViewModel(
                     }
                 }
             }
+
+            ShelfABookEvent.DismissUploadCoverDialog -> {
+                dismissUploadCoverDialog()
+            }
+            ShelfABookEvent.ShowUploadCoverDialog -> {
+                showUploadCoverDialog()
+            }
         }
+    }
+
+    private fun showUploadCoverDialog() {
+        state = state.copy(showUploadDialog = true)
+    }
+
+    private fun dismissUploadCoverDialog() {
+        state = state.copy(showUploadDialog = false)
     }
 
     override fun defaultState(): ShelfABookUiState = ShelfABookUiState()

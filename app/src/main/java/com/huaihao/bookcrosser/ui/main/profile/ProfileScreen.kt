@@ -52,11 +52,10 @@ import androidx.constraintlayout.compose.Dimension
 import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.BookProfileItem
 import com.huaihao.bookcrosser.model.toProfileItem
-import com.huaihao.bookcrosser.ui.common.CommonAlertDialog
+import com.huaihao.bookcrosser.ui.common.CommonTextAlertDialog
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.common.LogoutAlert
 import com.huaihao.bookcrosser.ui.common.PostBookCommentDialog
-import com.huaihao.bookcrosser.ui.common.UpdateBookCommentDialog
 import com.huaihao.bookcrosser.ui.common.UpdateBookDialog
 import com.huaihao.bookcrosser.ui.main.Destinations.BOOKS_WAITING_FOR_COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
@@ -291,7 +290,7 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 
             if (uiState.showDriftingFinishDialog) {
                 selectedBook?.let { book ->
-                    CommonAlertDialog(
+                    CommonTextAlertDialog(
                         onDismissRequest = { onEvent(ProfileEvent.DismissFinishDriftingDialog) },
                         onConfirmation = { onEvent(ProfileEvent.DriftingFinish(book)) },
                         dialogTitle = "收漂确认",

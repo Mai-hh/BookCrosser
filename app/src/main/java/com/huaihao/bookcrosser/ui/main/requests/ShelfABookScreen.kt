@@ -1,36 +1,28 @@
 package com.huaihao.bookcrosser.ui.main.requests
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddLocation
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +35,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.ui.common.LimitedOutlinedTextField
+import com.huaihao.bookcrosser.ui.common.UploadCoverDialog
+import com.huaihao.bookcrosser.ui.common.UploadImageDialog
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookEvent
 import com.huaihao.bookcrosser.viewmodel.main.ShelfABookUiState
@@ -53,6 +47,21 @@ const val exampleImageAddress =
 
 @Composable
 fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> Unit) {
+
+    if (uiState.showUploadDialog) {
+        UploadImageDialog(
+            onDismiss = {
+                onEvent(ShelfABookEvent.DismissUploadCoverDialog)
+            },
+            onConfirm = { coverUrl ->
+                onEvent(ShelfABookEvent.CoverUrlChange(coverUrl))
+                onEvent(ShelfABookEvent.DismissUploadCoverDialog)
+            },
+            imageUrl = uiState.coverUrl,
+            imageDescription = "封面"
+        )
+    }
+
     Column(
         Modifier
             .fillMaxSize(),
@@ -68,7 +77,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                val (cover, info, action) = createRefs()
+                val (cover, action) = createRefs()
                 Card(modifier = Modifier
                     .constrainAs(cover) {
                         top.linkTo(parent.top)
@@ -77,8 +86,19 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                         bottom.linkTo(parent.bottom)
                     }
                     .fillMaxSize()) {
+
+                    uiState.coverUrl.ifBlank {
+                        Image(
+                            painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                            contentDescription = "封面",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        return@Card
+                    }
+
                     AsyncImage(
-                        model = exampleImageAddress,
+                        model = uiState.coverUrl,
                         placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
@@ -88,7 +108,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
 
                 FilterChip(
                     selected = true,
-                    onClick = { onEvent(ShelfABookEvent.UploadCover) },
+                    onClick = { onEvent(ShelfABookEvent.ShowUploadCoverDialog) },
                     label = {
                         Text(text = "上传封面")
                     },
@@ -122,7 +142,8 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())) {
+                        .verticalScroll(rememberScrollState())
+                ) {
                     Text(
                         text = "书籍信息",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
@@ -150,6 +171,7 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
                             label = "简介（可选）",
                             maxLength = 100,
                             maxLines = 4,
+                            singleLine = false,
                             value = uiState.description,
                             onValueChange = { onEvent(ShelfABookEvent.DescriptionChange(it)) },
                             modifier = Modifier.fillMaxWidth()

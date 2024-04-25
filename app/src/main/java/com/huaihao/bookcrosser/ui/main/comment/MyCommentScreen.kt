@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.huaihao.bookcrosser.ui.common.CommonAlertDialog
+import com.huaihao.bookcrosser.ui.common.CommonTextAlertDialog
 import com.huaihao.bookcrosser.ui.common.UpdateBookCommentDialog
 import com.huaihao.bookcrosser.ui.main.profile.PlaceHolderScreen
 import com.huaihao.bookcrosser.viewmodel.main.MyCommentEvent
@@ -34,7 +34,7 @@ fun MyCommentScreen(uiState: MyCommentUiState, onEvent: (MyCommentEvent) -> Unit
 
     if (uiState.showDeleteDialog) {
         uiState.selectedComment?.comment?.let { comment ->
-            CommonAlertDialog(
+            CommonTextAlertDialog(
                 onDismissRequest = {
                     onEvent(MyCommentEvent.DismissDeleteDialog)
                 },

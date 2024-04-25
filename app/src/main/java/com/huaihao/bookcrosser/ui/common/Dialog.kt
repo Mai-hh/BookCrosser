@@ -1,15 +1,18 @@
 package com.huaihao.bookcrosser.ui.common
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material3.AlertDialog
@@ -17,6 +20,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,11 +36,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
+import com.huaihao.bookcrosser.R
 import com.huaihao.bookcrosser.model.Book
 import com.huaihao.bookcrosser.model.Comment
+import com.huaihao.bookcrosser.ui.main.requests.exampleImageAddress
 import com.huaihao.bookcrosser.ui.theme.BookCrosserTheme
 import com.huaihao.bookcrosser.viewmodel.main.MyCommentEvent
 import com.huaihao.bookcrosser.viewmodel.main.ProfileEvent
@@ -198,7 +208,7 @@ fun UpdateBookCommentDialog(
                     maxLines = 5,
                     maxLength = 200,
                     textStyle = MaterialTheme.typography.bodyMedium,
-                    singLine = false,
+                    singleLine = false,
                     modifier = Modifier,
                 )
 
@@ -271,7 +281,7 @@ fun PostBookCommentDialog(
                     maxLines = 5,
                     maxLength = 200,
                     textStyle = MaterialTheme.typography.bodyMedium,
-                    singLine = false,
+                    singleLine = false,
                     modifier = Modifier,
                 )
 
@@ -301,13 +311,20 @@ fun PostBookCommentDialog(
 }
 
 @Composable
-fun CommonAlertDialog(
+fun UploadCoverDialog(
+
+) {
+
+}
+
+@Composable
+fun CommonTextAlertDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
-    isCancellable: Boolean = true
+    isCancellable: Boolean = true,
 ) {
     AlertDialog(
         icon = {
@@ -339,11 +356,107 @@ fun CommonAlertDialog(
     )
 }
 
+
+@Composable
+fun UploadImageDialog(
+    onDismiss: () -> Unit = {},
+    onConfirm: (String) -> Unit = {},
+    imageUrl: String? = null,
+    imageDescription: String,
+) {
+    var currentUrl by remember { mutableStateOf("") }
+    var url4Load by remember { mutableStateOf(imageUrl) }
+
+    Dialog(onDismissRequest = {
+        onDismiss()
+    }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(375.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                if (url4Load.isNullOrBlank()) {
+                    Image(
+                        painter = painterResource(id = R.mipmap.bc_logo_foreground),
+                        contentDescription = imageDescription,
+                        modifier = Modifier
+                            .height(160.dp)
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    AsyncImage(
+                        model = url4Load,
+                        placeholder = painterResource(id = R.mipmap.bc_logo_foreground),
+                        contentDescription = imageDescription,
+                        modifier = Modifier
+                            .height(160.dp)
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+
+                LimitedOutlinedTextField(
+                    value = currentUrl,
+                    onValueChange = {
+                        currentUrl = it
+                    },
+                    maxLength = 200,
+                    label = "网络图片地址",
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Button(
+                        onClick = {
+                            url4Load = currentUrl
+                        },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("测试")
+                    }
+                    OutlinedButton(
+                        onClick = { onConfirm(currentUrl) },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("确认")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun UploadImagePreview() {
+    BookCrosserTheme {
+        UploadImageDialog(
+            imageUrl = exampleImageAddress,
+            imageDescription = "Logo",
+        )
+    }
+}
+
 @Preview
 @Composable
 fun CommonAlertDialogPreview() {
     BookCrosserTheme {
-        CommonAlertDialog(
+        CommonTextAlertDialog(
             onDismissRequest = {},
             onConfirmation = {},
             dialogTitle = "Title",
