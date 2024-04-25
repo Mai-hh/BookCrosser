@@ -30,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,6 +55,8 @@ import com.huaihao.bookcrosser.model.toProfileItem
 import com.huaihao.bookcrosser.ui.common.CommonAlertDialog
 import com.huaihao.bookcrosser.ui.common.FilterChips
 import com.huaihao.bookcrosser.ui.common.LogoutAlert
+import com.huaihao.bookcrosser.ui.common.PostBookCommentDialog
+import com.huaihao.bookcrosser.ui.common.UpdateBookCommentDialog
 import com.huaihao.bookcrosser.ui.common.UpdateBookDialog
 import com.huaihao.bookcrosser.ui.main.Destinations.BOOKS_WAITING_FOR_COMMENT_ROUTE
 import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
@@ -64,13 +65,22 @@ import com.huaihao.bookcrosser.ui.main.Destinations.MY_UPLOADED_BOOKS_ROUTE
 import com.huaihao.bookcrosser.viewmodel.main.ProfileEvent
 import com.huaihao.bookcrosser.viewmodel.main.ProfileUiState
 
+private val items = listOf(
+    MY_UPLOADED_BOOKS_ROUTE,
+    MY_BORROWED_BOOKS_ROUTE,
+    MY_REQUESTS_ROUTE
+)
+
 @Composable
-fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+fun ProfileScreen(
+    uiState: ProfileUiState,
+    onEvent: (ProfileEvent) -> Unit,
+    firstScreen: String? = MY_UPLOADED_BOOKS_ROUTE
+) {
 
     LaunchedEffect(Unit) {
         onEvent(ProfileEvent.LoadUserProfile)
     }
-
 
     Surface(
         modifier = Modifier
@@ -159,16 +169,15 @@ fun ProfileScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
 
-                var selectedScreen by remember { mutableStateOf(MY_UPLOADED_BOOKS_ROUTE) }
+                var selectedScreen by remember { mutableStateOf(firstScreen) }
+
+
                 FilterChips(
-                    items = listOf(
-                        MY_UPLOADED_BOOKS_ROUTE,
-                        MY_BORROWED_BOOKS_ROUTE,
-                        MY_REQUESTS_ROUTE
-                    ),
+                    items = items,
                     onSelected = { selected ->
                         selectedScreen = selected
-                    }
+                    },
+                    selectedIndex = items.indexOf(selectedScreen)
                 )
 
                 when (selectedScreen) {
@@ -211,9 +220,11 @@ fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     if (uiState.userProfile.booksInRequesting.isNullOrEmpty()) {
         PlaceHolderScreen()
     } else {
-        LazyColumn(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 80.dp)) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp)
+        ) {
             items(uiState.userProfile.booksInRequesting!!) { book ->
                 BookProfileCard(
                     book = book.toProfileItem(),
@@ -231,21 +242,36 @@ fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
 // 这个页面可以查看我借阅的图书，并且决定是否起漂
 @Composable
 fun MyBorrowedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
+
     if (uiState.userProfile.booksBorrowed.isNullOrEmpty()) {
-        PlaceHolderScreen()
+        PlaceHolderScreen(text = "你还没有借阅/可留言的图书~")
     } else {
         uiState.userProfile.booksBorrowed?.let { books ->
-            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+            var selectedBook: Book? by remember { mutableStateOf(null) }
 
-            LazyColumn(modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 80.dp)) {
+            if (uiState.showCommentDialog) {
+                selectedBook?.let { book ->
+                    PostBookCommentDialog(
+                        onDismiss = { onEvent(ProfileEvent.DismissCommentDialog) },
+                        onConfirm = {
+                            onEvent(it)
+                        },
+                        book = book,
+                    )
+                }
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp)
+            ) {
                 items(books) { book ->
                     BookProfileCardBorrowed(
                         book = book.toProfileItem(),
-                        onDriftingFinish = {
+                        onComment = {
                             selectedBook = book
-                            onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                            onEvent(ProfileEvent.ShowCommentDialog)
                         }
                     )
                 }
@@ -261,7 +287,7 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
     } else {
 
         uiState.userProfile.booksUploaded?.let { books ->
-            var selectedBook: Book? by remember { mutableStateOf(books.firstOrNull()) }
+            var selectedBook: Book? by remember { mutableStateOf(null) }
 
             if (uiState.showDriftingFinishDialog) {
                 selectedBook?.let { book ->
@@ -290,9 +316,11 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
             }
 
-            LazyColumn(modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 80.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp)
+            ) {
                 items(books) { book ->
 
                     BookProfileCard(
@@ -339,7 +367,7 @@ fun MyWait4CommentScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Uni
 fun BookProfileCardBorrowed(
     modifier: Modifier = Modifier,
     book: BookProfileItem,
-    onDriftingFinish: () -> Unit = {}
+    onComment: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -391,7 +419,7 @@ fun BookProfileCardBorrowed(
             .padding(8.dp)
         ) {
             OutlinedButton(
-                onClick = { onDriftingFinish() },
+                onClick = { onComment() },
                 colors = ButtonDefaults.outlinedButtonColors().copy(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     contentColor = MaterialTheme.colorScheme.primary

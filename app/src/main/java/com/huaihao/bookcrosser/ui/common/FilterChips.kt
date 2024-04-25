@@ -18,8 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterChips(items: List<String>,modifier: Modifier = Modifier, onSelected: (String) -> Unit = {}) {
-    var selected by remember { mutableIntStateOf(0) }
+fun FilterChips(
+    items: List<String>,
+    modifier: Modifier = Modifier,
+    selectedIndex: Int = 0,
+    onSelected: (String) -> Unit = {}
+) {
+    var selected by remember { mutableIntStateOf(selectedIndex) }
     Row(modifier = modifier) {
         items.forEachIndexed { index, item ->
             FilterChip(

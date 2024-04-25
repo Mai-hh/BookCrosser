@@ -114,7 +114,9 @@ fun ShelfABookScreen(uiState: ShelfABookUiState, onEvent: (ShelfABookEvent) -> U
         ) {
             Column(
                 modifier = Modifier
-                    .padding(vertical = 20.dp, horizontal = 16.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxSize()
             ) {
                 Column(

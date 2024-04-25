@@ -7,11 +7,15 @@ import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.CommentRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.ui.main.Destinations.MY_BORROWED_BOOKS_ROUTE
+import com.huaihao.bookcrosser.ui.main.Destinations.PROFILE_ROUTE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface CommentSquareEvent {
     data object LoadAllComments : CommentSquareEvent
+
+    data object NavToComment : CommentSquareEvent
 }
 
 data class CommentSquareUiState(
@@ -24,6 +28,10 @@ class CommentSquareViewModel(private val commentRepo: CommentRepo) :
         when (event) {
             is CommentSquareEvent.LoadAllComments -> {
                 loadAllComments()
+            }
+
+            CommentSquareEvent.NavToComment -> {
+                sendEvent(UiEvent.Navigate("${PROFILE_ROUTE}/${MY_BORROWED_BOOKS_ROUTE}"))
             }
         }
     }

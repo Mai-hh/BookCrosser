@@ -8,6 +8,7 @@ import com.huaihao.bookcrosser.network.ApiResult
 import com.huaihao.bookcrosser.repo.CommentRepo
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.ui.main.Destinations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -27,6 +28,8 @@ sealed interface MyCommentEvent {
     data object DismissDeleteDialog : MyCommentEvent
 
     data class DeleteComment(val commentId: Long) : MyCommentEvent
+
+    data object NavToComment : MyCommentEvent
 
 }
 
@@ -72,6 +75,8 @@ class MyCommentViewModel(private val commentRepo: CommentRepo) :
                 state = state.copy(selectedComment = event.selectedComment)
                 showDeleteDialog()
             }
+
+            MyCommentEvent.NavToComment -> sendEvent(UiEvent.Navigate("${Destinations.PROFILE_ROUTE}/${Destinations.MY_BORROWED_BOOKS_ROUTE}"))
         }
 
     }

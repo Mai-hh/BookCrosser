@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Person
@@ -67,22 +68,47 @@ fun CommentSquareScreen(uiState: CommentSquareUiState, onEvent: (CommentSquareEv
         onEvent(CommentSquareEvent.LoadAllComments)
     }
 
-    if (uiState.comments.isEmpty()) {
-        PlaceHolderScreen(text = "留言广场空空如也~")
-        return
-    }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(uiState.comments) { comment ->
-            CommentCard(
+        if (uiState.comments.isEmpty()) {
+            PlaceHolderScreen(text = "留言广场空空如也~")
+            FloatingActionButton(
+                onClick = { onEvent(CommentSquareEvent.NavToComment) },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .padding(horizontal = 16.dp),
-                comment = comment
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.Comment,
+                    contentDescription = "Add Comment"
+                )
+            }
+            return
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(uiState.comments) { comment ->
+                CommentCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    comment = comment
+                )
+            }
+        }
+        FloatingActionButton(
+            onClick = { onEvent(CommentSquareEvent.NavToComment) },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Rounded.Comment,
+                contentDescription = "Add Comment"
             )
         }
     }

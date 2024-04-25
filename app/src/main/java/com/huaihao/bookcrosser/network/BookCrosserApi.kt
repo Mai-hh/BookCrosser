@@ -184,5 +184,11 @@ interface BookCrosserApiService {
     @DELETE("/comment/delete")
     suspend fun deleteComment(@Query("id") commentId: Long): Response<Unit>
 
+    @POST("/comment/post")
+    suspend fun postComment(
+        @Query("bookId") bookId: Long,
+        @Query("content") content: String
+    ): Response<Unit>
+
 }
 

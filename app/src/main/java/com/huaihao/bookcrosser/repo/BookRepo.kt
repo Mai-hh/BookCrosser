@@ -15,7 +15,8 @@ interface BookRepo {
     suspend fun drift(driftingRequestId: Long): Flow<ApiResult>
     suspend fun rejectDriftingRequest(driftingRequestId: Long): Flow<ApiResult>
     suspend fun driftingFinish(bookId: Long): Flow<ApiResult>
-
     suspend fun updateBook(bookId: Long, title: String, author: String, description: String): Flow<ApiResult>
+
+    suspend fun comment(bookId: Long, content: String): Flow<ApiResult>
 
 }

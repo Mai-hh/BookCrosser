@@ -159,4 +159,19 @@ class BookRepoImpl : BookRepo {
         Log.e(TAG, "updateBook: ${it.message}")
         it.printStackTrace()
     }
+
+    override suspend fun comment(bookId: Long, content: String): Flow<ApiResult> = flow {
+        emit(ApiResult.Loading())
+        val response = api.postComment(bookId, content)
+        NetUtil.checkResponse(response, this)
+    }.flowOn(dispatcher).catch {
+        emit(
+            ApiResult.Error(
+                code = 1,
+                errorMessage = "未知错误: ${it.message}",
+            )
+        )
+        Log.e(TAG, "comment: ${it.message}")
+        it.printStackTrace()
+    }
 }

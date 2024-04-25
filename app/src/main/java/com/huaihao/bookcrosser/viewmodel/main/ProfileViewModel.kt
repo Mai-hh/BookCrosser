@@ -20,11 +20,13 @@ import kotlinx.coroutines.launch
 
 
 data class ProfileUiState(
-    var userProfile: UserProfile = UserProfile(),
-    var isSaving: Boolean = false,
-    var isUpdatingBook: Boolean = false,
-    var showUpdateBookDialog: Boolean = false,
-    var showDriftingFinishDialog: Boolean = false
+    val userProfile: UserProfile = UserProfile(),
+    val isSaving: Boolean = false,
+    val isUpdatingBook: Boolean = false,
+    val isPostingComment: Boolean = false,
+    val showUpdateBookDialog: Boolean = false,
+    val showDriftingFinishDialog: Boolean = false,
+    val showCommentDialog: Boolean = false
 )
 
 sealed interface ProfileEvent {
@@ -58,6 +60,12 @@ sealed interface ProfileEvent {
 
     data object ShowUpdateBookDialog : ProfileEvent
     data object ShowFinishDriftingDialog : ProfileEvent
+
+    data object ShowCommentDialog : ProfileEvent
+
+    data object DismissCommentDialog : ProfileEvent
+
+    data class Comment(val bookId: Long, val content: String) : ProfileEvent
 }
 
 class ProfileViewModel(
@@ -123,12 +131,60 @@ class ProfileViewModel(
             ProfileEvent.DismissFinishDriftingDialog -> {
                 state = state.copy(showDriftingFinishDialog = false)
             }
+
             ProfileEvent.ShowFinishDriftingDialog -> {
                 state = state.copy(showDriftingFinishDialog = true)
             }
 
             ProfileEvent.ResetState -> state = state.copy(isSaving = false)
+
+            is ProfileEvent.Comment -> {
+                comment(event.bookId, event.content)
+            }
+
+            ProfileEvent.DismissCommentDialog -> {
+                dismissCommentDialog()
+            }
+
+            ProfileEvent.ShowCommentDialog -> {
+                showCommentDialog()
+            }
         }
+    }
+
+    private fun comment(bookId: Long, content: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookRepo.comment(bookId, content).collect { result ->
+                when (result) {
+                    is ApiResult.Success<*> -> {
+                        state = state.copy(showCommentDialog = false)
+                        sendEvent(UiEvent.SnackbarToast("评论成功"))
+                        onLoadUserProfile()
+                        dismissCommentDialog()
+                        state = state.copy(isPostingComment = false)
+                    }
+
+                    is ApiResult.Error -> {
+                        Log.e(TAG, "comment: ${result.errorMessage}")
+                        sendEvent(UiEvent.SnackbarToast("评论失败"))
+                        state = state.copy(isPostingComment = false)
+                        dismissCommentDialog()
+                    }
+
+                    is ApiResult.Loading -> {
+                        state = state.copy(isPostingComment = true)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun dismissCommentDialog() {
+        state = state.copy(showCommentDialog = false)
+    }
+
+    private fun showCommentDialog() {
+        state = state.copy(showCommentDialog = true)
     }
 
     private fun getCurrentLocation() {

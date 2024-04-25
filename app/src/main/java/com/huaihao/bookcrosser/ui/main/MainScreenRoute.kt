@@ -97,7 +97,7 @@ fun MainScreenRoute(
         currentRoute == SEARCH_ROUTE -> selectedItem = 1
         currentRoute == REQUESTS_ROUTE -> selectedItem = 2
         currentRoute == REVIEWS_ROUTE -> selectedItem = 3
-        currentRoute == PROFILE_ROUTE || currentRoute == PROFILE_SETTINGS_ROUTE -> selectedItem = 4
+        currentRoute == PROFILE_ROUTE || currentRoute == PROFILE_SETTINGS_ROUTE || currentRoute?.startsWith("$PROFILE_ROUTE/") == true -> selectedItem = 4
     }
 
 
@@ -198,6 +198,21 @@ fun MainScreenRoute(
                 )
                 BaseScreenWrapper(navController = navController, viewModel = viewModel) {
                     ProfileScreen(uiState = viewModel.state, onEvent = viewModel::onEvent)
+                }
+            }
+
+            composable(
+                route = "${PROFILE_ROUTE}/{firstScreen}",
+                arguments = listOf(
+                    navArgument("firstScreen") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                val firstScreen = backStackEntry.arguments?.getString("firstScreen")
+                val viewModel = koinNavViewModel<ProfileViewModel>(
+                    viewModelStoreOwner = navController.getViewModelStoreOwner(navController.graph.id)
+                )
+                BaseScreenWrapper(navController = navController, viewModel = viewModel) {
+                    ProfileScreen(uiState = viewModel.state, onEvent = viewModel::onEvent, firstScreen = firstScreen)
                 }
             }
 
