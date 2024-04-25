@@ -18,4 +18,6 @@ interface BookRepo {
     suspend fun updateBook(bookId: Long, title: String, author: String, description: String): Flow<ApiResult>
     suspend fun comment(bookId: Long, content: String): Flow<ApiResult>
 
+    suspend fun deleteBook(bookId: Long): Flow<ApiResult>
+
 }

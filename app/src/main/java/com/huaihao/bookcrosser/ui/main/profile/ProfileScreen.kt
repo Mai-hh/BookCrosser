@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PinDrop
@@ -33,6 +34,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -319,6 +321,18 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                 }
             }
 
+            if (uiState.showDeleteBookDialog) {
+                selectedBook?.let {
+                    CommonTextAlertDialog(
+                        onDismiss = { onEvent(ProfileEvent.DismissDeleteBookDialog) },
+                        onConfirm = { onEvent(ProfileEvent.Delete(it.id)) },
+                        dialogTitle = "下架确认",
+                        dialogText = "你确定要下架\"${it.title}\"吗？\n这将删除此书的所有信息和相关留言",
+                        icon = Icons.Rounded.DeleteOutline
+                    )
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -342,6 +356,10 @@ fun MyUploadedScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                         onDriftingFinish = {
                             selectedBook = book
                             onEvent(ProfileEvent.ShowFinishDriftingDialog)
+                        },
+                        onBookDelete = {
+                            selectedBook = book
+                            onEvent(ProfileEvent.ShowDeleteBookDialog)
                         }
                     )
                 }
@@ -433,14 +451,15 @@ fun BookProfileCard(
     onLocateSelected: () -> Unit = {},
     onBookInfoChanged: () -> Unit = {},
     onDriftingFinish: () -> Unit = {},
+    onBookDelete: () -> Unit = {},
     showUpdateBookBtn: Boolean = true
 ) {
     var showStatusCard by remember {
         mutableStateOf(false)
     }
 
-    val showDriftingFinishBtn by remember {
-        mutableStateOf(book.ownerId != book.uploaderId)
+    val uploadedAndOwned by remember {
+        mutableStateOf(book.ownerId == book.uploaderId)
     }
 
     Surface {
@@ -555,7 +574,7 @@ fun BookProfileCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    if (showDriftingFinishBtn) {
+                    if (!uploadedAndOwned) {
                         OutlinedButton(
                             onClick = {
                                 onDriftingFinish()
@@ -569,7 +588,17 @@ fun BookProfileCard(
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    if (uploadedAndOwned) {
+                        OutlinedIconButton(
+                            onClick = {
+                                onBookDelete()
+                            }
+                        ) {
+                            Icon(Icons.Rounded.DeleteOutline, contentDescription = "下架")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     IconButton(
                         colors = IconButtonDefaults.iconButtonColors(

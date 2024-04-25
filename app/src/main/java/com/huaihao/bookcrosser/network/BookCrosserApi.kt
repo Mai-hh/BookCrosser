@@ -142,6 +142,9 @@ interface BookCrosserApiService {
         @Query("exact") matchComplete: Boolean
     ): Response<List<Book>>
 
+    @DELETE("/book/delete")
+    suspend fun deleteBook(@Query("bookId") bookId: Long): Response<Unit>
+
     @GET("/book/searchByIsbn")
     suspend fun searchByIsbn(@Query("isbn") isbn: String): Response<List<Book>>
 

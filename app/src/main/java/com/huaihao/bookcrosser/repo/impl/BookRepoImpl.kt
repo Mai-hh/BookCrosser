@@ -174,4 +174,21 @@ class BookRepoImpl : BookRepo {
         Log.e(TAG, "comment: ${it.message}")
         it.printStackTrace()
     }
+
+    override suspend fun deleteBook(bookId: Long): Flow<ApiResult> {
+        return flow {
+            emit(ApiResult.Loading())
+            val response = api.deleteBook(bookId)
+            NetUtil.checkResponse(response, this)
+        }.flowOn(dispatcher).catch {
+            emit(
+                ApiResult.Error(
+                    code = 1,
+                    errorMessage = "未知错误: ${it.message}",
+                )
+            )
+            Log.e(TAG, "deleteBook: ${it.message}")
+            it.printStackTrace()
+        }
+    }
 }

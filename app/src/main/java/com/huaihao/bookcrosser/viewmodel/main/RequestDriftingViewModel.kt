@@ -71,7 +71,7 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
                                 "/" +
                                 "${event.driftingRequest.requester.username}" +
                                 "/" +
-                                "${event.driftingRequest.requester.bio}" + "/" +
+                                "${event.driftingRequest.requester.bio} " + "/" +
                                 Type.USER
                     )
                 )

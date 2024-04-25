@@ -27,7 +27,8 @@ data class ProfileUiState(
     val isPostingComment: Boolean = false,
     val showUpdateBookDialog: Boolean = false,
     val showDriftingFinishDialog: Boolean = false,
-    val showCommentDialog: Boolean = false
+    val showCommentDialog: Boolean = false,
+    val showDeleteBookDialog: Boolean = false
 )
 
 sealed interface ProfileEvent {
@@ -67,6 +68,12 @@ sealed interface ProfileEvent {
     data object DismissCommentDialog : ProfileEvent
 
     data class Comment(val bookId: Long, val content: String) : ProfileEvent
+
+    data object ShowDeleteBookDialog : ProfileEvent
+
+    data object DismissDeleteBookDialog : ProfileEvent
+
+    data class Delete(val bookId: Long) : ProfileEvent
 }
 
 class ProfileViewModel(
@@ -154,7 +161,49 @@ class ProfileViewModel(
             is ProfileEvent.NavToBookComments -> {
                 sendEvent(UiEvent.Navigate("${COMMENT_ROUTE}/${event.bookId}"))
             }
+
+            is ProfileEvent.Delete -> {
+                deleteBook(event.bookId)
+            }
+
+            ProfileEvent.DismissDeleteBookDialog -> {
+                dismissDeleteBookDialog()
+            }
+
+            ProfileEvent.ShowDeleteBookDialog -> {
+                showDeleteBookDialog()
+            }
         }
+    }
+
+    private fun deleteBook(bookId: Long) {
+           viewModelScope.launch(Dispatchers.IO) {
+                bookRepo.deleteBook(bookId).collect { result ->
+                    when (result) {
+                        is ApiResult.Success<*> -> {
+                            sendEvent(UiEvent.SnackbarToast("删除成功"))
+                            onLoadUserProfile()
+                            dismissDeleteBookDialog()
+                        }
+
+                        is ApiResult.Error -> {
+                            Log.e(TAG, "deleteBook: ${result.errorMessage}")
+                            sendEvent(UiEvent.SnackbarToast("删除失败"))
+                            dismissDeleteBookDialog()
+                        }
+
+                        is ApiResult.Loading -> {}
+                    }
+                }
+            }
+    }
+
+    private fun showDeleteBookDialog() {
+        state = state.copy(showDeleteBookDialog = true)
+    }
+
+    private fun dismissDeleteBookDialog() {
+        state = state.copy(showDeleteBookDialog = false)
     }
 
     private fun comment(bookId: Long, content: String) {
@@ -162,7 +211,6 @@ class ProfileViewModel(
             bookRepo.comment(bookId, content).collect { result ->
                 when (result) {
                     is ApiResult.Success<*> -> {
-                        state = state.copy(showCommentDialog = false)
                         sendEvent(UiEvent.SnackbarToast("评论成功"))
                         onLoadUserProfile()
                         dismissCommentDialog()
@@ -266,7 +314,7 @@ class ProfileViewModel(
 
     private fun onLogout() {
         MMKVUtil.clear(USER_TOKEN)
-        sendEvent(UiEvent.Finish)
+        sendEvent(UiEvent.Navigate(AUTH_ROUTE))
     }
 
     private fun onUpdateProfile(
