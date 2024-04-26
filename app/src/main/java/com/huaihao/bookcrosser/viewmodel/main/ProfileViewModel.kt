@@ -314,7 +314,7 @@ class ProfileViewModel(
 
     private fun onLogout() {
         MMKVUtil.clear(USER_TOKEN)
-        sendEvent(UiEvent.Navigate(AUTH_ROUTE))
+        sendEvent(UiEvent.Finish)
     }
 
     private fun onUpdateProfile(

@@ -233,7 +233,8 @@ fun MyRequestsScreen(uiState: ProfileUiState, onEvent: (ProfileEvent) -> Unit) {
                     onLocateSelected = {
                         onEvent(ProfileEvent.LocatedBook(book))
                     },
-                    showUpdateBookBtn = false
+                    showUpdateBookBtn = false,
+                    showDeleteBookBtn = false
                 )
             }
         }
@@ -452,7 +453,8 @@ fun BookProfileCard(
     onBookInfoChanged: () -> Unit = {},
     onDriftingFinish: () -> Unit = {},
     onBookDelete: () -> Unit = {},
-    showUpdateBookBtn: Boolean = true
+    showUpdateBookBtn: Boolean = true,
+    showDeleteBookBtn: Boolean = true
 ) {
     var showStatusCard by remember {
         mutableStateOf(false)
@@ -588,7 +590,7 @@ fun BookProfileCard(
                         }
                     }
 
-                    if (uploadedAndOwned) {
+                    if (uploadedAndOwned && showDeleteBookBtn) {
                         OutlinedIconButton(
                             onClick = {
                                 onBookDelete()
