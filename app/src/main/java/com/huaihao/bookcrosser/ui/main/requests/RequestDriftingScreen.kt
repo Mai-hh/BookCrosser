@@ -70,6 +70,16 @@ fun RequestDriftingScreen(
         )
     }
 
+    if (uiState.showRejectDialog) {
+        CommonTextAlertDialog(
+            onDismiss = { onEvent(RequestDriftingEvent.DismissRejectDialog) },
+            onConfirm = { onEvent(RequestDriftingEvent.RejectDriftingRequest) },
+            dialogTitle = "拒绝",
+            dialogText = "确认拒绝\"${uiState.selectedRequest!!.book.title}\"吗？",
+            icon = Icons.Rounded.RoundaboutRight
+        )
+    }
+
     LaunchedEffect(Unit) {
         onEvent(RequestDriftingEvent.LoadDriftingRequests)
     }

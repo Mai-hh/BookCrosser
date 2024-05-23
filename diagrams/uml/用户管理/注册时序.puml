@@ -1,47 +1,67 @@
 @startuml
 actor User
-participant RegistrationActivity
-participant RegistrationFragment
-participant RegistrationViewModel
-participant RegistrationService
-participant EmailService
+participant MainActivity
+participant SignUpScreen
+participant SignUpViewModel
+participant AuthRepository
+participant AuthUtil
 participant UserRepository
+participant JWTService
 
-User -> RegistrationActivity: 进入注册页面
-RegistrationActivity -> RegistrationFragment: 显示注册表单
+User -> MainActivity: 进入注册页面
+MainActivity -> SignUpScreen: 显示注册表单
 
-User -> RegistrationFragment: 填写注册信息
-User -> RegistrationFragment: 提交注册表单
+User -> SignUpScreen: 填写注册信息
+User -> SignUpScreen: 提交注册表单
 
-RegistrationFragment -> RegistrationViewModel: submitRegistration()
+SignUpScreen -> SignUpViewModel: submitRegistration()
 
-RegistrationViewModel -> RegistrationViewModel: 校验表单数据
+SignUpViewModel -> SignUpViewModel: 校验表单数据
 alt 表单数据无效
-    RegistrationViewModel -> RegistrationFragment: 返回表单验证错误
-    RegistrationFragment -> User: 显示错误提示
+   SignUpViewModel -> SignUpScreen: 返回表单验证错误
+   SignUpScreen -> User: 显示错误提示
 else 表单数据有效
-    RegistrationViewModel -> RegistrationService: register()
+   SignUpViewModel -> AuthRepository: register()
 
-    RegistrationService -> UserRepository: findByUsername()
-    UserRepository -> RegistrationService: 返回查询结果
+   AuthRepository -> UserRepository: findByUsername()
+   UserRepository -> AuthRepository: 返回查询结果
 
-    RegistrationService -> UserRepository: findByEmail()
-    UserRepository -> RegistrationService: 返回查询结果
+   AuthRepository -> UserRepository: findByEmail()
+   UserRepository -> AuthRepository: 返回查询结果
 
-    alt 用户名或邮箱已存在
-        RegistrationService -> RegistrationViewModel: 返回用户已存在错误
-        RegistrationViewModel -> RegistrationFragment: 显示错误提示
-        RegistrationFragment -> User: 显示错误提示
-    else 用户名和邮箱未被注册
-        RegistrationService -> EmailService: sendVerificationEmail()
-        EmailService -> RegistrationService: 返回邮件发送结果
+   alt 用户名或邮箱已存在
+       AuthRepository -> SignUpViewModel: 返回用户已存在错误
+       SignUpViewModel -> SignUpScreen: 显示错误提示
+       SignUpScreen -> User: 显示错误提示
+   else 用户名和邮箱未被注册
+       AuthRepository -> AuthUtil: sendVerificationEmail()
+       AuthUtil -> AuthRepository: 返回邮件发送结果
 
-        RegistrationService -> UserRepository: save()
-        UserRepository -> RegistrationService: 返回保存结果
+       AuthRepository -> UserRepository: save()
+       UserRepository -> AuthRepository: 返回保存结果
 
-        RegistrationService -> RegistrationViewModel: 返回注册成功
-        RegistrationViewModel -> RegistrationFragment: 显示注册成功提示
-        RegistrationFragment -> User: 显示注册成功提示
-    end
+       AuthRepository -> JWTService: generateToken()
+       JWTService -> AuthRepository: 返回生成的JWT
+
+       AuthRepository -> SignUpViewModel: 返回注册成功和JWT
+       SignUpViewModel -> SignUpScreen: 显示注册成功提示
+       SignUpScreen -> User: 显示注册成功提示
+   end
+end
+
+User -> SignUpScreen: 点击登录按钮
+SignUpScreen -> SignUpViewModel: login()
+
+SignUpViewModel -> AuthRepository: login()
+AuthRepository -> JWTService: validateToken()
+
+alt JWT有效
+   JWTService -> AuthRepository: 返回解析后的用户信息
+   AuthRepository -> SignUpViewModel: 返回登录成功
+   SignUpViewModel -> SignUpScreen: 跳转到主页面
+else JWT无效
+   JWTService -> AuthRepository: 返回JWT无效错误
+   AuthRepository -> SignUpViewModel: 返回登录失败
+   SignUpViewModel -> SignUpScreen: 显示登录失败提示
 end
 @enduml

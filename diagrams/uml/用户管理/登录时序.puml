@@ -1,50 +1,50 @@
 @startuml
 actor User
-participant LoginActivity
-participant LoginFragment
+participant MainActivity
+participant LoginScreen
 participant LoginViewModel
-participant AuthenticationService
+participant AuthRepository
 participant UserRepository
 participant JWTService
 
-User -> LoginActivity: 进入登录页面
-LoginActivity -> LoginFragment: 显示登录表单
+User -> MainActivity: 进入登录页面
+MainActivity -> LoginScreen: 显示登录表单
 
-User -> LoginFragment: 填写登录信息
-User -> LoginFragment: 提交登录表单
+User -> LoginScreen: 填写登录信息
+User -> LoginScreen: 提交登录表单
 
-LoginFragment -> LoginViewModel: login()
+LoginScreen -> LoginViewModel: login()
 
 LoginViewModel -> LoginViewModel: 校验表单数据
 alt 表单数据无效
-    LoginViewModel -> LoginFragment: 返回表单验证错误
-    LoginFragment -> User: 显示错误提示
+    LoginViewModel -> LoginScreen: 返回表单验证错误
+    LoginScreen -> User: 显示错误提示
 else 表单数据有效
-    LoginViewModel -> AuthenticationService: authenticate()
+    LoginViewModel -> AuthRepository: authenticate()
 
-    AuthenticationService -> UserRepository: findByUsername()
-    UserRepository -> AuthenticationService: 返回用户信息
+    AuthRepository -> UserRepository: findByUsername()
+    UserRepository -> AuthRepository: 返回用户信息
 
     alt 用户名不存在
-        AuthenticationService -> LoginViewModel: 返回用户不存在错误
-        LoginViewModel -> LoginFragment: 显示错误提示
-        LoginFragment -> User: 显示错误提示
+        AuthRepository -> LoginViewModel: 返回用户不存在错误
+        LoginViewModel -> LoginScreen: 显示错误提示
+        LoginScreen -> User: 显示错误提示
     else 用户名存在
-        AuthenticationService -> AuthenticationService: 验证密码
+        AuthRepository -> AuthRepository: 验证密码
         alt 密码错误
-            AuthenticationService -> LoginViewModel: 返回密码错误
-            LoginViewModel -> LoginFragment: 显示错误提示
-            LoginFragment -> User: 显示错误提示
+            AuthRepository -> LoginViewModel: 返回密码错误
+            LoginViewModel -> LoginScreen: 显示错误提示
+            LoginScreen -> User: 显示错误提示
         else 密码正确
-            AuthenticationService -> JWTService: generateToken()
-            JWTService -> AuthenticationService: 返回JWT token
+            AuthRepository -> JWTService: generateToken()
+            JWTService -> AuthRepository: 返回JWT token
 
-            AuthenticationService -> LoginViewModel: 返回登录成功
-            LoginViewModel -> LoginFragment: 显示登录成功提示
-            LoginFragment -> User: 显示登录成功提示
+            AuthRepository -> LoginViewModel: 返回登录成功
+            LoginViewModel -> LoginScreen: 显示登录成功提示
+            LoginScreen -> User: 显示登录成功提示
 
-            LoginFragment -> LoginActivity: 跳转到主页面
-            LoginActivity -> User: 显示主页面
+            LoginScreen -> MainActivity: 跳转到主页面
+            MainActivity -> User: 显示主页面
         end
     end
 end

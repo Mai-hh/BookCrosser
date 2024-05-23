@@ -2,7 +2,7 @@
     <string name="app_name">BookCrosser</string>
     <string name="content_test">BookCrosserBookCrosserBookCrosserBookCrosserBookCrosserBookCrosser</string>
 
-    <string name="app_name_space">Book Crosser</string>
+    <string name="app_name_space">图书 漂流</string>
     <string name="login">登录</string>
     <string name="forget_password">忘记密码</string>
     <string name="register">注册</string>

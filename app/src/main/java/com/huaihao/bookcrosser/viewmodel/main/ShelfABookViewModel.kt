@@ -8,6 +8,7 @@ import com.huaihao.bookcrosser.repo.BookRepo
 import com.huaihao.bookcrosser.service.ILocationService
 import com.huaihao.bookcrosser.ui.common.BaseViewModel
 import com.huaihao.bookcrosser.ui.common.UiEvent
+import com.huaihao.bookcrosser.util.AuthUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,6 +25,12 @@ sealed interface ShelfABookEvent {
 
     data object GetCurrentLocation : ShelfABookEvent
 
+    data object ShowScanning : ShelfABookEvent
+
+    data class DoneScanning(val isbn: String) : ShelfABookEvent
+
+    data object CloseScanning : ShelfABookEvent
+
 }
 
 data class ShelfABookUiState(
@@ -34,7 +41,9 @@ data class ShelfABookUiState(
     var description: String = "",
     var isLoading: Boolean = false,
     var location: LatLng? = null,
-    val showUploadDialog: Boolean = false
+    val showUploadDialog: Boolean = false,
+    val isbnError: String? = null,
+    val showScanningBarcode: Boolean = false
 )
 
 class ShelfABookViewModel(
@@ -75,6 +84,21 @@ class ShelfABookViewModel(
             ShelfABookEvent.ShowUploadCoverDialog -> {
                 showUploadCoverDialog()
             }
+
+            ShelfABookEvent.ShowScanning -> {
+                state = state.copy(showScanningBarcode = true)
+            }
+
+            is ShelfABookEvent.DoneScanning -> {
+                state = state.copy(
+                    isbn = event.isbn,
+                    showScanningBarcode = false
+                )
+            }
+
+            ShelfABookEvent.CloseScanning -> {
+                state = state.copy(showScanningBarcode = false)
+            }
         }
     }
 
@@ -108,7 +132,8 @@ class ShelfABookViewModel(
 
     private fun onIsbnChange(isbn: String) {
         state = state.copy(
-            isbn = isbn
+            isbn = isbn,
+            isbnError = AuthUtil.validateISBN(isbn)
         )
     }
 

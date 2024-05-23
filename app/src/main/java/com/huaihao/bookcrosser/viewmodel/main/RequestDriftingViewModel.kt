@@ -118,6 +118,7 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
                     is ApiResult.Success<*> -> {
                         sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 成功"))
                         Log.d(TAG, "onRejectDriftingRequest: Success")
+                        dismissRejectDialog()
                         onLoadDriftingRequests()
                     }
 
@@ -125,6 +126,7 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
                         sendEvent(UiEvent.SnackbarToast("拒绝 ${driftingRequest.book.title} 失败\n原因: ${result.errorMessage}"))
                         Log.d(TAG, "onRejectDriftingRequest: Error")
                         onLoadDriftingRequests()
+                        dismissRejectDialog()
                     }
 
                     is ApiResult.Loading -> {
@@ -143,12 +145,14 @@ class RequestDriftingViewModel(private val bookRepo: BookRepo) :
                         sendEvent(UiEvent.SnackbarToast("起漂 ${driftingRequest.book.title} 成功"))
                         Log.d(TAG, "onDrift: Success")
                         onLoadDriftingRequests()
+                        dismissDriftDialog()
                     }
 
                     is ApiResult.Error -> {
                         sendEvent(UiEvent.SnackbarToast("起漂 ${driftingRequest.book.title} 失败"))
                         Log.d(TAG, "onDrift: Error")
                         onLoadDriftingRequests()
+                        dismissDriftDialog()
                     }
 
                     is ApiResult.Loading -> {

@@ -154,7 +154,7 @@ fun LimitedOutlinedTextField(
         textStyle = textStyle,
         supportingText = supportingText,
         placeholder = placeholder,
-        label = { Text(label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)) },
+        label = { Text(label) },
         modifier = modifier,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions
