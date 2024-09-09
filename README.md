@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Welcome to [Book Crosser], an innovative Android application built using Kotlin and the latest UI toolkit, Jetpack Compose. This project adopts the MVI (Model-View-Intent) architecture and is styled with Material Design 3, ensuring a modern and seamless user experience. Additionally, it integrates Google Maps Compose API for rich mapping features.
+Welcome to [Book Crosser], an innovative Android application built using Kotlin and the latest UI toolkit, Jetpack Compose. This project adopts the MVI (Model-View-Intent) architecture and is styled with Material Design 3, ensuring a modern and seamless user experience. Additionally, it integrates Google Maps Compose API for rich mapping features. For the server end, please visit [BookCrosser Android Server](https://github.com/Mai-hh/BCbackend).
 
 ## 📱Shortcut
 <div align="center">
@@ -25,7 +25,7 @@ Welcome to [Book Crosser], an innovative Android application built using Kotlin 
 
 - **Modern Kotlin-Based Application**: Utilizing the powerful and concise language features of Kotlin for Android development.
 - **Jetpack Compose UI**: Building intuitive and dynamic UIs with less code using Compose UI.
-- **MVI Architecture**: Ensuring a predictable and manageable state in the app by following the Model-View-Intent pattern.
+- **MVI Architecture**: Ensuring the app's predictable and manageable state by following the Model-View-Intent pattern.
 - **Material Design 3**: Incorporating the latest Material Design guidelines for a visually appealing and responsive interface.
 - **Google Maps Compose Integration**: Embedding interactive maps directly into the app’s interfaces with Google Maps Compose API.
 
