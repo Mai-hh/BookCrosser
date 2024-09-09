@@ -6,6 +6,21 @@
 
 Welcome to [Book Crosser], an innovative Android application built using Kotlin and the latest UI toolkit, Jetpack Compose. This project adopts the MVI (Model-View-Intent) architecture and is styled with Material Design 3, ensuring a modern and seamless user experience. Additionally, it integrates Google Maps Compose API for rich mapping features.
 
+## 📱Shortcut
+<div align="center">
+<div>
+<img src="md/img.png" width="30%" />
+<img src="md/img1.png" width="30%" />
+<img src="md/img_1.png" width="30%" />
+<img src="md/img_2.png" width="30%" />
+<img src="md/img_3.png" width="30%" />
+<img src="md/img_4.png" width="30%" />
+<img src="md/img_5.png" width="30%" />
+<img src="md/img_6.png" width="30%" />
+<img src="md/img_7.png" width="30%" />
+</div>
+</div>
+
 ## Features
 
 - **Modern Kotlin-Based Application**: Utilizing the powerful and concise language features of Kotlin for Android development.
@@ -15,23 +30,6 @@ Welcome to [Book Crosser], an innovative Android application built using Kotlin 
 - **Google Maps Compose Integration**: Embedding interactive maps directly into the app’s interfaces with Google Maps Compose API.
 
 ## Getting Started
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourgithubprofile/projectname.git
-   ```
-2. Open the project in Android Studio.
-3. Sync the project with Gradle.
-4. Build the project and run it on an Android device or emulator.
-
-## Usage
-
-Here’s how to navigate and use the application:
-
-- **Home Screen**: Displays the basic UI and entry points into various features of the app.
-- **Map Feature**: Access this via the navigation menu to view an interactive map powered by Google Maps Compose.
 
 ## Contact
 
